@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 #include "compact.h"
 #define FILE_NUM 8
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
@@ -741,7 +744,7 @@ void ApplyStationeryHandle(MyWindowPtr win,Handle textH,Boolean dontCleanse,Bool
 	}
 
 	for (spot = *textH;spot<end && (spot[0]!='\015'||spot[1]!='\015');spot++);
-	bodySpot = spot<end-2 ? spot-*textH+2 : end-*textH;
+	bodySpot = spot<end-2 ? spot-(unsigned char *)*textH+2 : end-(unsigned char *)*textH;
 	spot = *textH;
 
 	/*
@@ -820,7 +823,7 @@ void ApplyStationeryHandle(MyWindowPtr win,Handle textH,Boolean dontCleanse,Bool
 		newBodySpot = PETEGetTextLen(PETE,TheBody);
 		if (oldSum.opts & OPT_HTML)
 		{
-			InsertRich(textH,bodySpot,end-*textH,newBodySpot,false,TheBody,nil,false);
+			InsertRich(textH,bodySpot,end-(unsigned char *)*textH,newBodySpot,false,TheBody,nil,false);
 			SetMessOpt(messH,OPT_HTML);
 		}
 		else
@@ -831,7 +834,7 @@ void ApplyStationeryHandle(MyWindowPtr win,Handle textH,Boolean dontCleanse,Bool
 			ClearMessOpt(messH,OPT_INLINE_SIG);
 			
 			// append the body
-			AppendMessText(messH,0,*textH+bodySpot,end-*textH-bodySpot);
+			AppendMessText(messH,0,*textH+bodySpot,end-(unsigned char *)*textH-bodySpot);
 			
 			// final steps of the hacky dance.
 			if (oldSigOpt) SetMessOpt(messH,OPT_INLINE_SIG);
