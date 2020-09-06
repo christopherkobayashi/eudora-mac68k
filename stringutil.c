@@ -16,10 +16,16 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+#include <string.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #define FILE_NUM 73
 /* Copyright (c) 1995 by QUALCOMM Incorporated */
 
-#include "stringutil.h"
+#include "StringUtil.h"
 #pragma segment StringUtil
 
 PStr FormatString(unsigned int arg, PStr string, short format, short digits);
@@ -99,7 +105,7 @@ void CaptureHexPtr(Ptr from,Ptr to,long *pLen)
 		else
 			*toSpot++ = *spot;
 	}
-	*pLen = toSpot - to;
+	*pLen = toSpot - (UPtr)to;
 }
 
 /************************************************************************
@@ -430,7 +436,7 @@ PStr Transmogrify(PStr toStr,short toId,PStr fromStr,short fromId)
  ************************************************************************/
 void FixNewlines(UPtr string,long *count)
 {
-	char *from, *to;
+	unsigned char *from, *to;
 	long n;
 	
 	for (to=from=string,n= *count;n;n--,from++)
@@ -650,7 +656,7 @@ PStr PCopyTrim(PStr toString,PStr fromString,short max)
 UPtr PEscCat(UPtr string, UPtr suffix, short escape, char *escapeWhat)
 {
 	short sufLen;
-	char *suffSpot,*stringSpot;
+	unsigned char *suffSpot,*stringSpot;
 	
 	sufLen = *suffix;
 	stringSpot = string+*string+1;
@@ -1143,7 +1149,7 @@ long StripChar(Ptr string,long len,Byte c)
 	to = string;
 	
 	while (++from<end) if (*from != c) *to++ = *from;
-	return to-string;
+	return to-(UPtr)string;
 }
 
 /************************************************************************
@@ -1251,7 +1257,7 @@ PStr TrimInternalWhite(PStr s)
 		*copySpot++ = *spot;	// otherwise, copy the char
 		wasWhite = isWhite;	// remember if we were looking at whitespace
 	}
-	*s = copySpot-s-1;
+	*s = copySpot-(char *)s-1;
 	
 	return(s);
 }
