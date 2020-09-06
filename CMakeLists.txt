@@ -207,7 +207,7 @@ else()
     set_target_properties(Eudora PROPERTIES LINK_FLAGS "-Wl,-gc-sections")
 endif()
 
-add_definitions(-DTWO)
+add_definitions(-DTWO -DACCESSOR_CALLS_ARE_FUNCTIONS)
 
 target_include_directories(Eudora PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
