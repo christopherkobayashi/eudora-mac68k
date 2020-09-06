@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 #include "boxact.h"
 #define FILE_NUM 5
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
@@ -1824,7 +1827,7 @@ void BoxType2Select(TOCHandle tocH,PStr string)
 	for (i=(*tocH)->count;i--;)
 		if (spot=PPtrFindSub(Type2SelString,(*tocH)->sums[i].subj+1,*(*tocH)->sums[i].subj))
 		{
-			thisDiff = spot-(*tocH)->sums[i].subj;
+			thisDiff = spot-(unsigned char*)(*tocH)->sums[i].subj;
 			if (spot>(*tocH)->sums[i].subj && IsWordChar[spot[-1]]) thisDiff += 100;
 			if (difference>thisDiff)
 			{
@@ -1838,7 +1841,7 @@ void BoxType2Select(TOCHandle tocH,PStr string)
 	for (i=(*tocH)->count;i--;)
 		if (spot=PPtrFindSub(Type2SelString,(*tocH)->sums[i].from+1,*(*tocH)->sums[i].from))
 		{
-			thisDiff = spot-(*tocH)->sums[i].from;
+			thisDiff = spot-(unsigned char*)(*tocH)->sums[i].from;
 			if (spot>(*tocH)->sums[i].from && IsWordChar[spot[-1]]) thisDiff += 100;
 			if (difference>thisDiff)
 			{
