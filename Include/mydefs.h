@@ -610,7 +610,3 @@ Boolean	CanDoSSL ( void );
 #include "Globals.h"
 
 void DebugSomething(void);
-
-// CK fixme!
-Rect * GetControlBounds( ControlRef   control, Rect *       bounds);
-Rect * GetPortBounds( CGrafPtr   port, Rect *     rect);
