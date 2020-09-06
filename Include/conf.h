@@ -137,7 +137,7 @@ DAMAGE. */
 #ifndef rez
 #ifdef TARGET_CPU_PPC
 #define	SPEECH_ENABLED
-#define URLACCESS
+#undef URLACCESS // CK
 #endif
 #ifdef TARGET_CPU_68K
 #pragma opt_strength_reduction off

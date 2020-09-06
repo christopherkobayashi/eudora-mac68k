@@ -53,7 +53,7 @@ add_application(Eudora
 	ends.c
 	euerrors.c
 	export.c
-	extras.c
+#	extras.c
 	featureldef.c
 	features.c
 	filegraphic.c

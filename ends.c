@@ -16,6 +16,15 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Folders.h>
+#include <KeychainCore.h>
+#include <KeychainHI.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
+#include <Globals.h>
+
 #include "ends.h"
 #include "buildversion.h"
 #define FILE_NUM 12

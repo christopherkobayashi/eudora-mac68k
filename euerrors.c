@@ -17,6 +17,6 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 DAMAGE. */
 
 #define FILE_NUM 66
-#include "euerrors.h"
+#include "euErrors.h"
 /* Copyright (c) 1994 by QUALCOMM Incorporated */
 
