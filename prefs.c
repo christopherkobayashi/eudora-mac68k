@@ -16,6 +16,10 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Keychain.h>
+#include <InternetConfig.h>
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -1280,6 +1284,7 @@ PStr GetRealname(PStr name)
 	UPtr spot;
 	
 	GetPref(name,PREF_REALNAME);
+#if 0 // CK hesiod
 	if (EqualStrRes(name,HESIOD))
 	{
 		*name = 0;
@@ -1316,6 +1321,7 @@ PStr GetRealname(PStr name)
 			}
 		}
 	}	
+#endif
 	return(name);
 }
 
@@ -1447,6 +1453,8 @@ PStr GetPOPPref(PStr popAcct)
 	return popAcct;
 }
 
+#if 0 // CK hesiod?
+
 static Str127 hes_host, hes_user;
 
 /************************************************************************
@@ -1559,6 +1567,7 @@ OSErr HesiodPOPInfo(PStr user,PStr host)
 	}
 	return(err);
 }
+#endif
 
 /************************************************************************
  * GetSMTPInfo - get SMTP host (fallback to POP host if necessary)
@@ -2695,7 +2704,7 @@ void SettingsScreen(short startingWith,Boolean opening)
 			SelectDialogItemText(DlogDP,setBaseLimit,0,32000);
 		}
 	}
-#endif SETTINGSLISTKEY
+#endif // SETTINGSLISTKEY
 }
 
 /**********************************************************************
@@ -2862,7 +2871,7 @@ void BuildPrefList(Boolean disabled)
 #ifdef SETTINGSLISTKEY
 	(*SG)->lastTextItem = -1; 
 	(*SG)->firstTextItem = -1; 
-#endif SETTINGSLISTKEY
+#endif // SETTINGSLISTKEY
 
 	ConfigFontSetup(Dlog);
 		
@@ -2914,7 +2923,7 @@ void BuildPrefList(Boolean disabled)
 						(*SG)->firstTextItem = item;
 					(*SG)->lastTextItem = item;	
 				}
-#endif SETTINGSLISTKEY
+#endif // SETTINGSLISTKEY
 				if (disabled||!enabled) DeactivateControl(cntl);
 				break;
 			case ctrlItem+btnCtrl:
