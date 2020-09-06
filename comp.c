@@ -16,6 +16,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
+#include <mailbox.h>
+
 #include "comp.h"
 #define FILE_NUM 7
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
@@ -178,7 +183,7 @@ long BodyOffset(Handle text)
 		if (spot[-1]!='\015') spot++;
 		else if (spot[-2]=='\015') break;
 		
-	return(spot-*text);
+	return(spot-(UPtr)*text);
 }
 
 /************************************************************************
@@ -518,14 +523,14 @@ OSErr GetCompTexts(MessHandle messH,Boolean new)
 	{
 		if (MessOptIsSet(messH,OPT_HTML))
 		{
-			long offset = ep-*buffer;
+			long offset = ep-(long)*buffer;
 			long len = stop-*buffer;
 			UL(buffer);
 			if (err = InsertRich(buffer,offset,len,bo,false,TheBody,nil,false)) goto failure;
 		}
 		else
 		{
-			if (err=PETEInsertParaPtr(PETE,TheBody,kPETELastPara,&pdi.inParaInfo,ep,stop-ep,Pslh)) goto failure;
+			if (err=PETEInsertParaPtr(PETE,TheBody,kPETELastPara,&pdi.inParaInfo,ep,stop-(unsigned char *)ep,Pslh)) goto failure;
 			if (MessFlagIsSet(messH,FLAG_RICH)) PeteRich(TheBody,bo,0,True);
 		}
 		if (!err && MessOptIsSet(messH,OPT_INLINE_SIG)) FindAndMarkSigSep(TheBody);
@@ -1264,18 +1269,18 @@ OSErr CompStripHeaderReturns(MessHandle messH)
 					/*
 					 * replace return with space
 					 */
-					index = spot-*text;
+					index = spot-(unsigned char *)*text;
 					err = PETEInsertTextPtr(PETE,TheBody,index,nil,1,nil);
 					if (!err) err = PETEInsertTextPtr(PETE,TheBody,index," ",1,nil);
 					spot = *text+index;
 					end = *text+hs.stop;
 				}
-				else if (*spot==':' && IsAddressHead(h) && spot-*text-hs.value >= *mailtoBecauseNetscapeIsStupid)
+				else if (*spot==':' && IsAddressHead(h) && spot-(unsigned char *)*text-hs.value >= *mailtoBecauseNetscapeIsStupid)
 				{
 					MakePStr(mightBeMailto,spot-*mailtoBecauseNetscapeIsStupid,*mailtoBecauseNetscapeIsStupid);
 					if (StringSame(mightBeMailto,mailtoBecauseNetscapeIsStupid))
 					{
-						PeteDelete(TheBody,spot-*text-*mailtoBecauseNetscapeIsStupid,spot-*text+1);
+						PeteDelete(TheBody,spot-(unsigned char *)*text-*mailtoBecauseNetscapeIsStupid,spot-(unsigned char*)*text+1);
 						spot -= *mailtoBecauseNetscapeIsStupid+1;
 						hs.stop -= *mailtoBecauseNetscapeIsStupid+1;
 						end -= *mailtoBecauseNetscapeIsStupid+1;
@@ -2105,7 +2110,7 @@ OSErr GetHeaderAnywhere(MessHandle messH,PStr header,Handle *text)
 	
 	if (spot)
 	{
-		offset = spot - *(*messH)->extras.data;
+		offset = spot - (unsigned char *)*(*messH)->extras.data;
 		
 		if (*text = NuHTempBetter(size))
 		{
