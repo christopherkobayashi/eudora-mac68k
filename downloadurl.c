@@ -21,6 +21,11 @@ DAMAGE. */
  * Download a URL. Downloads only HTTP files at the moment.
  *
  ************************************************************************/
+
+#include <conf.h>
+#include <mydefs.h>
+#include <string.h>
+
 #include "downloadurl.h"
 #include "buildversion.h"
 
@@ -508,7 +513,7 @@ static OSErr ProcessHeader(Ptr *transferBuffer,long *bytesReceived,ResType *type
 		//	get filetype and creator
 		if (pTemp = strchr(s,'/'))
 		{
-			MakePStr(sContType,s,pTemp-s);
+			MakePStr(sContType,s,pTemp-(Ptr)s);
 			MakePStr(sContSubType,pTemp+1,strlen(pTemp+1));
 			if (FindMIMEMapPtr(sContType,sContSubType,(*threadData)->info.spec.name,&mm))
 			{
