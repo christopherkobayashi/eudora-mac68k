@@ -34,10 +34,12 @@ enum {
 };
 
 
+#if 0 // CK might just work under retro68
 #if PRAGMA_STRUCT_ALIGN
 #pragma options align=mac68k
 #else
 #error This file requires a compiler that supports mac68k struct alignment
+#endif
 #endif
 
 typedef struct {
