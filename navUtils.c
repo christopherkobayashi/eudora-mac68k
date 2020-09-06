@@ -16,6 +16,10 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <AEObjects.h>
+#include <Folders.h>
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -458,7 +462,7 @@ void DoSFOpenNav (short modifiers)
 		dialogOptions.dialogOptionFlags |= kNavNoTypePopup;
 		dialogOptions.dialogOptionFlags &= ~kNavAllowMultipleFiles;
 		dialogOptions.dialogOptionFlags |= kNavSelectAllReadableItem;
-		BlockMoveData (LMGetCurApName(), dialogOptions.clientName, LMGetCurApName()[0] + 1);
+		BlockMoveData (LMGetCurApName(), dialogOptions.clientName, /* LMGetCurApName()[0]*/ ((StringPtr) 0x0910)[0] + 1);
 	}
 	if (!theError) {
 		GetZoneAndResFile (&zoneAndResFile);
@@ -477,7 +481,7 @@ void DoSFOpenNav (short modifiers)
 					OpenNewSettings (&spec, false, GetNagState());
 				else
 					SimpleAESend (CurrentPSN (&psn),
-									 kCoreEventClass,kAEOpenDocuments,nil,kEAEWhenever,
+									 kCoreEventClass,kAEOpenDocuments,nil,nil /*kEAEWhenever CK*/,
 									 keyDirectObject,keyEuDesc,SimpleAEList (&fileList, typeFSS, &spec, sizeof (spec), nil),
 									 nil,nil);
 		}
@@ -660,7 +664,7 @@ Boolean MakeUserFindSettingsNav (FSSpecPtr theSpec)
 	if (!theError) {
 		dialogOptions.dialogOptionFlags &= ~kNavAllowMultipleFiles;
 		GetRString (dialogOptions.message, NAV_CHOOSE_SETTINGS);
-		BlockMoveData (LMGetCurApName(), dialogOptions.clientName, LMGetCurApName()[0] + 1);
+		BlockMoveData (LMGetCurApName(), dialogOptions.clientName, /* LMGetCurApName()*/ ((StringPtr) 0x0910)[0] + 1);
 	}
 	if (!theError) {
 		GetZoneAndResFile (&zoneAndResFile);
