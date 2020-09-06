@@ -400,7 +400,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #define WhoAmI (*CurTrans.vWhoAmI)
 #define RecvLine (*CurTrans.vRecvLine)
 #define AsyncSendTrans (*CurTrans.vAsyncSendTrans)
-#endif
+// #endif
 
 #ifdef CK
 #include "KClient.h"
@@ -423,7 +423,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "StrnDefs.h"
 #include "nickae.h"
 #ifdef WINTERTREE
-#include "ssce.h"
+//#include "ssce.h" CK
 #endif
 #include "spell.h"
 #ifndef ONE
@@ -610,3 +610,11 @@ Boolean	CanDoSSL ( void );
 #include "Globals.h"
 
 void DebugSomething(void);
+
+// CK stuff from here
+static void MoreAssetQ(void)
+{
+	/* NOOP for now */
+}
+
+#endif // MYDEFS_C
