@@ -127,7 +127,7 @@ DAMAGE. */
 #define	USECMM					// Provide Contextual Menu Manager Support
 #define IMAP			//turn this on to enable the beast
 //#ifndef LIGHT	// No Wintertree
-#undef WINTERTREE	// use internal wintertree speller CK
+#define WINTERTREE	// use internal wintertree speller CK
 //#endif //LIGHT
 #define LDAP_USE_STD_LINK_MECHANISM
 #define NEWFIND
