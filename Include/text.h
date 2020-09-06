@@ -37,17 +37,18 @@
 #define	kTextAttributeReadOnly		0x0001
 #define	kTextAttributeIsHTML			0x0002
 
-typedef struct
-{
-	FSSpec	spec;
-	uLong		textAttrbutes;
+typedef struct {
+	FSSpec spec;
+	uLong textAttrbutes;
 } TextDesc, *TextDPtr, **TextDHandle;
 
-MyWindowPtr OpenText(FSSpecPtr spec,WindowPtr winWP,MyWindowPtr win,WindowPtr behind,Boolean showIt,UPtr alias,Boolean ro,Boolean insertAsHTML);
-Boolean TextScroll(MyWindowPtr win,int h,int v);
-void TextDidResize(MyWindowPtr win,Rect *oldContR);
-MyWindowPtr FindTextLo(FSSpecPtr spec,PStr name);
+MyWindowPtr OpenText(FSSpecPtr spec, WindowPtr winWP, MyWindowPtr win,
+		     WindowPtr behind, Boolean showIt, UPtr alias,
+		     Boolean ro, Boolean insertAsHTML);
+Boolean TextScroll(MyWindowPtr win, int h, int v);
+void TextDidResize(MyWindowPtr win, Rect * oldContR);
+MyWindowPtr FindTextLo(FSSpecPtr spec, PStr name);
 #define FindText(s) FindTextLo(s,nil)
 Boolean TextMenu(MyWindowPtr win, int menu, int item, short modifiers);
-Boolean TextFind(MyWindowPtr win,PStr what);
+Boolean TextFind(MyWindowPtr win, PStr what);
 #endif

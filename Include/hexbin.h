@@ -36,7 +36,8 @@
 /************************************************************************
  * declarations for binhexing and unbinhexing macintosh files
  ************************************************************************/
-Boolean ConvertHexBin(short refN,UPtr buf,long *size,POPLineType lineType,long estSize);
+Boolean ConvertHexBin(short refN, UPtr buf, long *size,
+		      POPLineType lineType, long estSize);
 void EndHexBin(void);
 void BeginHexBin(HeaderDHandle hdh);
 
@@ -48,10 +49,12 @@ typedef enum {
 	RzWrite, RzCrc1, RzCrc2, Excess, HexDone, HexSLimit
 } HexBinStates;
 #ifdef	IMAP
-Boolean AutoWantTheFileLo(FSSpecPtr specPtr,Boolean ohYesYouDo,Boolean relatedPart, Boolean imapStub);
+Boolean AutoWantTheFileLo(FSSpecPtr specPtr, Boolean ohYesYouDo,
+			  Boolean relatedPart, Boolean imapStub);
 #endif
-Boolean AutoWantTheFile(FSSpecPtr specPtr,Boolean ohYesYouDo,Boolean relatedPart);
-void SafeInfo(FInfo *info, FXInfo *fxInfo);
+Boolean AutoWantTheFile(FSSpecPtr specPtr, Boolean ohYesYouDo,
+			Boolean relatedPart);
+void SafeInfo(FInfo * info, FXInfo * fxInfo);
 void ForceAttachFolder(PStr volName, long *dirId);
 
 

@@ -33,35 +33,44 @@
 #define NICKAE_H
 
 // Make this structure whatever you want; I just put something here so I could compile
-typedef struct
-{
+typedef struct {
 	short nickFileIndex;
 } NickFileToken, *NickFileTPtr, **NickFileTHandle;
-typedef struct
-{
+typedef struct {
 	short nickIndex;
-	short	nickFileNumber;
-}	NickToken, *NickTPtr, **NickTHandle;
+	short nickFileNumber;
+} NickToken, *NickTPtr, **NickTHandle;
 
 #endif
 Boolean AENickFileExists(AEDescPtr token);
 Boolean AENicknameExists(AEDescPtr token);
 Boolean AENickFieldExists(AEDescPtr token);
-OSErr GetNickFileProperty(AEDescPtr token,AppleEvent *reply, uLong refCon);
-OSErr GetNickProperty(AEDescPtr token,AppleEvent *reply, uLong refCon);
-OSErr SetNickProperty(AEDescPtr token,AEDescPtr data);
-OSErr GetNickField(AEDescPtr token,AppleEvent *reply, uLong refCon);
-OSErr SetNickField(AEDescPtr token,AEDescPtr data);
-OSErr AECreateNick(DescType theClass,AEDescPtr inContainer,AppleEvent *event, AppleEvent *reply);
-OSErr AECreateNickFile(DescType theClass,AEDescPtr inContainer,AppleEvent *event, AppleEvent *reply);
+OSErr GetNickFileProperty(AEDescPtr token, AppleEvent * reply,
+			  uLong refCon);
+OSErr GetNickProperty(AEDescPtr token, AppleEvent * reply, uLong refCon);
+OSErr SetNickProperty(AEDescPtr token, AEDescPtr data);
+OSErr GetNickField(AEDescPtr token, AppleEvent * reply, uLong refCon);
+OSErr SetNickField(AEDescPtr token, AEDescPtr data);
+OSErr AECreateNick(DescType theClass, AEDescPtr inContainer,
+		   AppleEvent * event, AppleEvent * reply);
+OSErr AECreateNickFile(DescType theClass, AEDescPtr inContainer,
+		       AppleEvent * event, AppleEvent * reply);
 OSErr AEDeleteNickname(NickTPtr token);
 OSErr AEDeleteNickFile(NickFileTPtr token);
-OSErr CountNickFileElements(DescType theClass,AEDescPtr inContainer,long *howMany);
-OSErr CountNickFiles(DescType theClass,AEDescPtr inContainer,long *howMany);
+OSErr CountNickFileElements(DescType theClass, AEDescPtr inContainer,
+			    long *howMany);
+OSErr CountNickFiles(DescType theClass, AEDescPtr inContainer,
+		     long *howMany);
 
 pascal OSErr FindNickFile(DescType desiredClass, AEDescPtr containerToken,
-	DescType containerClass, DescType keyForm, AEDescPtr keyData, AEDescPtr theToken, long refCon);
+			  DescType containerClass, DescType keyForm,
+			  AEDescPtr keyData, AEDescPtr theToken,
+			  long refCon);
 pascal OSErr FindNickname(DescType desiredClass, AEDescPtr containerToken,
-	DescType containerClass, DescType keyForm, AEDescPtr keyData, AEDescPtr theToken, long refCon);
+			  DescType containerClass, DescType keyForm,
+			  AEDescPtr keyData, AEDescPtr theToken,
+			  long refCon);
 pascal OSErr FindNickField(DescType desiredClass, AEDescPtr containerToken,
-	DescType containerClass, DescType keyForm, AEDescPtr keyData, AEDescPtr theToken, long refCon);
+			   DescType containerClass, DescType keyForm,
+			   AEDescPtr keyData, AEDescPtr theToken,
+			   long refCon);

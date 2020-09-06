@@ -34,22 +34,22 @@
 
 /* Copyright (c) 1998 by QUALCOMM Incorporated */
 
-typedef struct
-{
-	Handle	hRequestData;	//	Data passed in HTTP request
-	Str32	sContentType;
-	Str32	sMessageType;
-	Str32Field	sCheckSum;
-	Boolean	post;			//	POST instead of GET?
+typedef struct {
+	Handle hRequestData;	//      Data passed in HTTP request
+	Str32 sContentType;
+	Str32 sMessageType;
+	Str32Field sCheckSum;
+	Boolean post;		//      POST instead of GET?
 } HTTPinfo;
 
-typedef struct
-{
-	FSSpec	spec;
-	Str32Field	checksum;
+typedef struct {
+	FSSpec spec;
+	Str32Field checksum;
 } DownloadInfo;
 
-OSErr DownloadURL(const char *urlString, FSSpecPtr destSpec,long refCon,void (*FinishFunc)(long,OSErr,DownloadInfo*),long *pReference,HTTPinfo *HTTPstuff);
+OSErr DownloadURL(const char *urlString, FSSpecPtr destSpec, long refCon,
+		  void (*FinishFunc)(long, OSErr, DownloadInfo *),
+		  long *pReference, HTTPinfo * HTTPstuff);
 void URLDownloadAbort(long urlRef);
 Boolean DownloadURLOK(void);
 

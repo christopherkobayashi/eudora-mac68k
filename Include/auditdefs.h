@@ -32,31 +32,36 @@
 #ifndef AUDITDEFS_H
 #define AUDITDEFS_H
 
-#define kAuditShutdown 1 //
-#define kAuditTimestamp 2 //
-#define kAuditCheckStart 3 //
-#define kAuditCheckDone 4 //
-#define kAuditHit 5 //
-#define kAuditWindowOpen 6 //
-#define kAuditWindowClose 7 //
-#define kAuditAdOpen 8 //
-#define kAuditAdClose 9 //
-#define kAuditAdHit 10 //
-#define kAuditSendStart 11 //
-#define kAuditSendDone 12 //
-#define kAuditPersCreate 13 //
-#define kAuditPersDelete 14 //
-#define kAuditStartup 15 //
-#define kAuditPersRename 16 //
-#define kAuditConnect 17 //
-#define kAuditNonPersonalSettings 18 //
-#define kAuditNonPersonalSysInfo 19 //
-#define kAuditDemographicData 20 //
-OSErr AuditShutdown(long faceTime, long rearTime, long connectTime, long totalTime);
-OSErr AuditTimestamp(long faceTime, long rearTime, long connectTime, long totalTime);
-OSErr AuditCheckStart(uLong sessionID, uLong personalityID, Boolean isAuto);
+#define kAuditShutdown 1	//
+#define kAuditTimestamp 2	//
+#define kAuditCheckStart 3	//
+#define kAuditCheckDone 4	//
+#define kAuditHit 5		//
+#define kAuditWindowOpen 6	//
+#define kAuditWindowClose 7	//
+#define kAuditAdOpen 8		//
+#define kAuditAdClose 9		//
+#define kAuditAdHit 10		//
+#define kAuditSendStart 11	//
+#define kAuditSendDone 12	//
+#define kAuditPersCreate 13	//
+#define kAuditPersDelete 14	//
+#define kAuditStartup 15	//
+#define kAuditPersRename 16	//
+#define kAuditConnect 17	//
+#define kAuditNonPersonalSettings 18	//
+#define kAuditNonPersonalSysInfo 19	//
+#define kAuditDemographicData 20	//
+OSErr AuditShutdown(long faceTime, long rearTime, long connectTime,
+		    long totalTime);
+OSErr AuditTimestamp(long faceTime, long rearTime, long connectTime,
+		     long totalTime);
+OSErr AuditCheckStart(uLong sessionID, uLong personalityID,
+		      Boolean isAuto);
 OSErr AuditCheckDone(uLong sessionID, long messagesRcvd, long bytesRcvd);
-OSErr AuditHit(Boolean shift, Boolean control, Boolean option, Boolean command, Boolean alt, uLong windowID, long controlId, long eventType);
+OSErr AuditHit(Boolean shift, Boolean control, Boolean option,
+	       Boolean command, Boolean alt, uLong windowID,
+	       long controlId, long eventType);
 OSErr AuditWindowOpen(uLong windowID, uLong windowKind, long wazooState);
 OSErr AuditWindowClose(uLong windowID);
 OSErr AuditAdOpen(uLong serverID, uLong adID);
@@ -76,4 +81,4 @@ OSErr AuditDemographicData(short prefId);
 extern short AuditCategories[];
 #define MaxAuditType 20
 
-#endif //AUDITDEFS_H
+#endif				//AUDITDEFS_H

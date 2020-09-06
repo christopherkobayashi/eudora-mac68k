@@ -43,38 +43,37 @@
  ************************************************************************/
 
 #define MAX_CURSOR 8
-short CStack[MAX_CURSOR+1];
+short CStack[MAX_CURSOR + 1];
 int CSTop = 0;
 /************************************************************************
  * CycleBalls - spin the beach ball
  ************************************************************************/
 void CycleBalls(void)
 {
-	static int currentBall= -1;
+	static int currentBall = -1;
 	static long ticks;
 	extern short gNumBackgroundThreads;
-	
+
 	//ASSERT(!gNumBackgroundThreads || !InAThread() || CurThreadGlobals != &ThreadGlobals);
-	
-	if (TickCount()>ticks+10)
-	{
+
+	if (TickCount() > ticks + 10) {
 		ticks = TickCount();
 
 #ifdef THREADING_ON
-	if (InAThread () || DFWTC)
-	{
-		MiniEvents();
-		return;
-	}
+		if (InAThread() || DFWTC) {
+			MiniEvents();
+			return;
+		}
 #endif
-	
-		currentBall = (currentBall+1) % 4;
-		if (CStack[CSTop]<BALL_CURS || CStack[CSTop]>BALL_CURS+3)
-			PushCursor(BALL_CURS+currentBall);
+
+		currentBall = (currentBall + 1) % 4;
+		if (CStack[CSTop] < BALL_CURS
+		    || CStack[CSTop] > BALL_CURS + 3)
+			PushCursor(BALL_CURS + currentBall);
 		else
-			SetTopCursor(BALL_CURS+currentBall);
+			SetTopCursor(BALL_CURS + currentBall);
 		SFWTC = True;
-		MiniEventsLo(0,nil);	// let other threads run, but handle no events
+		MiniEventsLo(0, nil);	// let other threads run, but handle no events
 	}
 }
 
@@ -83,40 +82,35 @@ void CycleBalls(void)
  ************************************************************************/
 void CyclePendulum(void)
 {
-	static int currentPend= -1;
-	static int currentDir= 1;
-	
+	static int currentPend = -1;
+	static int currentDir = 1;
+
 #ifdef THREADING_ON
-	if (InAThread ()) {
+	if (InAThread()) {
 		return;
 	}
 #endif
-	
-	if (currentDir > 0)
-	{
+
+	if (currentDir > 0) {
 		currentPend++;
-		if (CStack[CSTop]<PENDULUM_CURS ||
-								 CStack[CSTop]>PENDULUM_CURS+3)
-			PushCursor(PENDULUM_CURS+currentPend);
+		if (CStack[CSTop] < PENDULUM_CURS ||
+		    CStack[CSTop] > PENDULUM_CURS + 3)
+			PushCursor(PENDULUM_CURS + currentPend);
 		else
-			SetTopCursor(PENDULUM_CURS+currentPend);
-		if (currentPend == 3)
-		{
+			SetTopCursor(PENDULUM_CURS + currentPend);
+		if (currentPend == 3) {
 			currentPend++;
 			currentDir = -1;
 		}
-	}
-	else
-	{
+	} else {
 		currentPend--;
-		if (CStack[CSTop]<PENDULUM_CURS ||
-				CStack[CSTop]>PENDULUM_CURS+3)
-			PushCursor(PENDULUM_CURS+currentPend);
+		if (CStack[CSTop] < PENDULUM_CURS ||
+		    CStack[CSTop] > PENDULUM_CURS + 3)
+			PushCursor(PENDULUM_CURS + currentPend);
 		else
-			SetTopCursor(PENDULUM_CURS+currentPend);
+			SetTopCursor(PENDULUM_CURS + currentPend);
 
-		if (currentPend == 0)
-		{
+		if (currentPend == 0) {
 			currentPend--;
 			currentDir = 1;
 		}
@@ -133,95 +127,90 @@ void SetCursorByLocation(void)
 	Point mouse;
 	Rect r;
 	MyWindowPtr topFloater;
-	Rect	rPort;
+	Rect rPort;
 #ifdef URL_PROTECTION
 	Boolean hideTag = true;
-#endif //URL_PROTECTION
+#endif				//URL_PROTECTION
 
-	if (InBG) return;
-	
+	if (InBG)
+		return;
+
 	PushGWorld();
-	
+
 	winWP = FrontWindow_();
-	if (winWP) SetPort(GetWindowPort(winWP));
+	if (winWP)
+		SetPort(GetWindowPort(winWP));
 	GetMouse(&mouse);
 
-	if (!MousePen) return;
-	SetRectRgn(MousePen,mouse.h,mouse.v,mouse.h+1,mouse.v+1);
+	if (!MousePen)
+		return;
+	SetRectRgn(MousePen, mouse.h, mouse.v, mouse.h + 1, mouse.v + 1);
 	GlobalizeRgn(MousePen);
-	
+
 	//If there's a floating window covering this spot, then we need to call
-	//the floater's cursor function	
-	if (topFloater = FloaterAtPoint(mouse))
-	{
+	//the floater's cursor function 
+	if (topFloater = FloaterAtPoint(mouse)) {
 		SetPort(GetMyWindowCGrafPtr(topFloater));
 		GetMouse(&mouse);
 		if (topFloater->cursor)
-		  (*topFloater->cursor)(mouse);
-	 	else if (PeteCursorList(topFloater->pteList,mouse))
-			;
+			(*topFloater->cursor) (mouse);
+		else if (PeteCursorList(topFloater->pteList, mouse));
 		else
 			SetMyCursor(arrowCursor);
-	}
-	else
-	{
-		//	Not floating window
-		if (!winWP || IsWindowCollapsed(winWP))
-		{
+	} else {
+		//      Not floating window
+		if (!winWP || IsWindowCollapsed(winWP)) {
 			SetMyCursor(arrowCursor);
-		}
-		else
-		{
-			GetPortBounds(GetWindowPort(winWP),&rPort);
-			if (!PtInRect(mouse,&rPort))
-			{
-				if (!ToolbarShowing())
-				{
+		} else {
+			GetPortBounds(GetWindowPort(winWP), &rPort);
+			if (!PtInRect(mouse, &rPort)) {
+				if (!ToolbarShowing()) {
 					SetMyCursor(arrowCursor);
-				}
-				else 	ToolbarCursor(mouse);
-			}
-			else if (IsMyWindow(winWP))
-			{
-				MyWindowPtr	win;
-				
-				if (win = GetWindowMyWindowPtr (winWP)) {
+				} else
+					ToolbarCursor(mouse);
+			} else if (IsMyWindow(winWP)) {
+				MyWindowPtr win;
+
+				if (win = GetWindowMyWindowPtr(winWP)) {
 					SetPort(GetWindowPort(winWP));
 					r = win->contR;
 					r.top = 0;
-					
+
 #ifdef URL_PROTECTION
-					hideTag = !URLHelpTagList(win->pteList,mouse);
-#endif //URL_PROTECTION
-			
+					hideTag =
+					    !URLHelpTagList(win->pteList,
+							    mouse);
+#endif				//URL_PROTECTION
+
 					if (win->cursor)
-						(*win->cursor)(mouse);
-					else if (PeteCursorList(win->pteList,mouse))
-						;
-					else
-					{
+						(*win->cursor) (mouse);
+					else if (PeteCursorList
+						 (win->pteList, mouse));
+					else {
 						SetMyCursor(arrowCursor);
 					}
 				}
-			}
-			else if (IsPlugwindow(winWP))
-			{
-				//	Send the plug window a fake mouse moved event in case that's
-				//	how it handles cursor setting (e.g. ESP and MLM).
+			} else if (IsPlugwindow(winWP)) {
+				//      Send the plug window a fake mouse moved event in case that's
+				//      how it handles cursor setting (e.g. ESP and MLM).
 				LocalToGlobal(&mouse);
-				PlugwindowSendFakeEvent(winWP, mouseMovedMessage << 24, osEvt, 0, &mouse);
+				PlugwindowSendFakeEvent(winWP,
+							mouseMovedMessage
+							<< 24, osEvt, 0,
+							&mouse);
 			}
 		}
 	}
-	
+
 #ifdef URL_PROTECTION
-	if (hideTag) MyHMHideTag();
-#endif //URL_PROTECTION
-	
+	if (hideTag)
+		MyHMHideTag();
+#endif				//URL_PROTECTION
+
 #ifdef NEVER
 	{
 		GrafPtr wMgrPort;
-		
+
 		PushGWorld();
 		GetWMgrPort(&wMgrPort);
 		SetPort_(wMgrPort);
@@ -231,7 +220,7 @@ void SetCursorByLocation(void)
 		PopGWorld();
 	}
 #endif
-	
+
 	PopGWorld();
 	SFWTC = False;
 }
@@ -250,7 +239,8 @@ void SetMyCursor(int cursor)
  ************************************************************************/
 void PushCursor(int cursor)
 {
-	if (CSTop<MAX_CURSOR) CSTop++;
+	if (CSTop < MAX_CURSOR)
+		CSTop++;
 	SetTopCursor(cursor);
 	SFWTC = True;
 }
@@ -260,7 +250,8 @@ void PushCursor(int cursor)
  ************************************************************************/
 void PopCursor(void)
 {
-	if (CSTop) CSTop--;
+	if (CSTop)
+		CSTop--;
 	SetTopCursor(CStack[CSTop]);
 }
 
@@ -269,17 +260,15 @@ void PopCursor(void)
  **********************************************************************/
 void SetTopCursor(int cursor)
 {
-	Cursor	arrowCurs;
-	
+	Cursor arrowCurs;
+
 	CStack[CSTop] = cursor;
 	if (cursor == arrowCursor)
 		SetCursor(GetQDGlobalsArrow(&arrowCurs));
-	else
-	{
+	else {
 		CursHandle curse = GetCursor(cursor);
-		short state = HGetState((Handle)curse);
+		short state = HGetState((Handle) curse);
 		SetCursor(LDRef(curse));
-		HSetState((Handle)curse,state);
+		HSetState((Handle) curse, state);
 	}
 }
-

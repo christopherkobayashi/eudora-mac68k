@@ -40,9 +40,11 @@
 #ifndef TASK_LDEF_H
 #define TASK_LDEF_H
 
-typedef void (*drawCellType)(MyWindowPtr win, Rect *lRect,Handle data);
-OSErr AddListItemEntry(short where, drawCellType draw, Handle data,ListHandle lHandle);
-void RemoveListItemEntry(Handle data,ListHandle lHandle);
-void ListItemDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
+typedef void (*drawCellType)(MyWindowPtr win, Rect * lRect, Handle data);
+OSErr AddListItemEntry(short where, drawCellType draw, Handle data,
+		       ListHandle lHandle);
+void RemoveListItemEntry(Handle data, ListHandle lHandle);
+void ListItemDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle);
 
 #endif

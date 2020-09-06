@@ -39,11 +39,11 @@
 #define	kVerticalDescriptionSqueeze		 3
 
 typedef struct {
-	Str255			description;				// The text description of the feature
-	FeatureType	type;								// The feature type
-	Boolean			isName;							// 'true' if this is a feature name as opposed to a description
-	Boolean			isSubFeature;				// 'true' if this is a sub feature to a primary feature
-	Boolean			used;								// 'true' if this feature has been used
+	Str255 description;	// The text description of the feature
+	FeatureType type;	// The feature type
+	Boolean isName;		// 'true' if this is a feature name as opposed to a description
+	Boolean isSubFeature;	// 'true' if this is a sub feature to a primary feature
+	Boolean used;		// 'true' if this feature has been used
 } FeatureCellRec, *FeatureCellPtr, **FeatureCellHandle;
 
 #endif

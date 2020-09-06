@@ -41,12 +41,12 @@
  *		This file contains the functions that manage IMAP connections
  **********************************************************************/
 
-#include "imapconnections.h" 
+#include "imapconnections.h"
 #include "myssl.h"
 
 // connection management
 short CountConnections(PersHandle pers);
-void ZapIMAPConnectionHandle(IMAPConnectionHandle *node);
+void ZapIMAPConnectionHandle(IMAPConnectionHandle * node);
 IMAPConnectionHandle FindConnectionFromStream(IMAPStreamPtr imapStream);
 void CloseImapStream(IMAPConnectionHandle node);
 void CloseIMAPStreamSilently(IMAPConnectionHandle node);
@@ -62,33 +62,32 @@ OSErr EnsureConnectionPool(PersHandle pers)
 	long numConnections;
 	IMAPConnectionHandle node;
 	Str255 user, host;
-	
+
 	CurPers = pers;
-	
-	numConnections = GetRLong(IMAP_MAX_CONNECTIONS) - CountConnections(CurPers);
-	GetPOPInfo(user,host);
-	
+
+	numConnections =
+	    GetRLong(IMAP_MAX_CONNECTIONS) - CountConnections(CurPers);
+	GetPOPInfo(user, host);
+
 	// create as many connections as we need for this personality
-	while(numConnections > 0 && (err==noErr))
-	{
+	while (numConnections > 0 && (err == noErr)) {
 		node = NewZH(IMAPConnectionStruct);
-		if (node)
-		{
+		if (node) {
 			// create the imapstream when we first use this node ...
 			(*node)->owner = (*CurPers)->persId;
-			(*node)->lifeTime = GetRLong(IMAP_MAIN_CON_TIMEOUT);
-			
-			LL_Queue(gIMAPConnectionPool, node, (IMAPConnectionHandle));
-		}
-		else
-		{
-			WarnUser(MEM_ERR, err=MemError());
+			(*node)->lifeTime =
+			    GetRLong(IMAP_MAIN_CON_TIMEOUT);
+
+			LL_Queue(gIMAPConnectionPool, node,
+				 (IMAPConnectionHandle));
+		} else {
+			WarnUser(MEM_ERR, err = MemError());
 			break;
 		}
 		numConnections--;
 	}
 	CurPers = oldPers;
-	
+
 	return (err);
 }
 
@@ -103,28 +102,25 @@ short CountConnections(PersHandle pers)
 	IMAPConnectionHandle node = gIMAPConnectionPool, next = nil;
 	Str255 user, host;
 	long port;
-			
+
 	CurPers = pers;
 	port = GetRLong(IMAP_PORT);
-	GetPOPInfoLo(user,host,&port);
+	GetPOPInfoLo(user, host, &port);
 	CurPers = oldPers;
 
-	while (node)
-	{	
+	while (node) {
 		next = (*node)->next;
-		
+
 		// if this node is owned by the given personality ...
-		if ((*node)->owner == (*pers)->persId)
-		{
+		if ((*node)->owner == (*pers)->persId) {
 			result++;
 		}
-		
 		// next node ...
 		node = next;
 	}
-	
+
 	return (result);
-} 
+}
 
 /************************************************************************
  *	FindConnectionFromStream - given an IMAP stream, locate the connection
@@ -133,58 +129,58 @@ short CountConnections(PersHandle pers)
 IMAPConnectionHandle FindConnectionFromStream(IMAPStreamPtr imapStream)
 {
 	IMAPConnectionHandle node = gIMAPConnectionPool;
-	
-	while (node)
-	{
-		if ((*node)->imapStream == imapStream) return (node);
-		else node = (*node)->next;
+
+	while (node) {
+		if ((*node)->imapStream == imapStream)
+			return (node);
+		else
+			node = (*node)->next;
 	}
-	
+
 	return (nil);
 }
 
 /************************************************************************
  *	CleanupConnection - clean up a connection so someone else can use it.
  ************************************************************************/
-void CleanupConnection(IMAPStreamPtr *imapStream)
+void CleanupConnection(IMAPStreamPtr * imapStream)
 {
 	IMAPConnectionHandle node = nil;
-	
+
 	// must actually have a stream to close ...
-	if (imapStream && *imapStream)
-	{		
-		if (node = FindConnectionFromStream(*imapStream))
-		{
+	if (imapStream && *imapStream) {
+		if (node = FindConnectionFromStream(*imapStream)) {
 			// cleanup alerts and display any new ones
 			IMAPAlert(*imapStream, (*node)->task);
-		
-			if ((*node)->imapStream->mailStream && (*node)->imapStream->mailStream->refN > 0) 
-			{
-				MyFSClose((*node)->imapStream->mailStream->refN);
+
+			if ((*node)->imapStream->mailStream
+			    && (*node)->imapStream->mailStream->refN > 0) {
+				MyFSClose((*node)->imapStream->mailStream->
+					  refN);
 				(*node)->imapStream->mailStream->refN = -1;
 			}
-
-	#ifdef	DEBUG
-			if ((*node)->imapStream->mailStream && (*node)->imapStream->mailStream->flagsRefN > 0) 
-			{
-				MyFSClose((*node)->imapStream->mailStream->flagsRefN);
-				(*node)->imapStream->mailStream->flagsRefN = -1;
+#ifdef	DEBUG
+			if ((*node)->imapStream->mailStream
+			    && (*node)->imapStream->mailStream->flagsRefN >
+			    0) {
+				MyFSClose((*node)->imapStream->mailStream->
+					  flagsRefN);
+				(*node)->imapStream->mailStream->
+				    flagsRefN = -1;
 			}
-	#endif
-		
+#endif
+
 			(*node)->lastUsed = TickCount();
 			(*node)->task = UndefinedTask;
-			
+
 			// unlock this node
 			(*node)->inUse = false;
 			UL(node);
-		}
-		else
-		{
+		} else {
 			// the node for this stream was not found.  Kill the imapstream.
 			ZapImapStream(imapStream);
 		}
-		
+
 		*imapStream = nil;
 	}
 }
@@ -193,7 +189,8 @@ void CleanupConnection(IMAPStreamPtr *imapStream)
  *	GetIMAPConnection - return the first unused IMAP connection for
  *	 the current personality.  Sit and wait until one is available.
  ************************************************************************/
-IMAPStreamPtr GetIMAPConnectionLo(TaskKindEnum forWhat, Boolean progress, Boolean bPerformUpdate)
+IMAPStreamPtr GetIMAPConnectionLo(TaskKindEnum forWhat, Boolean progress,
+				  Boolean bPerformUpdate)
 {
 	IMAPStreamPtr stream = nil;
 	IMAPConnectionHandle node = nil;
@@ -204,166 +201,188 @@ IMAPStreamPtr GetIMAPConnectionLo(TaskKindEnum forWhat, Boolean progress, Boolea
 	Boolean progressed = false;
 	Boolean connectionBusy = false;	// set to true to allow only one type of this connection
 	long port;
-	
+
 #ifdef ESSL
-	if(GetPrefLong(PREF_SSL_IMAP_SETTING) & esslUseAltPort)
+	if (GetPrefLong(PREF_SSL_IMAP_SETTING) & esslUseAltPort)
 		port = GetRLong(IMAP_SSL_PORT);
 	else
 #endif
 		port = GetRLong(IMAP_PORT);
-	HesOK = True;	// force re-fetch of hesiod info				
+	HesOK = True;		// force re-fetch of hesiod info                                
 	GetPOPInfoLo(user, host, &port);
 	HesOK = False;
-			
+
 	// user specified unlimited connections.
-	if (numConnections < 1)	
-	{
+	if (numConnections < 1) {
 		// create a new one.
 		NewImapStream(&stream, host, port);
-		if (stream == nil)
-		{
+		if (stream == nil) {
 			WarnUser(MEM_ERR, MemError());
 		}
-	}
-	else
-	{
+	} else {
 		// locate an available connection
-		while (!CommandPeriod && !stream)
-		{
+		while (!CommandPeriod && !stream) {
 			// make sure there's an ass to pull a stream out of ...
 			EnsureConnectionPool(CurPers);
-		
+
 			// Allow only one resync, fetch, or append at a time, if we're being smart.
 			connectionBusy = false;
-			if (!PrefIsSet(PREF_IMAP_NO_CONNECTION_MANAGEMENT))
-			{
-				if ((forWhat==IMAPResyncTask) || (forWhat==IMAPFetchingTask) 
-					|| (forWhat==IMAPAttachmentFetch) || (forWhat==IMAPAppendTask)
-					|| (forWhat == IMAPMultResyncTask))
-				{
+			if (!PrefIsSet(PREF_IMAP_NO_CONNECTION_MANAGEMENT)) {
+				if ((forWhat == IMAPResyncTask)
+				    || (forWhat == IMAPFetchingTask)
+				    || (forWhat == IMAPAttachmentFetch)
+				    || (forWhat == IMAPAppendTask)
+				    || (forWhat == IMAPMultResyncTask)) {
 					node = gIMAPConnectionPool;
-					while (node && !stream)
-					{
+					while (node && !stream) {
 						// there's one running
-						if ((*node)->task == forWhat) 
-						{
+						if ((*node)->task ==
+						    forWhat) {
 							// always allow one message text fetch per personality
-							if ((forWhat!=IMAPFetchingTask) || ((*node)->owner==(*CurPers)->persId))
-							{
-								connectionBusy = true;
+							if ((forWhat !=
+							     IMAPFetchingTask)
+							    || ((*node)->
+								owner ==
+								(*CurPers)->
+								persId)) {
+								connectionBusy
+								    = true;
 								break;
 							}
 						}
-						
 						// next node
 						node = (*node)->next;
 					}
 				}
 			}
 
-			if (!connectionBusy)
-			{
+			if (!connectionBusy) {
 				node = gIMAPConnectionPool;
-				while (node && !stream)
-				{
-					if (((*node)->owner == (*CurPers)->persId))
-					{	
+				while (node && !stream) {
+					if (((*node)->owner ==
+					     (*CurPers)->persId)) {
 						// make sure the node, if in use, really is.
-						if ((*node)->inUse)
-						{			
+						if ((*node)->inUse) {
 							// this node was found to be in use.  Are there any threads running?
-							if (!AnyThreadsRunning())
-							{
+							if (!AnyThreadsRunning()) {
 								// there are no threads, or we're in the only thread running.
-								(*node)->inUse = false;
+								(*node)->
+								    inUse =
+								    false;
 								UL(node);
 							}
 						}
-						
 						// if the node is not in use ...
-						if (!(*node)->inUse)
-						{
+						if (!(*node)->inUse) {
 							// lock it now.  No one else my touch it.
 							LDRef(node);
-							(*node)->inUse = true;
+							(*node)->inUse =
+							    true;
 
 							// Can we reuse this stream?
-							if ((*node)->imapStream)
-							{
-								if ((port != (*node)->imapStream->portNumber) 
-								 || (!StringSame(host, (*node)->imapStream->pServerName)) 
-								 || (*node)->rude
-								 ||	(*node)->dontReuse)
+							if ((*node)->
+							    imapStream) {
+								if ((port
+								     !=
+								     (*node)->
+								     imapStream->
+								     portNumber)
+								    ||
+								    (!StringSame
+								     (host,
+								      (*node)->
+								      imapStream->
+								      pServerName))
+								    ||
+								    (*node)->
+								    rude
+								    ||
+								    (*node)->
+								    dontReuse)
 								{
 									// force us to reconnect to the server
-									CloseImapStream(node);
-									
+									CloseImapStream
+									    (node);
+
 									// this connection CAN be reused in the future
-									(*node)->dontReuse = false;	
-								}	
+									(*node)->dontReuse = false;
+								}
 							}
-							
 							// Ping this connection to make sure it's still alive
-							if ((*node)->imapStream)
-							{
+							if ((*node)->
+							    imapStream) {
 								// do the ping silently.  If it fails, we'll create a new stream.
 								if ((*node)->imapStream->mailStream && (*node)->imapStream->mailStream->transStream)
 									(*node)->imapStream->mailStream->transStream->BeSilent = true;
-									
-								if (!Noop((*node)->imapStream))
-								{
+
+								if (!Noop
+								    ((*node)->imapStream)) {
 									// the ping failed.  Kill the mailStream, which kills the network stream.
-									CloseImapStream(node);
+									CloseImapStream
+									    (node);
 								}
 							}
-							
 							// create a new conneciton if we need one.
-							if ((*node)->imapStream == nil)
-							{
-								if ((err=NewImapStream(&(*node)->imapStream, host, port))!=noErr)
+							if ((*node)->
+							    imapStream ==
+							    nil) {
+								if ((err =
+								     NewImapStream
+								     (&
+								      (*node)->
+								      imapStream,
+								      host,
+								      port))
+								    !=
+								    noErr)
 								{
 									// unlock this node.
 									(*node)->inUse = false;
 									UL(node);
-									
+
 									// couldn't get a stream.
-									WarnUser(MEM_ERR, err);
+									WarnUser
+									    (MEM_ERR,
+									     err);
 									break;
 								}
 							}
-							
 							// what is this connection going to be doing?
-							(*node)->task = forWhat;
+							(*node)->task =
+							    forWhat;
 
 							// remember when this stream was last used
-							(*node)->lastUsed = TickCount();
-							
-							stream = (*node)->imapStream;
+							(*node)->lastUsed =
+							    TickCount();
+
+							stream =
+							    (*node)->
+							    imapStream;
 							break;
-						}				
-						
+						}
+
 					}
 					node = (*node)->next;
 				}
 			}
-											
 			// put up a progress message if we've waiting for more than a second ...
-			if (!progressed && ((TickCount() - ticks)>60))
-			{
-				PROGRESS_MESSAGER(kpMessage,IMAP_WAITING_FOR_CONNECTION);
-				
+			if (!progressed && ((TickCount() - ticks) > 60)) {
+				PROGRESS_MESSAGER(kpMessage,
+						  IMAP_WAITING_FOR_CONNECTION);
+
 				progressed = true;
 			}
-								
+
 			CycleBalls();
-			if (MyYieldToAnyThread()) break;
+			if (MyYieldToAnyThread())
+				break;
 		}
 	}
 
 	// processed all queued IMAP commands for this personality
 	if (bPerformUpdate)
 		PerformQueuedCommands(CurPers, stream, progress);
-	
+
 	return (stream);
 }
 
@@ -377,68 +396,71 @@ void CheckIMAPConnections(void)
 	PersHandle oldPers = CurPers;
 	long timeOut, secondaryTimeOut;
 	IMAPConnectionHandle node;
-	long now = TickCount();		
+	long now = TickCount();
 	Boolean foundMainConnection;
-	
-	for (CurPers = PersList; CurPers; CurPers = (*CurPers)->next)
-	{
-		timeOut = GetRLong(IMAP_MAIN_CON_TIMEOUT);					// timeOut for main IMAP connection
+
+	for (CurPers = PersList; CurPers; CurPers = (*CurPers)->next) {
+		timeOut = GetRLong(IMAP_MAIN_CON_TIMEOUT);	// timeOut for main IMAP connection
 		secondaryTimeOut = GetRLong(IMAP_SECONDARY_CON_TIMEOUT);	// timeOut for all other IMAP connections
-		foundMainConnection = false;								// set to true once we've processed the main connection
-		
+		foundMainConnection = false;	// set to true once we've processed the main connection
+
 		// look at the connections for this personality ...
-		for (node = gIMAPConnectionPool; node; node = (*node)->next)
-		{
+		for (node = gIMAPConnectionPool; node;
+		     node = (*node)->next) {
 			// if this connection belongs to the current personality ...
-			if ((*node)->owner == (*CurPers)->persId)
-			{
+			if ((*node)->owner == (*CurPers)->persId) {
 				// and if it's not in use ...
-				if (!(*node)->inUse)
-				{
+				if (!(*node)->inUse) {
 					// and if a connection has been made through it once before ...
-					if ((*node)->imapStream != nil)
-					{
+					if ((*node)->imapStream != nil) {
 						// and it hasn't been used for the last <timeOut> seconds ...
-						if (((*node)->lastUsed + 60*(foundMainConnection?secondaryTimeOut:timeOut))< now)
-						{
-							CloseIMAPStreamSilently(node);
+						if (((*node)->lastUsed +
+						     60 *
+						     (foundMainConnection ?
+						      secondaryTimeOut :
+						      timeOut)) < now) {
+							CloseIMAPStreamSilently
+							    (node);
 						}
 					}
 				}
 				foundMainConnection = true;	// we've processed the first/main connection for this personality
 			}
-		}	
+		}
 	}
-	
+
 	CurPers = oldPers;
 }
 
 /************************************************************************
  *	ZapIMAPConnectionHandle - zap a connection node
  ************************************************************************/
-void ZapIMAPConnectionHandle(IMAPConnectionHandle *node)
-{		
+void ZapIMAPConnectionHandle(IMAPConnectionHandle * node)
+{
 	// nothing to do if nothing to zap ...
-	if (!node || !*node) return;
-		
-	if (**node)
-	{		
+	if (!node || !*node)
+		return;
+
+	if (**node) {
 		// lock this node, no one else may touch it.
 		LDRef(*node);
 		(**node)->inUse = true;
 
 		// if there's a network stream leftover, make sure it's silent when we kill it.
-		if ((**node)->imapStream && (**node)->imapStream->mailStream && (**node)->imapStream->mailStream->transStream)
-			(**node)->imapStream->mailStream->transStream->BeSilent = true;
-		
+		if ((**node)->imapStream
+		    && (**node)->imapStream->mailStream
+		    && (**node)->imapStream->mailStream->transStream)
+			(**node)->imapStream->mailStream->transStream->
+			    BeSilent = true;
+
 		// now zap the IMAP stream, including the network stream.
 		ZapImapStream(&(**node)->imapStream);
-		
+
 		// unlock the node.
 		(**node)->inUse = false;
 		UL(*node);
-	}	
-	
+	}
+
 	ZapHandle(*node);
 	*node = nil;
 }
@@ -450,17 +472,16 @@ void ZapAllIMAPConnections(Boolean force)
 {
 	IMAPConnectionHandle node = gIMAPConnectionPool;
 	IMAPConnectionHandle next;
-	
-	while (node)
-	{
+
+	while (node) {
 		next = (*node)->next;
-		
-		if (!(*node)->inUse || force)
-		{
-			LL_Remove(gIMAPConnectionPool,node,(IMAPConnectionHandle));
+
+		if (!(*node)->inUse || force) {
+			LL_Remove(gIMAPConnectionPool, node,
+				  (IMAPConnectionHandle));
 			ZapIMAPConnectionHandle(&node);
 		}
-		
+
 		node = next;
 	}
 }
@@ -474,19 +495,18 @@ void PrepareToExpunge(IMAPStreamPtr imapStream)
 {
 	IMAPConnectionHandle node = gIMAPConnectionPool;
 	IMAPConnectionHandle next;
-	
-	while (node)
-	{
+
+	while (node) {
 		next = (*node)->next;
-		if (((*node)->owner == (*CurPers)->persId))
-		{
-			if (!(*node)->inUse && (*node)->imapStream)
-			{
+		if (((*node)->owner == (*CurPers)->persId)) {
+			if (!(*node)->inUse && (*node)->imapStream) {
 				// idle connection found.  Is it connected to the same mailbox?
-				if (!strcmp(imapStream->mailboxName, (*node)->imapStream->mailboxName))
+				if (!strcmp
+				    (imapStream->mailboxName,
+				     (*node)->imapStream->mailboxName))
 					CloseIMAPStreamSilently(node);
 			}
-		}		
+		}
 		node = next;
 	}
 }
@@ -505,11 +525,12 @@ void CloseImapStream(IMAPConnectionHandle node)
  ************************************************************************/
 void CloseIMAPStreamSilently(IMAPConnectionHandle node)
 {
-	if ((*node)->imapStream)
-	{
+	if ((*node)->imapStream) {
 		// silent killing ...
-		if ((*node)->imapStream->mailStream && (*node)->imapStream->mailStream->transStream)
-			(*node)->imapStream->mailStream->transStream->BeSilent = true;
+		if ((*node)->imapStream->mailStream
+		    && (*node)->imapStream->mailStream->transStream)
+			(*node)->imapStream->mailStream->transStream->
+			    BeSilent = true;
 
 		// close the connection to the server.
 		LDRef(node);
@@ -527,9 +548,9 @@ void CloseIMAPStreamSilently(IMAPConnectionHandle node)
 void IMAPRudeConnectionClose(IMAPStreamPtr imapStream)
 {
 	IMAPConnectionHandle node;
-	
+
 	if (!PrefIsSet(PREF_IMAP_POLITE_LOGOUT))
-		if ((node = FindConnectionFromStream(imapStream))!=nil)
+		if ((node = FindConnectionFromStream(imapStream)) != nil)
 			(*node)->rude = true;
 }
 
@@ -541,26 +562,22 @@ void IMAPRudeConnectionClose(IMAPStreamPtr imapStream)
 void IMAPInvalidatePerConnections(PersHandle pers)
 {
 	IMAPConnectionHandle node;
-			
+
 	// look at the connections for this personality ...
-	for (node = gIMAPConnectionPool; node; node = (*node)->next)
-	{
+	for (node = gIMAPConnectionPool; node; node = (*node)->next) {
 		// if this connection belongs to the current personality ...
-		if ((*node)->owner == (*pers)->persId)
-		{
+		if ((*node)->owner == (*pers)->persId) {
 			// and this connection is up and running ...
-			if ((*node)->imapStream != nil)
-			{
-				if ((*node)->inUse)
-				{
+			if ((*node)->imapStream != nil) {
+				if ((*node)->inUse) {
 					// this connection is currently being used.  Let it finish,
 					// but don't reuse it
 					(*node)->dontReuse = true;
-				}
-				else CloseIMAPStreamSilently(node);
+				} else
+					CloseIMAPStreamSilently(node);
 			}
 		}
-	}	
+	}
 }
 
 /************************************************************************
@@ -570,12 +587,12 @@ void IMAPInvalidatePerConnections(PersHandle pers)
 Boolean AnyThreadsRunning(void)
 {
 	int numThreads = GetNumBackgroundThreads();
-	
+
 	// if there's only one thread running and it's a filter progress 
 	// thread, we can ignore it.  It doesn't use any connections.
-	if (numThreads  == 1)
+	if (numThreads == 1)
 		if (IsIMAPOperationUnderway(IMAPFilterTask))
 			numThreads = 0;
-	
+
 	return (numThreads != 0);
 }

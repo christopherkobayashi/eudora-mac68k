@@ -32,55 +32,53 @@
 #ifndef TRANSSTREAM_H
 #define TRANSSTREAM_H
 
-typedef enum
-{
+typedef enum {
 	kAuditNothing,
 	kAuditBytesReceived,
 	kAuditBytesSent
 } StreamAuditTypeEnum;
 
 // Stream info structure, contains info about a connection
-typedef struct TransStreamStruct
-{										   
+typedef struct TransStreamStruct {
 	// stuff needed for an OT TCP conenction
 	MyOTTCPStreamPtr OTTCPStream;
-	
+
 	// stuff needed for an SSL connection
- 	long ESSLSetting;
-// 	Ptr ESSLContext;
+	long ESSLSetting;
+//      Ptr ESSLContext;
 	SSL_CTX *ctx;
-	SSL 	*ssl;
-	BIO 	*bio;
-	
+	SSL *ssl;
+	BIO *bio;
+
 	// stuff needed for a TCP connection
-	int CharsAvail;					
+	int CharsAvail;
 	UPtr TcpBuffer;
 	long TcpStream;
 
 	// stuff needed for all conenctions
-	UHandle RcvBuffer;				
+	UHandle RcvBuffer;
 	short RcvSize;
 	short RcvSpot;
 
-	Boolean BeSilent;				// set to true to avoid error messages	
-	Boolean Opening;				// set to true when this connection is being opened.
-	Boolean DontWait;				// set to true to return immediately if there is no data
-	OSErr	streamErr;				// error specific to this stream
+	Boolean BeSilent;	// set to true to avoid error messages  
+	Boolean Opening;	// set to true when this connection is being opened.
+	Boolean DontWait;	// set to true to return immediately if there is no data
+	OSErr streamErr;	// error specific to this stream
 
-	unsigned long port;			// port (unused if not an IMAP or SSL stream)
-	Str255 serverName;				// server name (unused if not an IMAP or SSL stream)
-	Str255 localHostName;			// our name (unused if not an IMAP stream)
-	
+	unsigned long port;	// port (unused if not an IMAP or SSL stream)
+	Str255 serverName;	// server name (unused if not an IMAP or SSL stream)
+	Str255 localHostName;	// our name (unused if not an IMAP stream)
+
 	// auditing
 	StreamAuditTypeEnum auditType;	// type of audit we're performing
-	long bytesTransferred;			// number of bytes sent or received during audit
+	long bytesTransferred;	// number of bytes sent or received during audit
 } TransStreamStruct, *TransStreamPtr;
 
 #define IsSendAudit(s) (stream && stream->auditType == kAuditBytesSent)
 #define IsRecAudit(s) (stream && stream->auditType == kAuditBytesReceived)
 
-OSErr NewTransStream(TransStream *newStream);	// create a TransStream
-void ZapTransStream(TransStream *theStream);	// kill a transStream
+OSErr NewTransStream(TransStream * newStream);	// create a TransStream
+void ZapTransStream(TransStream * theStream);	// kill a transStream
 
 void StartStreamAudit(TransStream theStream, StreamAuditTypeEnum what);	// start auditing a network stream
 void StopStreamAudit(TransStream theStream);	// stop auditing a stream
@@ -88,4 +86,4 @@ long ReportStreamAudit(TransStream theStream);	// report audit results
 
 #define	ShouldUseSSL(ts)	(NULL != (ts)->ctx)
 
-#endif	//TRANSSTREAM_H
+#endif				//TRANSSTREAM_H

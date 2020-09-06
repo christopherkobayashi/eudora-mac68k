@@ -34,16 +34,20 @@
 #ifndef ACTIVEX_H
 #define ACTIVEX_H
 
-void InitAX (void);
-void ShutdownAX (void);
+void InitAX(void);
+void ShutdownAX(void);
 
-void NewAXWin (void);
+void NewAXWin(void);
 
 /* SiteCallbacks */
-AXErrorCode RequestFocus (AXRefID inClientSiteID, Boolean8 inAcquire, AXFocusSet inFocus);
-AXErrorCode RequestSizeChange (AXRefID inClientSiteID, AXPlatformPoint* ioSize);
-AXErrorCode OnChange (AXRefID inClientSiteID, AXChangeType inChangeType);
-AXErrorCode AcquireContext (AXRefID inClientSiteID, Uint32 inContextID, AXDrawContext* outContext);
-AXErrorCode ReleaseContext (AXRefID inClientSiteID, AXDrawContext* Context);
+AXErrorCode RequestFocus(AXRefID inClientSiteID, Boolean8 inAcquire,
+			 AXFocusSet inFocus);
+AXErrorCode RequestSizeChange(AXRefID inClientSiteID,
+			      AXPlatformPoint * ioSize);
+AXErrorCode OnChange(AXRefID inClientSiteID, AXChangeType inChangeType);
+AXErrorCode AcquireContext(AXRefID inClientSiteID, Uint32 inContextID,
+			   AXDrawContext * outContext);
+AXErrorCode ReleaseContext(AXRefID inClientSiteID,
+			   AXDrawContext * Context);
 
 #endif

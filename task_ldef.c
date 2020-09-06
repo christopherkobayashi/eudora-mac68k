@@ -37,47 +37,47 @@
 #pragma segment ListItemLDEF
 
 
-typedef struct taskCellData_ taskCellData, *taskCellDataPtr, **taskCellDataHandle;
-struct taskCellData_
-{
+typedef struct taskCellData_ taskCellData, *taskCellDataPtr,
+    **taskCellDataHandle;
+struct taskCellData_ {
 	drawCellType draw;
 	Handle data;
 };
 
-OSErr AddListItemEntry(short where, drawCellType draw, Handle data,ListHandle lHandle)
+OSErr AddListItemEntry(short where, drawCellType draw, Handle data,
+		       ListHandle lHandle)
 {
 	taskCellData cellData;
 	Point cell;
 	Size origSize;
 	short origCount;
-	OSErr err=noErr;
-	
+	OSErr err = noErr;
+
 	if (!lHandle)
 		return -1;
 	PushGWorld();
 	SetPort((*lHandle)->port);
-	cellData.draw=draw;
-	cellData.data=data;
+	cellData.draw = draw;
+	cellData.data = data;
 	cell.h = 0;
 	// don't draw on screen because we could be wazooed, but update list
-	SetOrigin(-REAL_BIG,-REAL_BIG);
+	SetOrigin(-REAL_BIG, -REAL_BIG);
 	origCount = (*lHandle)->dataBounds.bottom;
-	cell.v=LAddRow(1, where, lHandle);
+	cell.v = LAddRow(1, where, lHandle);
 	if (origCount >= (*lHandle)->dataBounds.bottom)
 		err = memFullErr;
-	if (!err)
-	{
-		origSize=GetHandleSize((*lHandle)->cells);	
+	if (!err) {
+		origSize = GetHandleSize((*lHandle)->cells);
 		LSetCell(&cellData, sizeof(cellData), cell, lHandle);
-		if (origSize==GetHandleSize((*lHandle)->cells))
+		if (origSize == GetHandleSize((*lHandle)->cells))
 			err = memFullErr;
 	}
-	SetOrigin(0,0);
+	SetOrigin(0, 0);
 	PopGWorld();
 	return err;
 }
 
-void RemoveListItemEntry(Handle data,ListHandle lHandle)
+void RemoveListItemEntry(Handle data, ListHandle lHandle)
 {
 	Cell searchCell;
 	taskCellData cellData;
@@ -88,18 +88,17 @@ void RemoveListItemEntry(Handle data,ListHandle lHandle)
 	PushGWorld();
 	SetPort((*lHandle)->port);
 	searchCell.v = searchCell.h = 0;
-	while (1)
-	{
-		cellData.draw=nil; cellData.data=nil;
-		dataLen=sizeof(cellData);
+	while (1) {
+		cellData.draw = nil;
+		cellData.data = nil;
+		dataLen = sizeof(cellData);
 		LGetCell(&cellData, &dataLen, searchCell, lHandle);
-		ASSERT(dataLen==sizeof(cellData));
-		if (cellData.data==data)
-		{
+		ASSERT(dataLen == sizeof(cellData));
+		if (cellData.data == data) {
 			// don't draw on screen because we could be wazooed, but update list
-			SetOrigin(-REAL_BIG,-REAL_BIG);
+			SetOrigin(-REAL_BIG, -REAL_BIG);
 			LDelRow(1, searchCell.v, lHandle);
-			SetOrigin(0,0);
+			SetOrigin(0, 0);
 			break;
 		}
 		if (!LNextCell(false, true, &searchCell, lHandle))
@@ -108,76 +107,78 @@ void RemoveListItemEntry(Handle data,ListHandle lHandle)
 	PopGWorld();
 }
 
-pascal void ListItemDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell,
-	short lDataOffset, short lDataLen, ListHandle lHandle)
+pascal void ListItemDef(short lMessage, Boolean lSelect, Rect * lRect,
+			Cell lCell, short lDataOffset, short lDataLen,
+			ListHandle lHandle)
 {
 #pragma unused(lDataOffset,lDataLen)
 	Rect fullRect;
-	if (lMessage==lDrawMsg || lMessage==lHiliteMsg)
-	{
+	if (lMessage == lDrawMsg || lMessage == lHiliteMsg) {
 		fullRect = *lRect;
 		fullRect.bottom = fullRect.top + (*lHandle)->cellSize.v;
 	}
-	switch (lMessage)
-	{
-		case lDrawMsg:
-			ListItemDraw(lSelect,&fullRect,lCell,lHandle);
-			break;
-//		case lHiliteMsg:
-//			MyListHilite(lSelect,&fullRect,lCell,lHandle);
-//			break;
+	switch (lMessage) {
+	case lDrawMsg:
+		ListItemDraw(lSelect, &fullRect, lCell, lHandle);
+		break;
+//              case lHiliteMsg:
+//                      MyListHilite(lSelect,&fullRect,lCell,lHandle);
+//                      break;
 	}
 }
 
-void ListItemDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void ListItemDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle)
 {
 	MyWindowPtr win = GetPortMyWindowPtr(GetQDGlobalsThePort());
-	Rect oldRect = *lRect,
-			dividerRect,
-			clipRect;
+	Rect oldRect = *lRect, dividerRect, clipRect;
 	short dataLen;
 	taskCellData cellData;
 
 	PushGWorld();
 	SetPort((*lHandle)->port);
-	
+
 	{
 		SAVE_STUFF;
-		
+
 		SET_COLORS;
 		/*
 		 * erase the rectangle first
 		 */
 		SectRect(lRect, &(*lHandle)->rView, &clipRect);
 		ClipRect(&clipRect);
-		
+
 		/*
 		 * setup font and size
 		 */
 		SetSmallSysFont();
-		
+
 		/*
 		 * draw
 		 */
-		cellData.draw=nil;cellData.data=nil;
-		dataLen=sizeof(cellData);
+		cellData.draw = nil;
+		cellData.data = nil;
+		dataLen = sizeof(cellData);
 		LGetCell(&cellData, &dataLen, lCell, lHandle);
-		if(dataLen==sizeof(cellData))
-		{
-			if (cellData.draw)
-			{
+		if (dataLen == sizeof(cellData)) {
+			if (cellData.draw) {
 				Rect indentedLRect;
-				indentedLRect=*lRect;
-				InsetRect(&indentedLRect, (*lHandle)->indent.h, (*lHandle)->indent.v);
-				(*cellData.draw)(win,&indentedLRect,cellData.data);
+				indentedLRect = *lRect;
+				InsetRect(&indentedLRect,
+					  (*lHandle)->indent.h,
+					  (*lHandle)->indent.v);
+				(*cellData.draw) (win, &indentedLRect,
+						  cellData.data);
 			}
 		}
-		
-		SetRect(&dividerRect,(*lHandle)->rView.left,lRect->bottom-2,(*lHandle)->rView.right+1,lRect->bottom);
+
+		SetRect(&dividerRect, (*lHandle)->rView.left,
+			lRect->bottom - 2, (*lHandle)->rView.right + 1,
+			lRect->bottom);
 		SectRect(&dividerRect, &(*lHandle)->rView, &clipRect);
 		ClipRect(&clipRect);
-		DrawDivider(&dividerRect,True);
-	//	if (lSelect) 	HiInvertRect(&oldRect);
+		DrawDivider(&dividerRect, True);
+		//      if (lSelect)    HiInvertRect(&oldRect);
 		/*
 		 * restore font & size & clip
 		 */

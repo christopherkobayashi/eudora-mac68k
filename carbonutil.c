@@ -37,10 +37,10 @@
 
 #pragma segment carbonutil
 
-void GetControlListLo (Handle controlList, ControlHandle theControl);
-static void PMRectToRect(PMRect *pmRect, Rect *r);
+void GetControlListLo(Handle controlList, ControlHandle theControl);
+static void PMRectToRect(PMRect * pmRect, Rect * r);
 
-RgnHandle	gAccessorRgn,gEmptyRgn;
+RgnHandle gAccessorRgn, gEmptyRgn;
 
 /**********************************************************************
  * InitCarbonUtil - initialize data for Carbon utilities
@@ -50,7 +50,7 @@ void InitCarbonUtil(void)
 	gAccessorRgn = NewRgn();
 	gEmptyRgn = NewRgn();
 	if (!gAccessorRgn || !gEmptyRgn)
-		DieWithError (MEM_ERR, MemError ());
+		DieWithError(MEM_ERR, MemError());
 }
 
 
@@ -61,22 +61,43 @@ void InitCarbonUtil(void)
  * once in the same statement.
  **********************************************************************/
 // MyGetPortVisibleRegion - get port's visRgn
-RgnHandle MyGetPortVisibleRegion(CGrafPtr port) { return GetPortVisibleRegion(port,gAccessorRgn); }
+RgnHandle MyGetPortVisibleRegion(CGrafPtr port)
+{
+	return GetPortVisibleRegion(port, gAccessorRgn);
+}
 
 // MyGetWindowStructureRegion - get window's strucRgn
-RgnHandle MyGetWindowStructureRegion(WindowRef window) { GetWindowRegion(window,kWindowStructureRgn,gAccessorRgn); return gAccessorRgn; }
+RgnHandle MyGetWindowStructureRegion(WindowRef window)
+{
+	GetWindowRegion(window, kWindowStructureRgn, gAccessorRgn);
+	return gAccessorRgn;
+}
 
 // MyGetWindowContentRegion - get window's contentRgn
-RgnHandle MyGetWindowContentRegion(WindowRef window) { GetWindowRegion(window,kWindowContentRgn,gAccessorRgn); return gAccessorRgn; }
+RgnHandle MyGetWindowContentRegion(WindowRef window)
+{
+	GetWindowRegion(window, kWindowContentRgn, gAccessorRgn);
+	return gAccessorRgn;
+}
 
 // MyGetWindowUpdateRegion - get window's UpdateRgn
-RgnHandle MyGetWindowUpdateRegion(WindowRef window) { GetWindowRegion(window,kWindowUpdateRgn,gAccessorRgn); return gAccessorRgn; }
+RgnHandle MyGetWindowUpdateRegion(WindowRef window)
+{
+	GetWindowRegion(window, kWindowUpdateRgn, gAccessorRgn);
+	return gAccessorRgn;
+}
 
 // SetEmptyVisRgn - set port's visRgn to nil region
-void SetEmptyVisRgn(CGrafPtr port) { SetPortVisibleRegion(port,gEmptyRgn); }
+void SetEmptyVisRgn(CGrafPtr port)
+{
+	SetPortVisibleRegion(port, gEmptyRgn);
+}
 
 // SetEmptyClipRgn - set port's clipRgn to nil region
-void SetEmptyClipRgn(CGrafPtr port) { SetPortClipRegion(port,gEmptyRgn); }
+void SetEmptyClipRgn(CGrafPtr port)
+{
+	SetPortClipRegion(port, gEmptyRgn);
+}
 
 
 /**********************************************************************
@@ -84,8 +105,8 @@ void SetEmptyClipRgn(CGrafPtr port) { SetPortClipRegion(port,gEmptyRgn); }
  **********************************************************************/
 Rect GetScreenBounds(void)
 {
-	BitMap	screenBits;
-	
+	BitMap screenBits;
+
 	screenBits = *GetQDGlobalsScreenBits(&screenBits);
 	return screenBits.bounds;
 }
@@ -93,30 +114,28 @@ Rect GetScreenBounds(void)
 /**********************************************************************
  * GetCWMgrPort - make a wmgr port
  **********************************************************************/
-void GetCWMgrPort(CGrafPtr *wPort)
+void GetCWMgrPort(CGrafPtr * wPort)
 {
 	static CGrafPtr wMgrPort;
-	static Rect	rWMgrPort;
-	
-	if (!wMgrPort) MyCreateNewPort(wMgrPort);
-	if (wMgrPort)
-	{
-		//	Set up size and position of port
-		Rect	gdRect;
-		GDHandle	gd;
-		
-		gd=GetMainDevice();
-		if (gd)
-		{
+	static Rect rWMgrPort;
+
+	if (!wMgrPort)
+		MyCreateNewPort(wMgrPort);
+	if (wMgrPort) {
+		//      Set up size and position of port
+		Rect gdRect;
+		GDHandle gd;
+
+		gd = GetMainDevice();
+		if (gd) {
 			gdRect = (*gd)->gdRect;
-			if (!EqualRect(&gdRect,&rWMgrPort))
-			{
-				GrafPtr	savePort;
-				
+			if (!EqualRect(&gdRect, &rWMgrPort)) {
+				GrafPtr savePort;
+
 				GetPort(&savePort);
 				SetPort(wMgrPort);
-				MovePortTo(gdRect.left,gdRect.top);
-				PortSize(RectWi(gdRect),RectHi(gdRect));
+				MovePortTo(gdRect.left, gdRect.top);
+				PortSize(RectWi(gdRect), RectHi(gdRect));
 				SetPort(savePort);
 				rWMgrPort = gdRect;
 			}
@@ -125,7 +144,10 @@ void GetCWMgrPort(CGrafPtr *wPort)
 	*wPort = wMgrPort;
 }
 
-void GetWMgrPort(GrafPtr *wPort) {GetCWMgrPort((CGrafPtr*)wPort);}
+void GetWMgrPort(GrafPtr * wPort)
+{
+	GetCWMgrPort((CGrafPtr *) wPort);
+}
 
 /**********************************************************************
  * GetWindowGoAwayFlag - does window have a close box?
@@ -133,44 +155,46 @@ void GetWMgrPort(GrafPtr *wPort) {GetCWMgrPort((CGrafPtr*)wPort);}
 pascal Boolean GetWindowGoAwayFlag(WindowRef win)
 {
 	WindowAttributes attr;
-	GetWindowAttributes(win,&attr);
-	return (attr&kWindowCloseBoxAttribute) != 0;
+	GetWindowAttributes(win, &attr);
+	return (attr & kWindowCloseBoxAttribute) != 0;
 }
 
 /**********************************************************************
  * GetScrap - old Scrap Manager replacement function
  **********************************************************************/
-long GetScrap(Handle h,ScrapFlavorType flavorType,SInt32 *offset)
+long GetScrap(Handle h, ScrapFlavorType flavorType, SInt32 * offset)
 {
-	ScrapRef	scrap;
-	Size		byteCount=0;
-	OSErr		err;
-	
+	ScrapRef scrap;
+	Size byteCount = 0;
+	OSErr err;
+
 	GetCurrentScrap(&scrap);
-	GetScrapFlavorSize(scrap,flavorType,&byteCount);
-	if (h)
-	{
-		SetHandleSize(h,byteCount);
-		if (!(err = MemError()))
-		{
-			GetScrapFlavorData(scrap,flavorType,&byteCount,LDRef(h));
+	GetScrapFlavorSize(scrap, flavorType, &byteCount);
+	if (h) {
+		SetHandleSize(h, byteCount);
+		if (!(err = MemError())) {
+			GetScrapFlavorData(scrap, flavorType, &byteCount,
+					   LDRef(h));
 			UL(h);
 		}
 	}
 	*offset = 0;
-	if (err == cantGetFlavorErr) err = noTypeErr;
+	if (err == cantGetFlavorErr)
+		err = noTypeErr;
 	return err ? err : byteCount;
 }
 
 /**********************************************************************
  * PutScrap - old Scrap Manager replacement function
  **********************************************************************/
-OSStatus PutScrap(SInt32 byteCount,ScrapFlavorType flavorType,const void *source)
+OSStatus PutScrap(SInt32 byteCount, ScrapFlavorType flavorType,
+		  const void *source)
 {
-	ScrapRef	scrap;
-	
+	ScrapRef scrap;
+
 	GetCurrentScrap(&scrap);
-	return PutScrapFlavor(scrap,flavorType,kScrapFlavorMaskNone,byteCount,source);
+	return PutScrapFlavor(scrap, flavorType, kScrapFlavorMaskNone,
+			      byteCount, source);
 }
 
 /**********************************************************************
@@ -179,36 +203,43 @@ OSStatus PutScrap(SInt32 byteCount,ScrapFlavorType flavorType,const void *source
  * use rect.
  **********************************************************************/
 #ifdef NEVER
-OSStatus PMGetPhysicalPaperSizeAsRect(PMPageFormat pageFormat,Rect *paperSize)
+OSStatus PMGetPhysicalPaperSizeAsRect(PMPageFormat pageFormat,
+				      Rect * paperSize)
 {
-	PMRect	pmRect;
-	PMGetPhysicalPaperSize(pageFormat,&pmRect);
-	PMRectToRect(&pmRect,paperSize);
+	PMRect pmRect;
+	PMGetPhysicalPaperSize(pageFormat, &pmRect);
+	PMRectToRect(&pmRect, paperSize);
 }
-OSStatus PMGetPhysicalPageSizeAsRect(PMPageFormat pageFormat,Rect *pageSize)
+
+OSStatus PMGetPhysicalPageSizeAsRect(PMPageFormat pageFormat,
+				     Rect * pageSize)
 {
-	PMRect	pmRect;
-	PMGetPhysicalPageSize(pageFormat,&pmRect);
-	PMRectToRect(&pmRect,pageSize);
+	PMRect pmRect;
+	PMGetPhysicalPageSize(pageFormat, &pmRect);
+	PMRectToRect(&pmRect, pageSize);
 }
 #endif
-OSStatus PMGetAdjustedPaperSizeAsRect(PMPageFormat pageFormat,Rect *paperSize)
+OSStatus PMGetAdjustedPaperSizeAsRect(PMPageFormat pageFormat,
+				      Rect * paperSize)
 {
 	OSStatus err;
-	PMRect	pmRect;
-	err = PMGetAdjustedPaperRect(pageFormat,&pmRect);
-	PMRectToRect(&pmRect,paperSize);
+	PMRect pmRect;
+	err = PMGetAdjustedPaperRect(pageFormat, &pmRect);
+	PMRectToRect(&pmRect, paperSize);
 	return err;
 }
-OSStatus PMGetAdjustedPageSizeAsRect(PMPageFormat pageFormat,Rect *pageSize)
+
+OSStatus PMGetAdjustedPageSizeAsRect(PMPageFormat pageFormat,
+				     Rect * pageSize)
 {
 	OSStatus err;
-	PMRect	pmRect;
-	err = PMGetAdjustedPageRect(pageFormat,&pmRect);
-	PMRectToRect(&pmRect,pageSize);
+	PMRect pmRect;
+	err = PMGetAdjustedPageRect(pageFormat, &pmRect);
+	PMRectToRect(&pmRect, pageSize);
 	return err;
 }
-static void PMRectToRect(PMRect *pmRect, Rect *r)
+
+static void PMRectToRect(PMRect * pmRect, Rect * r)
 {
 	r->top = pmRect->top;
 	r->left = pmRect->left;
@@ -222,46 +253,46 @@ static void PMRectToRect(PMRect *pmRect, Rect *r)
  **********************************************************************/
 RgnHandle SavePortClipRegion(CGrafPtr port)
 {
-	RgnHandle	rgn;
-	
+	RgnHandle rgn;
+
 	if (rgn = NewRgn())
-		GetPortClipRegion(port,rgn);
+		GetPortClipRegion(port, rgn);
 	return rgn;
 }
+
 /**********************************************************************
  * RestorePortClipRegion - restore port clipRgn and dispose copy
  **********************************************************************/
-void RestorePortClipRegion(CGrafPtr port,RgnHandle rgn)
+void RestorePortClipRegion(CGrafPtr port, RgnHandle rgn)
 {
-	if (rgn)
-	{
-		SetPortClipRegion(port,rgn);
+	if (rgn) {
+		SetPortClipRegion(port, rgn);
 		DisposeRgn(rgn);
 	}
 }
 
 //
-//	AppleEvent help
+//      AppleEvent help
 //
 
 /**********************************************************************
  * AEGetDescDataHandle - return AEDesc as copy of handle
  **********************************************************************/
-OSErr AEGetDescDataHandle (AEDesc *theAEDesc, Handle *handle)
+OSErr AEGetDescDataHandle(AEDesc * theAEDesc, Handle * handle)
 {
-	Handle	dataHandle = nil;
-	OSErr	theError = noErr;
-	Size	size = AEGetDescDataSize(theAEDesc);
-	
+	Handle dataHandle = nil;
+	OSErr theError = noErr;
+	Size size = AEGetDescDataSize(theAEDesc);
+
 	dataHandle = NuHandle(size);
 	theError = MemError();
-	if (!theError) 
-	{
-		theError = AEGetDescData (theAEDesc, LDRef(dataHandle), size);
-		UL (dataHandle);
+	if (!theError) {
+		theError =
+		    AEGetDescData(theAEDesc, LDRef(dataHandle), size);
+		UL(dataHandle);
 	}
 	if (theError)
-		ZapHandle (dataHandle);
+		ZapHandle(dataHandle);
 	*handle = dataHandle;
 	return (theError);
 }
@@ -269,269 +300,276 @@ OSErr AEGetDescDataHandle (AEDesc *theAEDesc, Handle *handle)
 /**********************************************************************
  * AEDisposeDescDataHandle - dispose of AEDesc copy handle, only for Carbon
  **********************************************************************/
-void AEDisposeDescDataHandle(Handle h) 
+void AEDisposeDescDataHandle(Handle h)
 {
 	DisposeHandle(h);
 }
 
-OSErr MyAECreateDesc (DescType typeCode, void *dataPtr, Size dataSize, AEDesc *result)
-
+OSErr MyAECreateDesc(DescType typeCode, void *dataPtr, Size dataSize,
+		     AEDesc * result)
 {
-	return (AECreateDesc (typeCode, dataPtr, dataSize, result));
+	return (AECreateDesc(typeCode, dataPtr, dataSize, result));
 }
 
 
 //
-//	QuickDraw Utilities
+//      QuickDraw Utilities
 //
 
-OSStatus InvalWindowPort (WindowPtr theWindow)
-
+OSStatus InvalWindowPort(WindowPtr theWindow)
 {
-	Rect	theRect;
+	Rect theRect;
 
-	return (InvalWindowRect	(theWindow, GetWindowPortBounds (theWindow, &theRect)));
+	return (InvalWindowRect
+		(theWindow, GetWindowPortBounds(theWindow, &theRect)));
 }
 
 
-Rect *GetQDGlobalsScreenBitsBounds (Rect *bounds)
-
+Rect *GetQDGlobalsScreenBitsBounds(Rect * bounds)
 {
-	BitMap	screenBits;
-	
+	BitMap screenBits;
+
 	screenBits = *GetQDGlobalsScreenBits(&screenBits);
 	*bounds = screenBits.bounds;
 	return (bounds);
 }
 
-Rect *GetUpdateRgnBounds (WindowPtr theWindow, Rect *bounds)
+Rect *GetUpdateRgnBounds(WindowPtr theWindow, Rect * bounds)
 {
 #ifdef TARGET_CARBON_CANT_YET_GET_UPDATE_BOUNDS_DIRECTLY
-	RgnHandle	updateRgn;
-	
-	if (updateRgn = NewRgn ()) {
-		if (!GetWindowRegion (theWindow, kWindowUpdateRgn, updateRgn))
-			GetRegionBounds (updateRgn, bounds);
-		DisposeRgn (updateRgn);
+	RgnHandle updateRgn;
+
+	if (updateRgn = NewRgn()) {
+		if (!GetWindowRegion
+		    (theWindow, kWindowUpdateRgn, updateRgn))
+			GetRegionBounds(updateRgn, bounds);
+		DisposeRgn(updateRgn);
 	}
 #else
 
-	GetWindowBounds (theWindow, kWindowUpdateRgn, bounds);
+	GetWindowBounds(theWindow, kWindowUpdateRgn, bounds);
 #endif
 	return (bounds);
 }
 
-Rect *GetVisibleRgnBounds (WindowPtr theWindow, Rect *bounds)
+Rect *GetVisibleRgnBounds(WindowPtr theWindow, Rect * bounds)
 {
-	RgnHandle	visRgn;
-	
-	if (visRgn = NewRgn ()) {
-		GetRegionBounds (GetWindowVisRgn (theWindow, visRgn), bounds);
-		DisposeRgn (visRgn);
+	RgnHandle visRgn;
+
+	if (visRgn = NewRgn()) {
+		GetRegionBounds(GetWindowVisRgn(theWindow, visRgn),
+				bounds);
+		DisposeRgn(visRgn);
 	}
 	return (bounds);
 }
 
-Rect *GetContentRgnBounds (WindowPtr theWindow, Rect *bounds)
+Rect *GetContentRgnBounds(WindowPtr theWindow, Rect * bounds)
 {
-	GetWindowBounds (theWindow, kWindowContentRgn, bounds);
+	GetWindowBounds(theWindow, kWindowContentRgn, bounds);
 	return (bounds);
 }
 
-Rect *GetStructureRgnBounds (WindowPtr theWindow, Rect *bounds)
+Rect *GetStructureRgnBounds(WindowPtr theWindow, Rect * bounds)
 {
-	GetWindowBounds (theWindow, kWindowStructureRgn, bounds);
+	GetWindowBounds(theWindow, kWindowStructureRgn, bounds);
 	return (bounds);
 }
 
-Boolean HasUpdateRgn (WindowPtr theWindow)
-
+Boolean HasUpdateRgn(WindowPtr theWindow)
 {
-	RgnHandle	updateRgn;
-	Boolean		hasUpdate;
-	
+	RgnHandle updateRgn;
+	Boolean hasUpdate;
+
 	hasUpdate = false;
-	if (updateRgn = NewRgn ()) {
-		if (!GetWindowRegion (theWindow, kWindowUpdateRgn, updateRgn))
-			hasUpdate = !EmptyRgn (updateRgn);
-		DisposeHandle (updateRgn);
+	if (updateRgn = NewRgn()) {
+		if (!GetWindowRegion
+		    (theWindow, kWindowUpdateRgn, updateRgn))
+			hasUpdate = !EmptyRgn(updateRgn);
+		DisposeHandle(updateRgn);
 	}
 	return (hasUpdate);
 }
 
-short MyGetWindowTitleWidth (WindowPtr theWindow)
-
+short MyGetWindowTitleWidth(WindowPtr theWindow)
 {
-	RgnHandle	textRgn;
-	Rect			bounds;
-	short			width;
+	RgnHandle textRgn;
+	Rect bounds;
+	short width;
 
 	width = 0;
-	if (textRgn = NewRgn ()) {
-    GetWindowRegion (theWindow, kWindowTitleTextRgn, textRgn);
-    GetRegionBounds (textRgn, &bounds);
-    width = bounds.right - bounds.left;
-    DisposeRgn (textRgn);
+	if (textRgn = NewRgn()) {
+		GetWindowRegion(theWindow, kWindowTitleTextRgn, textRgn);
+		GetRegionBounds(textRgn, &bounds);
+		width = bounds.right - bounds.left;
+		DisposeRgn(textRgn);
 	}
 	return (width);
 }
 
 
-void MySetDialogFont (short fontNum)
-
+void MySetDialogFont(short fontNum)
 {
 #ifndef TARGET_CARBON_GOING_AWAY_BUT_CURRENTLY_IN_HEADERS
-	SetDialogFont (fontNum);
+	SetDialogFont(fontNum);
 #endif
 }
 
 //
-//	Control utilities
+//      Control utilities
 //
 
 
 
 //
-//	MyGetControlList
+//      MyGetControlList
 //
-//		Builds a control list which is an array of ControlHandles
-//		we can walk ourselves.  This is stored in a Handle within
-//		the window structure under carbon.  While we certainly
-//		could cache this information, we don't currently so as to
-//		avoid rewriting all of the dialog manager calls that fiddle
-//		with the control list.  Instead, we always destroy the old
-//		list and create a new one.  Not very efficient, but...
+//              Builds a control list which is an array of ControlHandles
+//              we can walk ourselves.  This is stored in a Handle within
+//              the window structure under carbon.  While we certainly
+//              could cache this information, we don't currently so as to
+//              avoid rewriting all of the dialog manager calls that fiddle
+//              with the control list.  Instead, we always destroy the old
+//              list and create a new one.  Not very efficient, but...
 //
-ControlHandle GetControlList (WindowPtr theWindow)
+ControlHandle GetControlList(WindowPtr theWindow)
 {
-	MyWindowPtr	win;
-	ControlHandle	rootControl;
-	
+	MyWindowPtr win;
+	ControlHandle rootControl;
+
 	rootControl = nil;
 	if (win = GetWindowMyWindowPtr(theWindow)) {
-		ZapHandle (win->hControlList);
+		ZapHandle(win->hControlList);
 
-		if (win->hControlList = NuHandle (0))
+		if (win->hControlList = NuHandle(0))
 			if (!GetRootControl(theWindow, &rootControl))
-				GetControlListLo (win->hControlList, rootControl);
+				GetControlListLo(win->hControlList,
+						 rootControl);
 	}
 	return (rootControl);
 }
 
-void GetControlListLo (Handle controlList, ControlHandle theControl)
+void GetControlListLo(Handle controlList, ControlHandle theControl)
 {
-	ControlHandle	subControl;
-	UInt16			count, index;
-	
+	ControlHandle subControl;
+	UInt16 count, index;
+
 	count = 0;
-	if (theControl) 
-	if (!PtrPlusHand (&theControl, controlList, sizeof (ControlHandle)))
-	if (!CountSubControls (theControl, &count))
-		for (index = 1; index <= count; ++index)
-		{
-			if (!GetIndexedSubControl (theControl, index, &subControl))
-				GetControlListLo (controlList, subControl);
-		}
+	if (theControl)
+		if (!PtrPlusHand
+		    (&theControl, controlList, sizeof(ControlHandle)))
+			if (!CountSubControls(theControl, &count))
+				for (index = 1; index <= count; ++index) {
+					if (!GetIndexedSubControl
+					    (theControl, index,
+					     &subControl))
+						GetControlListLo
+						    (controlList,
+						     subControl);
+				}
 }
 
 //
-//	MyGetNextControl
+//      MyGetNextControl
 //
 ControlHandle GetNextControl(ControlHandle theControl)
 {
-	MyWindowPtr	win;
-	ControlHandle	*controlPtr;
-	UInt16			count,i;
-	
+	MyWindowPtr win;
+	ControlHandle *controlPtr;
+	UInt16 count, i;
+
 	if (theControl)
-	if (win = GetWindowMyWindowPtr(GetControlOwner(theControl)))
-	if (win->hControlList)
-	{
-		controlPtr = (ControlHandle *) *(win->hControlList);
-		count = (GetHandleSize (win->hControlList) / sizeof (ControlHandle)) - 1;
-		for (i = 0; i < count; ++i, ++controlPtr)
-			if (*controlPtr == theControl)
-			{
-				++controlPtr;
-				return (*controlPtr);
+		if (win =
+		    GetWindowMyWindowPtr(GetControlOwner(theControl)))
+			if (win->hControlList) {
+				controlPtr =
+				    (ControlHandle *) *
+				    (win->hControlList);
+				count =
+				    (GetHandleSize(win->hControlList) /
+				     sizeof(ControlHandle)) - 1;
+				for (i = 0; i < count; ++i, ++controlPtr)
+					if (*controlPtr == theControl) {
+						++controlPtr;
+						return (*controlPtr);
+					}
 			}
-	}
 	return (nil);
 }
 
 
 
-OSStatus InvalControl (ControlHandle theControl)
-
+OSStatus InvalControl(ControlHandle theControl)
 {
-	Rect	theRect;
-	
-	return (InvalWindowRect	(GetControlOwner (theControl), GetControlBounds (theControl, &theRect)));
+	Rect theRect;
+
+	return (InvalWindowRect
+		(GetControlOwner(theControl),
+		 GetControlBounds(theControl, &theRect)));
 }
 
-short ControlHi (ControlHandle theControl)
-
+short ControlHi(ControlHandle theControl)
 {
-	Rect	controlRect;
-	
-	GetControlBounds (theControl, &controlRect);
+	Rect controlRect;
+
+	GetControlBounds(theControl, &controlRect);
 	return (RectHi(controlRect));
 }
 
-short ControlWi (ControlHandle theControl)
-
+short ControlWi(ControlHandle theControl)
 {
-	Rect	controlRect;
-	
-	GetControlBounds (theControl, &controlRect);
+	Rect controlRect;
+
+	GetControlBounds(theControl, &controlRect);
 	return (RectWi(controlRect));
 }
 
 
 //
-//	List Manager Helpers
+//      List Manager Helpers
 //
-ListHandle CreateNewList (
-	ListDefUPP ldefUPP,		// For Carbon
-	 short theProc,						// For non-Carbon
-	 Rect				*rView,
-	 ListBounds	*dataBounds,
-	 Point			cSize,
-	 WindowPtr	theWindow,
-	 Boolean 		drawIt,
-	 Boolean	 	hasGrow,
-	 Boolean		scrollHoriz,
-	 Boolean 		scrollVert)
+ListHandle CreateNewList(ListDefUPP ldefUPP,	// For Carbon
+			 short theProc,	// For non-Carbon
+			 Rect * rView,
+			 ListBounds * dataBounds,
+			 Point cSize,
+			 WindowPtr theWindow,
+			 Boolean drawIt,
+			 Boolean hasGrow,
+			 Boolean scrollHoriz, Boolean scrollVert)
 {
-	ListDefSpec	ldefSpec;
-	ListHandle	theList = nil;
-	
+	ListDefSpec ldefSpec;
+	ListHandle theList = nil;
+
 	ldefSpec.defType = kListDefUserProcType;
 	ldefSpec.u.userProc = ldefUPP;
-	return (CreateCustomList (rView, dataBounds, cSize, &ldefSpec, theWindow, drawIt, hasGrow, scrollHoriz, scrollVert, &theList) ? nil : theList);
+	return (CreateCustomList
+		(rView, dataBounds, cSize, &ldefSpec, theWindow, drawIt,
+		 hasGrow, scrollHoriz, scrollVert,
+		 &theList) ? nil : theList);
 }
 
 //
-//	Scrap Manager Helpers
+//      Scrap Manager Helpers
 //
 /**********************************************************************
  * IsScrapFull - anything on the scrap?
  **********************************************************************/
 Boolean IsScrapFull(void)
 {
-	ScrapRef	scrap;
+	ScrapRef scrap;
 	UInt32 scrapFlavorCount;
-	
+
 	GetCurrentScrap(&scrap);
-	GetScrapFlavorCount(scrap,&scrapFlavorCount);
+	GetScrapFlavorCount(scrap, &scrapFlavorCount);
 	return scrapFlavorCount > 0;
 }
 
 
 //
-//	Not supported in carbon
+//      Not supported in carbon
 //
-OSStatus NotSupportedInCarbon (...)
+OSStatus NotSupportedInCarbon(...)
 {
 	return (noErr);
 }
@@ -545,8 +583,8 @@ Boolean MyIsWindowVisible(WindowRef win)
 {
 #undef IsWindowVisible
 	WindowLatentVisibility latentVisible;
-	
-	return IsWindowLatentVisible ? 
-		(IsWindowLatentVisible(win,&latentVisible) || latentVisible) : 
-		IsWindowVisible(win);
+
+	return IsWindowLatentVisible ?
+	    (IsWindowLatentVisible(win, &latentVisible) || latentVisible) :
+	    IsWindowVisible(win);
 }

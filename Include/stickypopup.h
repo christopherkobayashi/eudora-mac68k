@@ -32,34 +32,41 @@
 #ifndef STICKYPOPUP_H
 #define STICKYPOPUP_H
 
-/* MJN *//* new file */
+	 /* MJN *//* new file */
 
 
 
 #pragma mark typedefs
 
 typedef struct {
-	WindowPtr		theWindow;
-	short				fontNum;
-	short				fontSize;
-	ListHandle	theList;
-	Boolean			isPopped;
-	long				maxVisItems; /* invalid while isPopped is false */
-	long				refCon;
+	WindowPtr theWindow;
+	short fontNum;
+	short fontSize;
+	ListHandle theList;
+	Boolean isPopped;
+	long maxVisItems;	/* invalid while isPopped is false */
+	long refCon;
 } StickyPopupRec, *StickyPopupPtr, **StickyPopupHdl;
 
 
 
 #pragma mark prototypes
 
-void StripStickyCharacters(Str255 theString); /* FINISH *//* move to stringutil.h */
+void StripStickyCharacters(Str255 theString);	/* FINISH *//* move to stringutil.h */
 void StickyPopupNormalizeString(Str255 theString);
-short StickyPopupCompareString(Str255 stringA, Str255 stringB, Boolean needNormalize);
-OSErr NewStickyPopup(short fontNum, short fontSize, StickyPopupHdl *stickyPopup);
+short StickyPopupCompareString(Str255 stringA, Str255 stringB,
+			       Boolean needNormalize);
+OSErr NewStickyPopup(short fontNum, short fontSize,
+		     StickyPopupHdl * stickyPopup);
 void DisposeStickyPopup(StickyPopupHdl stickyPopup);
-OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup, StringPtr dataPtr, long entryOffset, short entryCount, short beforeIndex);
-OSErr RemoveEntriesFromStickyPopup(StickyPopupHdl stickyPopup, short index, short count);
-long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short curItem, Boolean allowTyping, Rect *teflonRect);
+OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup,
+			      StringPtr dataPtr, long entryOffset,
+			      short entryCount, short beforeIndex);
+OSErr RemoveEntriesFromStickyPopup(StickyPopupHdl stickyPopup, short index,
+				   short count);
+long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left,
+		       short curItem, Boolean allowTyping,
+		       Rect * teflonRect);
 
 
-#endif  //ifndef STICKYPOPUP_H
+#endif				//ifndef STICKYPOPUP_H

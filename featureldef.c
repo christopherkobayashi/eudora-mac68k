@@ -36,65 +36,83 @@
 
 #pragma segment Nagging
 
-void FeatureListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
+void FeatureListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		     ListHandle lHandle);
 
-pascal void FeatureListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell,
-	short lDataOffset, short lDataLen, ListHandle lHandle)
+pascal void FeatureListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			   Cell lCell, short lDataOffset, short lDataLen,
+			   ListHandle lHandle)
 {
 	switch (lMessage) {
-		case lDrawMsg:
-			FeatureListDraw (lSelect, lRect, lCell, lHandle);
-			break;
-		case lCloseMsg:
-			if ((*lHandle)->userHandle)
-				ZapHandle ((*lHandle)->userHandle);
-			break;
+	case lDrawMsg:
+		FeatureListDraw(lSelect, lRect, lCell, lHandle);
+		break;
+	case lCloseMsg:
+		if ((*lHandle)->userHandle)
+			ZapHandle((*lHandle)->userHandle);
+		break;
 	}
 }
 
-void FeatureListDraw (Boolean lSelect, Rect *lRect, Cell lCell, ListHandle lHandle)
-
+void FeatureListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		     ListHandle lHandle)
 {
-	FeatureCellPtr	featureCellsPtr;
-	Rect						iconRect;
-	Point			portPenLoc;
+	FeatureCellPtr featureCellsPtr;
+	Rect iconRect;
+	Point portPenLoc;
 
 	SAVE_STUFF;
-	ClipRect (lRect);
-	EraseRect (lRect);
-	SmallSysFontSize ();
-	MoveTo (lRect->left + (*lHandle)->indent.h + 4, lRect->bottom - 3 - (*lHandle)->indent.v);
-	featureCellsPtr	= (FeatureCellPtr) LDRef ((*lHandle)->userHandle) + lCell.v;
+	ClipRect(lRect);
+	EraseRect(lRect);
+	SmallSysFontSize();
+	MoveTo(lRect->left + (*lHandle)->indent.h + 4,
+	       lRect->bottom - 3 - (*lHandle)->indent.v);
+	featureCellsPtr =
+	    (FeatureCellPtr) LDRef((*lHandle)->userHandle) + lCell.v;
 	if (featureCellsPtr->isSubFeature)
-		Move (kSubFeatureIndent, 0);
+		Move(kSubFeatureIndent, 0);
 	if (!featureCellsPtr->isName)
-		Move (kDescriptionIndent, -kVerticalDescriptionSqueeze);
-	if (featureCellsPtr->used || featureCellsPtr->type == featureTechSupportType) {
-		GetPortPenLocation(GetQDGlobalsThePort(),&portPenLoc);
-		iconRect.left		= portPenLoc.h;
-		iconRect.top		= lRect->top + ((lRect->bottom - lRect->top) >> 1) - (kCheckmarkIconSize >> 1);
-		iconRect.right	= iconRect.left + kCheckmarkIconSize;
-		iconRect.bottom	= iconRect.top + kCheckmarkIconSize;
-		PlotIconID (&iconRect, atAbsoluteCenter, ttNone, featureCellsPtr->type == featureTechSupportType ? TECH_SUPPORT_ICON : MESSAGE_STATUS_ICON_CHECKMARK);
+		Move(kDescriptionIndent, -kVerticalDescriptionSqueeze);
+	if (featureCellsPtr->used
+	    || featureCellsPtr->type == featureTechSupportType) {
+		GetPortPenLocation(GetQDGlobalsThePort(), &portPenLoc);
+		iconRect.left = portPenLoc.h;
+		iconRect.top =
+		    lRect->top + ((lRect->bottom - lRect->top) >> 1) -
+		    (kCheckmarkIconSize >> 1);
+		iconRect.right = iconRect.left + kCheckmarkIconSize;
+		iconRect.bottom = iconRect.top + kCheckmarkIconSize;
+		PlotIconID(&iconRect, atAbsoluteCenter, ttNone,
+			   featureCellsPtr->type ==
+			   featureTechSupportType ? TECH_SUPPORT_ICON :
+			   MESSAGE_STATUS_ICON_CHECKMARK);
 	}
-	Move (kCheckmarkIconSize + 4, 0);
-	GetPortPenLocation(GetQDGlobalsThePort(),&portPenLoc);
-	
+	Move(kCheckmarkIconSize + 4, 0);
+	GetPortPenLocation(GetQDGlobalsThePort(), &portPenLoc);
+
 	if (featureCellsPtr->isName)
-		TextFace (GetPortTextFace(GetQDGlobalsThePort()) | bold);
-	if (portPenLoc.h + StringWidth (featureCellsPtr->description) > lRect->right)
-		TextFace (GetPortTextFace(GetQDGlobalsThePort()) | condense);
-	TruncString (lRect->right - portPenLoc.h, featureCellsPtr->description, truncMiddle);
-	DrawString (featureCellsPtr->description);
-	if (!featureCellsPtr->isName && lCell.v < (*lHandle)->dataBounds.bottom - 1) {
-		SetForeGrey (k8Grey2);
-		MoveTo (lRect->left + (*lHandle)->indent.h + 4, lRect->bottom - (*lHandle)->indent.v - 2);
-		LineTo (lRect->right - (*lHandle)->indent.h - 4, lRect->bottom - (*lHandle)->indent.v - 2);
-		SetForeGrey (k8Grey1);
-		MoveTo (lRect->left + (*lHandle)->indent.h + 4, lRect->bottom - (*lHandle)->indent.v - 1);
-		LineTo (lRect->right - (*lHandle)->indent.h - 4, lRect->bottom - (*lHandle)->indent.v - 1);
+		TextFace(GetPortTextFace(GetQDGlobalsThePort()) | bold);
+	if (portPenLoc.h + StringWidth(featureCellsPtr->description) >
+	    lRect->right)
+		TextFace(GetPortTextFace(GetQDGlobalsThePort()) |
+			 condense);
+	TruncString(lRect->right - portPenLoc.h,
+		    featureCellsPtr->description, truncMiddle);
+	DrawString(featureCellsPtr->description);
+	if (!featureCellsPtr->isName
+	    && lCell.v < (*lHandle)->dataBounds.bottom - 1) {
+		SetForeGrey(k8Grey2);
+		MoveTo(lRect->left + (*lHandle)->indent.h + 4,
+		       lRect->bottom - (*lHandle)->indent.v - 2);
+		LineTo(lRect->right - (*lHandle)->indent.h - 4,
+		       lRect->bottom - (*lHandle)->indent.v - 2);
+		SetForeGrey(k8Grey1);
+		MoveTo(lRect->left + (*lHandle)->indent.h + 4,
+		       lRect->bottom - (*lHandle)->indent.v - 1);
+		LineTo(lRect->right - (*lHandle)->indent.h - 4,
+		       lRect->bottom - (*lHandle)->indent.v - 1);
 	}
-	UL ((*lHandle)->userHandle);
+	UL((*lHandle)->userHandle);
 	REST_STUFF;
-	InfiniteClip (GetQDGlobalsThePort());
+	InfiniteClip(GetQDGlobalsThePort());
 }

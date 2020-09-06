@@ -33,15 +33,20 @@
 #define ADDRESS_H
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
-OSErr  SuckAddresses(BinAddrHandle *addresses, TextAddrHandle	text,Boolean wantComments, Boolean wantErrors,Boolean wantAutoQual,long ***addrSpots);
-OSErr  SuckPtrAddresses(BinAddrHandle *addresses, TextAddrPtr text,long size,Boolean wantComments, Boolean wantErrors,Boolean wantAutoQual,long***addrSpots);
+OSErr SuckAddresses(BinAddrHandle * addresses, TextAddrHandle text,
+		    Boolean wantComments, Boolean wantErrors,
+		    Boolean wantAutoQual, long ***addrSpots);
+OSErr SuckPtrAddresses(BinAddrHandle * addresses, TextAddrPtr text,
+		       long size, Boolean wantComments, Boolean wantErrors,
+		       Boolean wantAutoQual, long ***addrSpots);
 PStr ShortAddr(PStr shortAddr, PStr longAddr);
 Boolean IsFCCAddr(PStr addr);
-Boolean SameAddressStr(PStr addr1,PStr addr2);
-PStr CanonAddr(PStr into,PStr addr,PStr name);
-short CountAddresses (Handle addresses, short justTellMeIfThereAreAtLeastThisMany);
+Boolean SameAddressStr(PStr addr1, PStr addr2);
+PStr CanonAddr(PStr into, PStr addr, PStr name);
+short CountAddresses(Handle addresses,
+		     short justTellMeIfThereAreAtLeastThisMany);
 #define IsNewsgroupAddr(s)	((Byte)(s)[1]==(Byte)'©')
-Boolean AddAddressHashUniq(PStr address,AccuPtr a);
+Boolean AddAddressHashUniq(PStr address, AccuPtr a);
 #define NextBinAddrOffset(addr,offs) ((offs)+(*(addr))[offs]+2)
 #define MakeBinAddrStr(addr,offs,s) PCopy(s,*(addr)+offs)
 #endif

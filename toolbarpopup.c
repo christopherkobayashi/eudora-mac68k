@@ -35,22 +35,23 @@
 #pragma segment ToolbarPopup
 
 typedef struct {
-	Str255	nickname;				// Name of the nickname that is the target of this popup
-	short		menuID;
+	Str255 nickname;	// Name of the nickname that is the target of this popup
+	short menuID;
 	short item;
 } ToolbarPopupData, *ToolbarPopupDataPtr, **ToolbarPopupDataHandle;
 
 typedef struct {
-	MyWindowPtr		win;
-	ToolbarVEnum	varCode;				// Variation code of the button from which this toolbar popup extends
-	Rect					windowRect;			// Rectangle of the toolbar popup window in global coordinates
-	Rect					buttonRect;			// Rectangle of the button from which this toolbar popup extends (in global coordinates)
-	short					numButtons;			// Number of buttons on this toolbar popup
-	Boolean				vertical;
-	Boolean				inToolbarPopup;	// We're in the toolbar popup!
-} ToolbarPopupGlobals, *ToolbarPopupGlobalsPtr, **ToolbarPopupGlobalsHandle;
+	MyWindowPtr win;
+	ToolbarVEnum varCode;	// Variation code of the button from which this toolbar popup extends
+	Rect windowRect;	// Rectangle of the toolbar popup window in global coordinates
+	Rect buttonRect;	// Rectangle of the button from which this toolbar popup extends (in global coordinates)
+	short numButtons;	// Number of buttons on this toolbar popup
+	Boolean vertical;
+	Boolean inToolbarPopup;	// We're in the toolbar popup!
+} ToolbarPopupGlobals, *ToolbarPopupGlobalsPtr,
+    **ToolbarPopupGlobalsHandle;
 
-ToolbarPopupGlobals	TBPopupGlobals;
+ToolbarPopupGlobals TBPopupGlobals;
 
 #define Win									TBPopupGlobals.win
 #define	VarCode							TBPopupGlobals.varCode
@@ -60,231 +61,282 @@ ToolbarPopupGlobals	TBPopupGlobals;
 #define	Vertical						TBPopupGlobals.vertical
 #define	InToolbarPopup			TBPopupGlobals.inToolbarPopup
 
-Boolean ToolbarPopupClose (MyWindowPtr win);
-Boolean ToolbarPopupPosition (Boolean save, MyWindowPtr win);
-OSErr		ToolbarPopupDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag);
-OSErr		ToolbarPopupDrop (DragReference drag, WindowPtr theWindow, Point mouse, short which);
+Boolean ToolbarPopupClose(MyWindowPtr win);
+Boolean ToolbarPopupPosition(Boolean save, MyWindowPtr win);
+OSErr ToolbarPopupDragHandler(MyWindowPtr win, DragTrackingMessage which,
+			      DragReference drag);
+OSErr ToolbarPopupDrop(DragReference drag, WindowPtr theWindow,
+		       Point mouse, short which);
 
 /**********************************************************************
  * OpenToolbarPopup - open a toolbar popup window
  **********************************************************************/
-Boolean OpenToolbarPopup (Rect *buttonRect, ToolbarVEnum varCode, short numButtons, Boolean vertical)
+Boolean OpenToolbarPopup(Rect * buttonRect, ToolbarVEnum varCode,
+			 short numButtons, Boolean vertical)
 {
-	WindowPtr	winWP;
+	WindowPtr winWP;
 
 	if (Win)
 		return (false);
-		
-	Win = GetNewMyWindow (TOOLBAR_POPUP_WIND, nil, nil, BehindModal, false, false, TOOLBAR_POPUP_WIN);
-	winWP = GetMyWindowWindowPtr (Win);
+
+	Win =
+	    GetNewMyWindow(TOOLBAR_POPUP_WIND, nil, nil, BehindModal,
+			   false, false, TOOLBAR_POPUP_WIN);
+	winWP = GetMyWindowWindowPtr(Win);
 	if (Win) {
-		VarCode		 = varCode;
+		VarCode = varCode;
 		ButtonRect = *buttonRect;
 		NumButtons = numButtons;
-		Vertical	 = vertical;
-		
-		Win->windowType	= kFloating;
-		Win->isRunt			= true;
-		Win->close			= ToolbarPopupClose;
-		Win->drag				= ToolbarPopupDragHandler;
-		Win->position		= ToolbarPopupPosition;
-		
-		MySetThemeWindowBackground (Win, kThemeActiveUtilityWindowBackgroundBrush, false);
-		SetThemeTextColor (kThemeActiveWindowHeaderTextColor, RectDepth (&Win->contR), true);
-		ShowMyWindow (winWP);
+		Vertical = vertical;
+
+		Win->windowType = kFloating;
+		Win->isRunt = true;
+		Win->close = ToolbarPopupClose;
+		Win->drag = ToolbarPopupDragHandler;
+		Win->position = ToolbarPopupPosition;
+
+		MySetThemeWindowBackground(Win,
+					   kThemeActiveUtilityWindowBackgroundBrush,
+					   false);
+		SetThemeTextColor(kThemeActiveWindowHeaderTextColor,
+				  RectDepth(&Win->contR), true);
+		ShowMyWindow(winWP);
 	}
 	return (Win ? true : false);
 }
 
 
-Boolean ToolbarPopupClose (MyWindowPtr win)
-
+Boolean ToolbarPopupClose(MyWindowPtr win)
 {
-	WindowPtr			theWindow;
-	ControlHandle	theControl;
-	
-	if (theWindow = GetMyWindowWindowPtr (win))
-		for (theControl = GetControlList(theWindow); theControl;theControl = GetNextControl(theControl))
-			DisposeHandle((Handle)GetControlReference(theControl));
+	WindowPtr theWindow;
+	ControlHandle theControl;
+
+	if (theWindow = GetMyWindowWindowPtr(win))
+		for (theControl = GetControlList(theWindow); theControl;
+		     theControl = GetNextControl(theControl))
+			DisposeHandle((Handle)
+				      GetControlReference(theControl));
 	return (true);
 }
 
-void CloseToolbarPopup (void)
-
+void CloseToolbarPopup(void)
 {
-	CGrafPtr	oldPort;
-	
-	CloseMyWindow (GetMyWindowWindowPtr (Win));
+	CGrafPtr oldPort;
+
+	CloseMyWindow(GetMyWindowWindowPtr(Win));
 	Win = nil;
 	InToolbarPopup = false;
-	
-	GetPort (&oldPort);
-	UpdateAllWindows ();	// Need do do this to force background windows to redraw when drag handling
-	SetPort (oldPort);
+
+	GetPort(&oldPort);
+	UpdateAllWindows();	// Need do do this to force background windows to redraw when drag handling
+	SetPort(oldPort);
 }
 
 
 /**********************************************************************
  * AddMenuToToolbarPopup - Add a menu item to a toolbar popup window
  **********************************************************************/
-OSErr AddMenuToToolbarPopup (short index, short menuID, short item, PStr nickname)
-
+OSErr AddMenuToToolbarPopup(short index, short menuID, short item,
+			    PStr nickname)
 {
-	ToolbarPopupData							toolbarData;
-	ToolbarPopupDataHandle				toolbarDataH;
-	ControlHandle									theControl;
-	ControlButtonTextPlacement		placement;
-	ControlButtonTextAlignment		alignment;
-	ControlButtonGraphicAlignment	gAlignment;
-	Str255												menuName;
-	Rect													bounds;
-	Point													gOffset;
-	OSErr													theError;
-	short													textOffset;
+	ToolbarPopupData toolbarData;
+	ToolbarPopupDataHandle toolbarDataH;
+	ControlHandle theControl;
+	ControlButtonTextPlacement placement;
+	ControlButtonTextAlignment alignment;
+	ControlButtonGraphicAlignment gAlignment;
+	Str255 menuName;
+	Rect bounds;
+	Point gOffset;
+	OSErr theError;
+	short textOffset;
 
 	toolbarDataH = nil;
-	
-	PCopy (toolbarData.nickname, nickname);
+
+	PCopy(toolbarData.nickname, nickname);
 	toolbarData.menuID = menuID;
-	toolbarData.item	 = item;
-	theError = PtrToHand (&toolbarData, &toolbarDataH, sizeof (toolbarData));
+	toolbarData.item = item;
+	theError =
+	    PtrToHand(&toolbarData, &toolbarDataH, sizeof(toolbarData));
 
 	if (!theError) {
-		SetRect (&bounds, 0, 0, RectWi (ButtonRect), RectHi (ButtonRect));
-		OffsetRect (&bounds, 1, 1);
+		SetRect(&bounds, 0, 0, RectWi(ButtonRect),
+			RectHi(ButtonRect));
+		OffsetRect(&bounds, 1, 1);
 
 		if (Vertical)
-			OffsetRect (&bounds, 0, index * RectHi (bounds));
+			OffsetRect(&bounds, 0, index * RectHi(bounds));
 		else
-			OffsetRect (&bounds, index * RectWi (bounds), 0);
+			OffsetRect(&bounds, index * RectWi(bounds), 0);
 
-		MyGetItem (GetMHandle (menuID), item, menuName);
-		if (theControl = NewControl (GetMyWindowWindowPtr(Win), &bounds, VarHasName(VarCode) ? menuName : "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, (long) toolbarDataH)) {
-			GetButtonAlignment (VarCode, &alignment, &placement, &textOffset, &gAlignment, &gOffset);
-		 	if (VarHasName(VarCode)) {
-			 	SetControlData (theControl,0,kControlBevelButtonTextAlignTag,sizeof(alignment),(void*)&alignment);
-			 	SetControlData (theControl,0,kControlBevelButtonTextPlaceTag,sizeof(placement),(void*)&placement);
-		 		SetControlData (theControl,0,kControlBevelButtonTextOffsetTag,sizeof(textOffset),(void*)&textOffset);
+		MyGetItem(GetMHandle(menuID), item, menuName);
+		if (theControl =
+		    NewControl(GetMyWindowWindowPtr(Win), &bounds,
+			       VarHasName(VarCode) ? menuName : "\p", true,
+			       0, 0, 1, kControlBevelButtonSmallBevelProc,
+			       (long) toolbarDataH)) {
+			GetButtonAlignment(VarCode, &alignment, &placement,
+					   &textOffset, &gAlignment,
+					   &gOffset);
+			if (VarHasName(VarCode)) {
+				SetControlData(theControl, 0,
+					       kControlBevelButtonTextAlignTag,
+					       sizeof(alignment),
+					       (void *) &alignment);
+				SetControlData(theControl, 0,
+					       kControlBevelButtonTextPlaceTag,
+					       sizeof(placement),
+					       (void *) &placement);
+				SetControlData(theControl, 0,
+					       kControlBevelButtonTextOffsetTag,
+					       sizeof(textOffset),
+					       (void *) &textOffset);
 			}
 			if (VarHasIcon(VarCode)) {
-				SetBevelIcon (theControl, Names2Icon (menuName, "\p"), nil, nil, nil);
-		 		SetControlData (theControl,0,kControlBevelButtonGraphicAlignTag,sizeof(gAlignment),(void*)&gAlignment);
-		 		SetControlData (theControl,0,kControlBevelButtonGraphicOffsetTag,sizeof(gOffset),(void*)&gOffset);
-	 		}
+				SetBevelIcon(theControl,
+					     Names2Icon(menuName, "\p"),
+					     nil, nil, nil);
+				SetControlData(theControl, 0,
+					       kControlBevelButtonGraphicAlignTag,
+					       sizeof(gAlignment),
+					       (void *) &gAlignment);
+				SetControlData(theControl, 0,
+					       kControlBevelButtonGraphicOffsetTag,
+					       sizeof(gOffset),
+					       (void *) &gOffset);
+			}
 		}
 	}
 	if (theError)
-		ZapHandle (toolbarDataH);
+		ZapHandle(toolbarDataH);
 	return (theError);
 }
 
 
-Boolean ToolbarPopupPosition (Boolean save, MyWindowPtr win)
-
+Boolean ToolbarPopupPosition(Boolean save, MyWindowPtr win)
 {
-	WindowPtr	winWP = GetMyWindowWindowPtr (win);
-	Rect			windowRect;
-	
+	WindowPtr winWP = GetMyWindowWindowPtr(win);
+	Rect windowRect;
+
 	if (Vertical)
-		SetRect (&windowRect, ButtonRect.left - 1, ButtonRect.bottom, ButtonRect.right + 1, ButtonRect.bottom + NumButtons * RectHi (ButtonRect) + 2);
+		SetRect(&windowRect, ButtonRect.left - 1,
+			ButtonRect.bottom, ButtonRect.right + 1,
+			ButtonRect.bottom +
+			NumButtons * RectHi(ButtonRect) + 2);
 	else
-		SetRect (&windowRect, ButtonRect.right, ButtonRect.top - 1, ButtonRect.right + NumButtons * RectWi (ButtonRect) + 2, ButtonRect.bottom + 1);
-	
-	SizeWindow (winWP, RectWi (windowRect), RectHi (windowRect), false);
-	MoveWindow (winWP, windowRect.left, windowRect.top, true);
+		SetRect(&windowRect, ButtonRect.right, ButtonRect.top - 1,
+			ButtonRect.right +
+			NumButtons * RectWi(ButtonRect) + 2,
+			ButtonRect.bottom + 1);
+
+	SizeWindow(winWP, RectWi(windowRect), RectHi(windowRect), false);
+	MoveWindow(winWP, windowRect.left, windowRect.top, true);
 	WindowRect = windowRect;
 	return (true);
 }
 
 
-OSErr ToolbarPopupDragHandler(MyWindowPtr win, DragTrackingMessage which, DragReference drag)
-
+OSErr ToolbarPopupDragHandler(MyWindowPtr win, DragTrackingMessage which,
+			      DragReference drag)
 {
-	CGrafPtr			oldPort;
-	WindowPtr			theWindow;
-	ControlHandle	selectedControl,
-								theControl;
-	OSErr					theError;
-	Point					mouse;
-	
-	theError	= noErr;
-	theWindow = GetMyWindowWindowPtr (win);
-	
-	GetPort (&oldPort);
-	SetPort (GetWindowPort (theWindow));
-	GetDragMouse (drag, &mouse, nil);
+	CGrafPtr oldPort;
+	WindowPtr theWindow;
+	ControlHandle selectedControl, theControl;
+	OSErr theError;
+	Point mouse;
+
+	theError = noErr;
+	theWindow = GetMyWindowWindowPtr(win);
+
+	GetPort(&oldPort);
+	SetPort(GetWindowPort(theWindow));
+	GetDragMouse(drag, &mouse, nil);
 	switch (which) {
-		case kDragTrackingEnterWindow:
-			InToolbarPopup = true;
-			break;
-		case kDragTrackingInWindow:
-			// While we're in the toolbar popup, handle highlighting of our buttons in a menu-like fashion.
-			GlobalToLocal (&mouse);
-			if (FindControl (mouse, theWindow, &selectedControl))
-				for (theControl = GetControlList(theWindow); theControl;theControl = GetNextControl(theControl))
-					SetControlValue (theControl, theControl == selectedControl ? 1 : 0);
-			break;
-		case kDragTrackingLeaveWindow:
-			if (!PtInRect (mouse, &ButtonRect)) {
-				CloseToolbarPopup ();
-				theError = dragNotAcceptedErr;
-			}
-			else
-				for (theControl = GetControlList(theWindow); theControl;theControl = GetNextControl(theControl))
-					SetControlValue (theControl, 0);
-			break;
-		case 0xfff:
-			theError = ToolbarPopupDrop (drag, theWindow, mouse, which);
-			break;
+	case kDragTrackingEnterWindow:
+		InToolbarPopup = true;
+		break;
+	case kDragTrackingInWindow:
+		// While we're in the toolbar popup, handle highlighting of our buttons in a menu-like fashion.
+		GlobalToLocal(&mouse);
+		if (FindControl(mouse, theWindow, &selectedControl))
+			for (theControl = GetControlList(theWindow);
+			     theControl;
+			     theControl = GetNextControl(theControl))
+				SetControlValue(theControl,
+						theControl ==
+						selectedControl ? 1 : 0);
+		break;
+	case kDragTrackingLeaveWindow:
+		if (!PtInRect(mouse, &ButtonRect)) {
+			CloseToolbarPopup();
+			theError = dragNotAcceptedErr;
+		} else
+			for (theControl = GetControlList(theWindow);
+			     theControl;
+			     theControl = GetNextControl(theControl))
+				SetControlValue(theControl, 0);
+		break;
+	case 0xfff:
+		theError = ToolbarPopupDrop(drag, theWindow, mouse, which);
+		break;
 	}
-	SetPort (oldPort);
+	SetPort(oldPort);
 	return (theError);
 }
 
 
-OSErr ToolbarPopupDrop (DragReference drag, WindowPtr theWindow, Point mouse, short which)
-
+OSErr ToolbarPopupDrop(DragReference drag, WindowPtr theWindow,
+		       Point mouse, short which)
 {
-	ToolbarPopupDataHandle	toolbarPopupH;
-	ToolbarPopupData				toolbarPopup;
-	TOCHandle								tocH;
-	TextAddrHandle					toWhom;
-	UHandle									data;
-	ControlHandle						theControl;
-	OSErr										theError;
-	
+	ToolbarPopupDataHandle toolbarPopupH;
+	ToolbarPopupData toolbarPopup;
+	TOCHandle tocH;
+	TextAddrHandle toWhom;
+	UHandle data;
+	ControlHandle theControl;
+	OSErr theError;
+
 	theError = dragNotAcceptedErr;
-	GlobalToLocal (&mouse);
-	if (FindControl (mouse, theWindow, &theControl)) {
-		if (toolbarPopupH = (ToolbarPopupDataHandle) GetControlReference(theControl)) {
+	GlobalToLocal(&mouse);
+	if (FindControl(mouse, theWindow, &theControl)) {
+		if (toolbarPopupH =
+		    (ToolbarPopupDataHandle)
+		    GetControlReference(theControl)) {
 			toolbarPopup = **toolbarPopupH;
 			tocH = nil;
 			data = nil;
-			if (toWhom = NuHandle (toolbarPopup.nickname[0]))
-				BlockMoveData (&toolbarPopup.nickname[1], *toWhom, toolbarPopup.nickname[0]);
-			if (!(theError = MyGetDragItemData (drag, 1, MESS_FLAVOR, (void*) &data)))
-				tocH = (***(MessHandle**)data)->tocH;
-			else
-				if (!(theError = MyGetDragItemData (drag, 1, TOC_FLAVOR, (void*) &data)))
-					tocH = **(TOCHandle**) data;
-			CloseToolbarPopup ();
+			if (toWhom = NuHandle(toolbarPopup.nickname[0]))
+				BlockMoveData(&toolbarPopup.nickname[1],
+					      *toWhom,
+					      toolbarPopup.nickname[0]);
+			if (!
+			    (theError =
+			     MyGetDragItemData(drag, 1, MESS_FLAVOR,
+					       (void *) &data)))
+				tocH = (***(MessHandle **) data)->tocH;
+			else if (!
+				 (theError =
+				  MyGetDragItemData(drag, 1, TOC_FLAVOR,
+						    (void *) &data)))
+				tocH = **(TOCHandle **) data;
+			CloseToolbarPopup();
 			if (tocH)
-				DoIterativeThingy (tocH, toolbarPopup.item, CurrentModifiers (), toWhom);
-			ZapHandle (data);
-			ZapHandle (toWhom);
+				DoIterativeThingy(tocH, toolbarPopup.item,
+						  CurrentModifiers(),
+						  toWhom);
+			ZapHandle(data);
+			ZapHandle(toWhom);
 		}
 	}
 	return (theError);
 }
 
 
-Boolean MouseInToolbarPopup (Point mouse, Boolean checkButton)
-
+Boolean MouseInToolbarPopup(Point mouse, Boolean checkButton)
 {
-	Boolean	inWindowRect,
-					inButtonRect;
-	
-	inWindowRect = PtInRect (mouse, &WindowRect);
-	inButtonRect = checkButton ? PtInRect (mouse, &ButtonRect) : false;
+	Boolean inWindowRect, inButtonRect;
+
+	inWindowRect = PtInRect(mouse, &WindowRect);
+	inButtonRect = checkButton ? PtInRect(mouse, &ButtonRect) : false;
 	return (inWindowRect || inButtonRect);
 }

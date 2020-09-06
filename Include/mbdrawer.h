@@ -33,31 +33,33 @@
 #define MBDRAWER_H
 
 void MBDrawerToggle(MyWindowPtr winParent);
-void MBDrawerFixUnread(MenuHandle mh,short item,Boolean unread);
+void MBDrawerFixUnread(MenuHandle mh, short item, Boolean unread);
 MyWindowPtr MBDrawerOpen(MyWindowPtr winParent);
 Boolean MBDrawerSupported(MyWindowPtr win);
 void MBDrawerSetFocus(MyWindowPtr win, Boolean focus);
 void MBDrawerActivate(MyWindowPtr win, Boolean activate);
 
-enum 
-{
+enum {
 	kDefaultMBDrawerWidth = 225
 };
 
 #if TARGET_RT_MAC_CFM
 // These items aren't in the carbon headers yet
-enum 
-{ 
+enum {
 	kDrawerWindowClass = 20,
 	kWindowCompositingAttribute = (1L << 19)
 };
-enum { kWindowEdgeDefault = 0, kWindowEdgeTop = 1 << 0, kWindowEdgeLeft = 1 << 1, kWindowEdgeBottom = 1 << 2, kWindowEdgeRight = 1 << 3 }; 
+enum { kWindowEdgeDefault = 0, kWindowEdgeTop = 1 << 0, kWindowEdgeLeft =
+	    1 << 1, kWindowEdgeBottom = 1 << 2, kWindowEdgeRight =
+	    1 << 3 };
 #endif
 
-extern OSStatus SetDrawerParent(WindowRef inDrawerWindow, WindowRef inParent);
+extern OSStatus SetDrawerParent(WindowRef inDrawerWindow,
+				WindowRef inParent);
 extern OSStatus ToggleDrawer(WindowRef inDrawerWindow);
-extern OSStatus OpenDrawer(WindowRef inDrawerWindow, OptionBits inEdge, Boolean inAsync);
-extern OSStatus CloseDrawer (WindowRef inDrawerWindow, Boolean inAsync); 
+extern OSStatus OpenDrawer(WindowRef inDrawerWindow, OptionBits inEdge,
+			   Boolean inAsync);
+extern OSStatus CloseDrawer(WindowRef inDrawerWindow, Boolean inAsync);
 extern Boolean MBDrawerClose(MyWindowPtr win);
 void MBDrawerReload(void);
 

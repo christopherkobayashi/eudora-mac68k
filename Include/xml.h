@@ -32,49 +32,50 @@
 #ifndef XML_H
 #define XML_H
 
-//	Tokenizing data
-typedef struct
-{
-	Ptr		pText;
-	long	size;
-	long	offset;
-	long	tokenStart;
-	long	tokenLen;
-	long	attrStart;
-	long	attrLen;
-	AccuPtr	aKeywords;
+//      Tokenizing data
+typedef struct {
+	Ptr pText;
+	long size;
+	long offset;
+	long tokenStart;
+	long tokenLen;
+	long attrStart;
+	long attrLen;
+	AccuPtr aKeywords;
 } TokenInfo;
-enum { kTokenDone, kElementTag, kContent, kEndTag, kEmptyElementTag, kCommentTag };
+enum { kTokenDone, kElementTag, kContent, kEndTag, kEmptyElementTag,
+	    kCommentTag };
 
 // functions for generating XML
 void AccuAddCRLF(AccuPtr a);
-void AccuAddTag(AccuPtr a,StringPtr sKeyword,Boolean endTag);
-void AccuAddXMLObject(AccuPtr a,StringPtr sKeyword,StringPtr value);
-void AccuAddXMLObjectInt(AccuPtr a,StringPtr sKeyword,long value);
-void AccuAddXMLWithAttr(AccuPtr a,StringPtr sKeyword,StringPtr sAttr,Boolean emptyElement);
-void AccuAddXMLObjectHandle(AccuPtr a,StringPtr sKeyword,Handle hValue);
-void AccuAddXMLWithAttrPtr(AccuPtr a,StringPtr sKeyword,Ptr pAttr,long len,Boolean emptyElement);
-void AccuAddTagLine(AccuPtr a,StringPtr sKeyword,Boolean endTag);
+void AccuAddTag(AccuPtr a, StringPtr sKeyword, Boolean endTag);
+void AccuAddXMLObject(AccuPtr a, StringPtr sKeyword, StringPtr value);
+void AccuAddXMLObjectInt(AccuPtr a, StringPtr sKeyword, long value);
+void AccuAddXMLWithAttr(AccuPtr a, StringPtr sKeyword, StringPtr sAttr,
+			Boolean emptyElement);
+void AccuAddXMLObjectHandle(AccuPtr a, StringPtr sKeyword, Handle hValue);
+void AccuAddXMLWithAttrPtr(AccuPtr a, StringPtr sKeyword, Ptr pAttr,
+			   long len, Boolean emptyElement);
+void AccuAddTagLine(AccuPtr a, StringPtr sKeyword, Boolean endTag);
 void XMLNoIndent();
 void XMLIncIndent();
 void XMLDecIndent();
 void AccuIndent(AccuPtr a);
 
 // functions for parsing XML
-short GetNextToken(TokenInfo *tokenInfo);
-PStr TokenToString(TokenInfo *pInfo, StringPtr s);
-OSErr TokenToURL(long *offset,AccuPtr a,TokenInfo *tokenInfo);
-short GetTokenIdx(AccuPtr accuKeywordList,StringPtr sToken);
-short GetNumAttribute(TokenInfo *pInfo,long *value);
-short GetAttribute(TokenInfo *pInfo,StringPtr sValue);
-unsigned char SkipWhiteSpace(TokenInfo *pInfo);
-unsigned char GetNextTokenChar(TokenInfo *tokenInfo);
+short GetNextToken(TokenInfo * tokenInfo);
+PStr TokenToString(TokenInfo * pInfo, StringPtr s);
+OSErr TokenToURL(long *offset, AccuPtr a, TokenInfo * tokenInfo);
+short GetTokenIdx(AccuPtr accuKeywordList, StringPtr sToken);
+short GetNumAttribute(TokenInfo * pInfo, long *value);
+short GetAttribute(TokenInfo * pInfo, StringPtr sValue);
+unsigned char SkipWhiteSpace(TokenInfo * pInfo);
+unsigned char GetNextTokenChar(TokenInfo * tokenInfo);
 Boolean IsWhiteSpace(char c);
 
 // High-Level parser
 
-typedef struct XMLNameValuePairStruct
-{
+typedef struct XMLNameValuePairStruct {
 	short type;
 	short id;
 	long numValue;
@@ -85,22 +86,22 @@ typedef struct XMLNameValuePairStruct
 
 typedef struct XMLBinaryStruct XMLBinary, *XMLBinPtr, **XMLBinH;
 
-struct XMLBinaryStruct
-{
+struct XMLBinaryStruct {
 	XMLNVP self;
 	StackHandle attribs;
 	StackHandle contents;
 };
 
-OSErr XMLParse(UHandle text,short keyWordStrn,AccuPtr keywords,StackHandle xmlbStack);
+OSErr XMLParse(UHandle text, short keyWordStrn, AccuPtr keywords,
+	       StackHandle xmlbStack);
 void XMLBinDispose(XMLBinPtr xmlb);
 void XMLBinStackDispose(StackHandle xmlbStack);
 void XMLNVPDispose(XMLNVPPtr nvpP);
 void XMLNVPStackDispose(StackHandle nvpStack);
 #ifdef DEBUG
-OSErr XMLBinStackPrint(AccuPtr a,StackHandle xmlbStack);
-OSErr XMLBinPrint(AccuPtr a,XMLBinPtr xmlbP);
-OSErr XMLNVPStackPrint(AccuPtr a,StackHandle nvpStack);
-OSErr XMLNVPPrint(AccuPtr a,XMLNVPPtr nvpP);
+OSErr XMLBinStackPrint(AccuPtr a, StackHandle xmlbStack);
+OSErr XMLBinPrint(AccuPtr a, XMLBinPtr xmlbP);
+OSErr XMLNVPStackPrint(AccuPtr a, StackHandle nvpStack);
+OSErr XMLNVPPrint(AccuPtr a, XMLNVPPtr nvpP);
 #endif
 #endif

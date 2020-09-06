@@ -34,53 +34,54 @@
 
 typedef enum {
 	e3DNone,		/* none of that! */
-	e3DSlight,	/* slight 3-d effect */
-	e3DOverBearing	/* overbearing 3-d effect */
+	e3DSlight,		/* slight 3-d effect */
+	e3DOverBearing		/* overbearing 3-d effect */
 } D3EffectEnum;
 
 enum {
-	wHiliteColorLight=	5,			/*lightest stripes in title bar */
-															/* and lightest dimmed text*/
-	wHiliteColorDark,			/*darkest stripes in title bar */
-															/* and darkest dimmed text*/
-	wTitleBarLight,			/*lightest parts of title bar background*/
-	wTitleBarDark,			/*darkest parts of title bar background*/
-	wDialogLight,			/*lightest element of dialog box frame*/
-	wDialogDark,			/*darkest element of dialog box frame*/
-	wTingeLight,			/*lightest window tinging*/
-	wTingeDark			/*darkest window tinging*/
+	wHiliteColorLight = 5,	/*lightest stripes in title bar */
+	/* and lightest dimmed text */
+	wHiliteColorDark,	/*darkest stripes in title bar */
+	/* and darkest dimmed text */
+	wTitleBarLight,		/*lightest parts of title bar background */
+	wTitleBarDark,		/*darkest parts of title bar background */
+	wDialogLight,		/*lightest element of dialog box frame */
+	wDialogDark,		/*darkest element of dialog box frame */
+	wTingeLight,		/*lightest window tinging */
+	wTingeDark		/*darkest window tinging */
 };
 typedef struct MyWindowStruct *MyWindowPtr;
 
-void SetMenuColor(MenuHandle menu, short item, RGBColor *color);
+void SetMenuColor(MenuHandle menu, short item, RGBColor * color);
 
-RGBColor *GetLabelColor(short index,RGBColor *color);
-OSErr MyGetLabel(short labelNumber,RGBColor *color,PStr labelString);
+RGBColor *GetLabelColor(short index, RGBColor * color);
+OSErr MyGetLabel(short labelNumber, RGBColor * color, PStr labelString);
 
-void Color3DRect(Rect *r, RGBColor *color, D3EffectEnum howMuch, Boolean raised);
-void TwoToneFrame(Rect *r, RGBColor *topLeft, RGBColor *botRight);
+void Color3DRect(Rect * r, RGBColor * color, D3EffectEnum howMuch,
+		 Boolean raised);
+void TwoToneFrame(Rect * r, RGBColor * topLeft, RGBColor * botRight);
 #define BlackWhite(c) (Black(c)||White(c))
-Boolean Black(RGBColor *color);
-Boolean White(RGBColor *color);
-RGBColor *LightenColor(RGBColor *color,short percent);
-RGBColor *DarkenColor(RGBColor *color,short percent);
-RGBColor *LimitColorRange(RGBColor *color);
-RGBColor *PastelColor(RGBColor *color);
-RGBColor *SetRGBGrey(RGBColor *color,short greyValue);
+Boolean Black(RGBColor * color);
+Boolean White(RGBColor * color);
+RGBColor *LightenColor(RGBColor * color, short percent);
+RGBColor *DarkenColor(RGBColor * color, short percent);
+RGBColor *LimitColorRange(RGBColor * color);
+RGBColor *PastelColor(RGBColor * color);
+RGBColor *SetRGBGrey(RGBColor * color, short greyValue);
 void SetForeGrey(short greyValue);
 void SetBGGrey(short greyValue);
-RGBColor *SetRGBGrey(RGBColor *color,short greyValue);
-short LightestGrey(Rect *r);
-OSErr ColorParam(RGBColor *color,PStr text);
-Boolean ColorIsLight(RGBColor *color);
+RGBColor *SetRGBGrey(RGBColor * color, short greyValue);
+short LightestGrey(Rect * r);
+OSErr ColorParam(RGBColor * color, PStr text);
+Boolean ColorIsLight(RGBColor * color);
 
 Boolean ColCtlPicker(ControlHandle cntl);
-void ColCtlSet(ControlHandle cntl, RGBColor *color);
-RGBColor *ColCtlGet(ControlHandle cntl, RGBColor *color);
-void DrawDivider(Rect *r,Boolean raised);
+void ColCtlSet(ControlHandle cntl, RGBColor * color);
+RGBColor *ColCtlGet(ControlHandle cntl, RGBColor * color);
+void DrawDivider(Rect * r, Boolean raised);
 void WinGreyBG(MyWindowPtr win);
 
-void Frame3DOrNot(Rect *r,RGBColor *baseColor,Boolean erase);
+void Frame3DOrNot(Rect * r, RGBColor * baseColor, Boolean erase);
 
 #define k8Grey1			61166
 #define	k8Grey2			56797

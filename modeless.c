@@ -41,19 +41,21 @@ StackHandle ModalStack;
 
 extern short AlertDefault(short template);
 
-MyWindowPtr GetNewMyAlert(short template,UPtr wStorage,MyWindowPtr winStorage,WindowPtr behind,StageList *stages);
+MyWindowPtr GetNewMyAlert(short template, UPtr wStorage,
+			  MyWindowPtr winStorage, WindowPtr behind,
+			  StageList * stages);
 
-void HandleModalEvent(EventRecord *theEvent,DialogPtr theDialog);
-void HandleMouseDown (EventRecord	*theEvent,DialogPtr theDialog);
-void HandleMenu (long mSelect,DialogPtr theDialog);
-void MySendBehind (WindowPtr theWindow, WindowPtr behindWindow);
+void HandleModalEvent(EventRecord * theEvent, DialogPtr theDialog);
+void HandleMouseDown(EventRecord * theEvent, DialogPtr theDialog);
+void HandleMenu(long mSelect, DialogPtr theDialog);
+void MySendBehind(WindowPtr theWindow, WindowPtr behindWindow);
 
 enum {
-    uppMovableModalProcInfo = kPascalStackBased
-         | RESULT_SIZE(SIZE_CODE(sizeof(Boolean)))
-         | STACK_ROUTINE_PARAMETER(1, SIZE_CODE(sizeof(DialogPtr)))
-         | STACK_ROUTINE_PARAMETER(2, SIZE_CODE(sizeof(EventRecord)))
-         | STACK_ROUTINE_PARAMETER(3, SIZE_CODE(sizeof(short)))
+	uppMovableModalProcInfo = kPascalStackBased
+	    | RESULT_SIZE(SIZE_CODE(sizeof(Boolean)))
+	    | STACK_ROUTINE_PARAMETER(1, SIZE_CODE(sizeof(DialogPtr)))
+	    | STACK_ROUTINE_PARAMETER(2, SIZE_CODE(sizeof(EventRecord)))
+	    | STACK_ROUTINE_PARAMETER(3, SIZE_CODE(sizeof(short)))
 };
 
 #define STOP_ICON_DITL 20100
@@ -65,108 +67,111 @@ enum {
  * GetNewMyDialog - get a new dialog, with a bit extra
  ************************************************************************/
 // (jp) We've grown a new parameter, win, to support memory preflighting for
-//			a world of opaque data structures.  We formerly passed in a pointer to an
-//			extended DialogRecord in 'wStorage'... which we won't be able to do under
-//			Carbon.  In fact, under Carbon we can't preflight memory at all -- so this
-//			will have to eventually change again.  For the time being, we're passing in
-//			pre-allocated storage for both the DialogRecord and our own window structure.
-MyWindowPtr GetNewMyDialog(short template,UPtr wStorage,MyWindowPtr win,WindowPtr behind)
+//                      a world of opaque data structures.  We formerly passed in a pointer to an
+//                      extended DialogRecord in 'wStorage'... which we won't be able to do under
+//                      Carbon.  In fact, under Carbon we can't preflight memory at all -- so this
+//                      will have to eventually change again.  For the time being, we're passing in
+//                      pre-allocated storage for both the DialogRecord and our own window structure.
+MyWindowPtr GetNewMyDialog(short template, UPtr wStorage, MyWindowPtr win,
+			   WindowPtr behind)
 {
-	DialogPtr		theDialog;
-	
-	if (win == nil)
-	{
-		if (HandyMyWindow)
-		{
+	DialogPtr theDialog;
+
+	if (win == nil) {
+		if (HandyMyWindow) {
 			win = HandyMyWindow;
 			HandyMyWindow = nil;
-		}
-		else if ((win=New(MyWindow))==nil)
+		} else if ((win = New(MyWindow)) == nil)
 			return (nil);
 	}
 	WriteZero(win, sizeof(MyWindow));
-	
-	theDialog = GetNewDialog(template, (void*)wStorage, behind);
-	if (theDialog==nil) { ZapPtr (win); return(nil); }
-	
-	SetDialogMyWindowPtr (theDialog, win);
+
+	theDialog = GetNewDialog(template, (void *) wStorage, behind);
+	if (theDialog == nil) {
+		ZapPtr(win);
+		return (nil);
+	}
+
+	SetDialogMyWindowPtr(theDialog, win);
 	win->theWindow = GetDialogWindow(theDialog);
-	
+
 	win->isDialog = win->isRunt = True;
 	win->dialogID = template;
 	SetPort(GetDialogPort(theDialog));
-	GetDialogPortBounds(theDialog,&win->contR);
-	SetMyWindowPrivateData (win, CREATOR);
-	GetRColor(&win->textColor,TEXT_COLOR);
-	GetRColor(&win->backColor,BACK_COLOR);
-	win->titleBarHi = win->uselessHi = win->leftRimWi = win->uselessWi = -1;
+	GetDialogPortBounds(theDialog, &win->contR);
+	SetMyWindowPrivateData(win, CREATOR);
+	GetRColor(&win->textColor, TEXT_COLOR);
+	GetRColor(&win->backColor, BACK_COLOR);
+	win->titleBarHi = win->uselessHi = win->leftRimWi =
+	    win->uselessWi = -1;
 	win->windex = ++Windex;
-	MySetThemeWindowBackground(win, kThemeActiveModelessDialogBackgroundBrush, false);
+	MySetThemeWindowBackground(win,
+				   kThemeActiveModelessDialogBackgroundBrush,
+				   false);
 	win->backBrush = kThemeActiveModelessDialogBackgroundBrush;
-	return(win);
+	return (win);
 }
 
 
 /************************************************************************
  * DoModelessEvent - handle (the result of) an event in a modeless dialog
  ************************************************************************/
-Boolean DoModelessEvent(DialogPtr dlog,EventRecord *event)
+Boolean DoModelessEvent(DialogPtr dlog, EventRecord * event)
 {
-	MyWindowPtr	dlogWin = GetDialogMyWindowPtr (dlog);
+	MyWindowPtr dlogWin = GetDialogMyWindowPtr(dlog);
 	long select;
 	Boolean result = false;
 	short item;
 	char key = event->message & charCodeMask;
 	DialogPtr outDlog;
 	Boolean mine = IsMyWindow(GetDialogWindow(dlog));
-	
+
 	SetPort_(GetWindowPort(GetDialogWindow(dlog)));
-	
+
 #ifdef SETTINGSLISTKEY
-	if ((event->what==keyDown) || (event->what==autoKey))
+	if ((event->what == keyDown) || (event->what == autoKey))
 		if (mine && dlogWin->key)
-			if (result = (*(dlogWin)->key)(dlogWin,event))
+			if (result = (*(dlogWin)->key) (dlogWin, event))
 				goto done;
 #endif
 	/*
 	 * check for cmdkey equivalents
 	 */
-	if (event->what==keyDown)
-	{
-		if (event->modifiers&cmdKey)
-		{
-			if (select=MyMenuKey(event))
-			{
-				DoMenu(FrontWindow_(),select,event->modifiers);
+	if (event->what == keyDown) {
+		if (event->modifiers & cmdKey) {
+			if (select = MyMenuKey(event)) {
+				DoMenu(FrontWindow_(), select,
+				       event->modifiers);
 				result = 0;
 				goto done;
-			}
-			else if (key=='.' && mine)
-			{
+			} else if (key == '.' && mine) {
 				if (dlogWin->hit)
-					result = (*(dlogWin)->hit)(event,dlog,2,dlogWin->dialogRefcon);
+					result =
+					    (*(dlogWin)->hit) (event, dlog,
+							       2,
+							       dlogWin->
+							       dialogRefcon);
 				goto done;
 			}
-		}
-		else if (key==escChar && mine)
-		{
+		} else if (key == escChar && mine) {
 			if (dlogWin->hit)
-				result = (*(dlogWin)->hit)(event,dlog,2,dlogWin->dialogRefcon);
+				result =
+				    (*(dlogWin)->hit) (event, dlog, 2,
+						       dlogWin->
+						       dialogRefcon);
 			goto done;
-		}
-		else if (key==delChar)
-		{
+		} else if (key == delChar) {
 			result = 0;
 			goto done;
-		}
-		else if (mine && (key==returnChar || key==enterChar) && !dlogWin->ignoreDefaultItem)
-		{
-				if (dlogWin->hit)
-					result = (*(dlogWin)->hit)(event,dlog,1,dlogWin->dialogRefcon);
-				goto done;
-		}
-		else if (key==tabChar && event->modifiers&shiftKey)
-		{
+		} else if (mine && (key == returnChar || key == enterChar)
+			   && !dlogWin->ignoreDefaultItem) {
+			if (dlogWin->hit)
+				result =
+				    (*(dlogWin)->hit) (event, dlog, 1,
+						       dlogWin->
+						       dialogRefcon);
+			goto done;
+		} else if (key == tabChar && event->modifiers & shiftKey) {
 			BackTab(dlog);
 			result = 0;
 			goto done;
@@ -177,25 +182,35 @@ Boolean DoModelessEvent(DialogPtr dlog,EventRecord *event)
 	 * do the event
 	 */
 #ifdef SETTINGSLISTKEY
-	if (mine && dlogWin->filter) result = ((*(dlogWin)->filter)(dlogWin,event));
-		result = MyDialogSelect(event,&outDlog,&item) && outDlog==dlog && mine && dlogWin->hit ?
-			(*(dlogWin)->hit)(event,dlog,item,dlogWin->dialogRefcon) : False;
+	if (mine && dlogWin->filter)
+		result = ((*(dlogWin)->filter) (dlogWin, event));
+	result = MyDialogSelect(event, &outDlog, &item) && outDlog == dlog
+	    && mine
+	    && dlogWin->hit ? (*(dlogWin)->hit) (event, dlog, item,
+						 dlogWin->
+						 dialogRefcon) : False;
 #else
-	if (mine && dlogWin->filter) (*(dlogWin)->filter)(dlogWin,event);
-	
-	result = MyDialogSelect(event,&outDlog,&item) && outDlog==dlog && mine && dlogWin->hit?
-		(*(dlogWin)->hit)(event,dlog,item,dlogWin->dialogRefcon) : False;
-#endif	
+	if (mine && dlogWin->filter)
+		(*(dlogWin)->filter) (dlogWin, event);
+
+	result = MyDialogSelect(event, &outDlog, &item) && outDlog == dlog
+	    && mine
+	    && dlogWin->hit ? (*(dlogWin)->hit) (event, dlog, item,
+						 dlogWin->
+						 dialogRefcon) : False;
+#endif
 	/*
 	 * if drawing, outline the ok button
 	 */
-	if (event->what==updateEvt || event->what==activateEvt) HiliteButtonOne(dlog);
-	
-	if (event->what==app4Evt) DoApp4(MyFrontWindow(),event);
+	if (event->what == updateEvt || event->what == activateEvt)
+		HiliteButtonOne(dlog);
 
-done:
-	EnableMenus(FrontWindow_(),False);
-	return(result);
+	if (event->what == app4Evt)
+		DoApp4(MyFrontWindow(), event);
+
+      done:
+	EnableMenus(FrontWindow_(), False);
+	return (result);
 }
 
 /************************************************************************
@@ -209,139 +224,148 @@ void BackTab(DialogPtr dlog)
 	short type;
 	Handle itemH;
 	short selectMe = 0;
-	
-	for (item=curItem-1;item>0;item--)
-	{
-		GetDialogItem(dlog,item,&type,&itemH,&itemR);
-		if (type==editText) {selectMe = item; break;}
-	}
-		
-	
-	if (!selectMe)
-		for (item=CountDITL(dlog);item>curItem;item--)
-		{
-			GetDialogItem(dlog,item,&type,&itemH,&itemR);
-			if (type==editText) {selectMe = item; break;}
+
+	for (item = curItem - 1; item > 0; item--) {
+		GetDialogItem(dlog, item, &type, &itemH, &itemR);
+		if (type == editText) {
+			selectMe = item;
+			break;
 		}
-	
-	if (selectMe) SelectDialogItemText(dlog,selectMe,0,REAL_BIG);
+	}
+
+
+	if (!selectMe)
+		for (item = CountDITL(dlog); item > curItem; item--) {
+			GetDialogItem(dlog, item, &type, &itemH, &itemR);
+			if (type == editText) {
+				selectMe = item;
+				break;
+			}
+		}
+
+	if (selectMe)
+		SelectDialogItemText(dlog, selectMe, 0, REAL_BIG);
 }
 
 /************************************************************************
  * DoModelessEdit - handle the Edit menu for a modeless dialog
  ************************************************************************/
-Boolean DoModelessEdit(MyWindowPtr win,short item)
+Boolean DoModelessEdit(MyWindowPtr win, short item)
 {
-	DialogPtr	winDP = GetMyWindowDialogPtr (win);
-	short	err;
+	DialogPtr winDP = GetMyWindowDialogPtr(win);
+	short err;
 	SAVE_STUFF;
 
 	SetBGGrey(0xffff);
 
 	// (jp) If the dialog is using PETE's instead of TE's, just return, because editing will
-	//			be handled by PETE. (We can't currently mix PETE's with edit items...)
-	if (IsMyWindow (GetDialogWindow(winDP)) && win->pte) {
+	//                      be handled by PETE. (We can't currently mix PETE's with edit items...)
+	if (IsMyWindow(GetDialogWindow(winDP)) && win->pte) {
 		REST_STUFF;
 		return (false);
 	}
-	
 	// password dialog doesn't like edit menu
-	if (win->noEditMenu)
-	{
+	if (win->noEditMenu) {
 		REST_STUFF;
 		SysBeep(20L);
 		return false;
 	}
-	
-	switch(item)
-	{
-		case EDIT_CUT_ITEM:
-			DialogCut(winDP);
-			if ((err=ClearCurrentScrap()) || (err=TEToScrap()))
-				WarnUser(COPY_FAILED,err);
-			break;
-		case EDIT_COPY_ITEM:
-			DialogCopy(winDP);
-			if (err=TEToScrap())
-				WarnUser(COPY_FAILED,err);
-			break;
-		case EDIT_PASTE_ITEM:
-			if (!IsScrapFull())
-				SysBeep(20);
-			else if (err=TEFromScrap())
-				WarnUser(PASTE_FAILED,err);
-			else
-				DialogPaste(winDP);
-			break;
-		case EDIT_CLEAR_ITEM:
-			DialogDelete(winDP);
-			break;
-		case EDIT_SELECT_ITEM:
-			SelectDialogItemText(winDP,GetDialogKeyboardFocusItem(winDP),0,REAL_BIG);
-			break;
-		case EDIT_UNDO_ITEM:
-			break;
-		default:
-			REST_STUFF;
-			return(False);
+
+	switch (item) {
+	case EDIT_CUT_ITEM:
+		DialogCut(winDP);
+		if ((err = ClearCurrentScrap()) || (err = TEToScrap()))
+			WarnUser(COPY_FAILED, err);
+		break;
+	case EDIT_COPY_ITEM:
+		DialogCopy(winDP);
+		if (err = TEToScrap())
+			WarnUser(COPY_FAILED, err);
+		break;
+	case EDIT_PASTE_ITEM:
+		if (!IsScrapFull())
+			SysBeep(20);
+		else if (err = TEFromScrap())
+			WarnUser(PASTE_FAILED, err);
+		else
+			DialogPaste(winDP);
+		break;
+	case EDIT_CLEAR_ITEM:
+		DialogDelete(winDP);
+		break;
+	case EDIT_SELECT_ITEM:
+		SelectDialogItemText(winDP,
+				     GetDialogKeyboardFocusItem(winDP), 0,
+				     REAL_BIG);
+		break;
+	case EDIT_UNDO_ITEM:
+		break;
+	default:
+		REST_STUFF;
+		return (False);
 	}
 	REST_STUFF;
-	return(True);
+	return (True);
 }
 
 
-void	StartMovableModal(DialogPtr dialog)
+void StartMovableModal(DialogPtr dialog)
 {
-	MyWindowPtr	dialogWin = GetDialogMyWindowPtr (dialog);
+	MyWindowPtr dialogWin = GetDialogMyWindowPtr(dialog);
 	short item;
 
 	HiliteMenu(0);
-	PositionPrefsTitle(false,dialogWin);
+	PositionPrefsTitle(false, dialogWin);
 	PushModalWindow(GetDialogWindow(dialog));
-	EnableMenus(ModalWindow,false);
+	EnableMenus(ModalWindow, false);
 	dialogWin->dontControl = true;
 	SetMyCursor(arrowCursor);
 	item = GetDialogDefaultItem(dialog);
-	if (!item) item=1;
-	SetDialogDefaultItem(dialog,item);
+	if (!item)
+		item = 1;
+	SetDialogDefaultItem(dialog, item);
 	TEFromScrap();
 }
 
-//	(jp)	PushModalWindow must receive a WindowPtr rather than a MyWindowPtr since not all
-//				dialogs are created with a MyWindowPtr hanging off of the refcon
+//      (jp)    PushModalWindow must receive a WindowPtr rather than a MyWindowPtr since not all
+//                              dialogs are created with a MyWindowPtr hanging off of the refcon
 void PushModalWindow(WindowPtr theWindow)
 {
-	if (!ModalStack) StackInit(sizeof(WindowPtr),&ModalStack);
-	if (ModalStack) StackPush(&ModalWindow,ModalStack);
+	if (!ModalStack)
+		StackInit(sizeof(WindowPtr), &ModalStack);
+	if (ModalStack)
+		StackPush(&ModalWindow, ModalStack);
 	ModalWindow = theWindow;
 }
 
 void PopModalWindow(void)
 {
 	ModalWindow = nil;
-	if (ModalStack) StackPop(&ModalWindow,ModalStack);
+	if (ModalStack)
+		StackPop(&ModalWindow, ModalStack);
 	if (!DirtyHackForChooseMailbox && gMenuBarIsSetup)
-		EnableMenus(ModalWindow,false);	//JDB 8/20/97 all should be false.
+		EnableMenus(ModalWindow, false);	//JDB 8/20/97 all should be false.
 }
 
-void	EndMovableModal(DialogPtr dialog)
+void EndMovableModal(DialogPtr dialog)
 {
-	PositionPrefsTitle(true,GetDialogMyWindowPtr(dialog));
+	PositionPrefsTitle(true, GetDialogMyWindowPtr(dialog));
 	PopModalWindow();
 }
 
-pascal void	MovableModalDialog(DialogPtr myDialog,ModalFilterUPP theFilterProc,short *itemHit)
+pascal void MovableModalDialog(DialogPtr myDialog,
+			       ModalFilterUPP theFilterProc,
+			       short *itemHit)
 {
-	MyWindowPtr	myDialogWin = GetDialogMyWindowPtr (myDialog);
-	EventRecord	oldMain = MainEvent;
-	DialogPtr		outDlog;
-	short				peteItemHit;
-	Boolean			hitPETEUserPane;
-	
+	MyWindowPtr myDialogWin = GetDialogMyWindowPtr(myDialog);
+	EventRecord oldMain = MainEvent;
+	DialogPtr outDlog;
+	short peteItemHit;
+	Boolean hitPETEUserPane;
+
 #ifndef DRAG_GETOSEVT
 	ASSERT(!Dragging);
-	if (Dragging)
-	{
+	if (Dragging) {
 		CommandPeriod = True;
 		*itemHit = CANCEL_ITEM;
 		return;
@@ -350,29 +374,33 @@ pascal void	MovableModalDialog(DialogPtr myDialog,ModalFilterUPP theFilterProc,s
 
 	PushCursor(arrowCursor);
 
-	for (;;)
-	{
-		WNE(everyEvent & ~highLevelEventMask,&MainEvent,0);
-		if (MainEvent.modifiers&cmdKey)
+	for (;;) {
+		WNE(everyEvent & ~highLevelEventMask, &MainEvent, 0);
+		if (MainEvent.modifiers & cmdKey)
 			HiliteMenu(0);
-		if (MyIsDialogEvent(&MainEvent))
-			{
-				hitPETEUserPane = AllWeAreSayingIsGivePeteAChance (myDialogWin, &MainEvent, &peteItemHit);
-				if (theFilterProc != nil && InvokeModalFilterUPP(myDialog,&MainEvent,itemHit,theFilterProc))
-					break;
-				else
-					if (MyDialogSelect(&MainEvent, &outDlog, itemHit) && outDlog==myDialog)
-						break;
-				if (hitPETEUserPane) {
-					*itemHit = peteItemHit;
-					break;
-				}
+		if (MyIsDialogEvent(&MainEvent)) {
+			hitPETEUserPane =
+			    AllWeAreSayingIsGivePeteAChance(myDialogWin,
+							    &MainEvent,
+							    &peteItemHit);
+			if (theFilterProc != nil
+			    && InvokeModalFilterUPP(myDialog, &MainEvent,
+						    itemHit,
+						    theFilterProc))
+				break;
+			else if (MyDialogSelect
+				 (&MainEvent, &outDlog, itemHit)
+				 && outDlog == myDialog)
+				break;
+			if (hitPETEUserPane) {
+				*itemHit = peteItemHit;
+				break;
 			}
-		else
+		} else
 			HandleEvent(&MainEvent);
-			//HandleModalEvent(&theEvent,myDialog);
+		//HandleModalEvent(&theEvent,myDialog);
 	}
-	
+
 	PopCursor();
 	MainEvent = oldMain;
 }
@@ -381,152 +409,155 @@ pascal void	MovableModalDialog(DialogPtr myDialog,ModalFilterUPP theFilterProc,s
  * GetNewMyAlert - get a new dialog, with a bit extra
  ************************************************************************/
 // (jp) We've grown a new parameter, winStorage, to support memory preflighting for
-//			a world of opaque data structures.  We formerly passed in a pointer to an
-//			extended DialogRecord in 'wStorage'... which we won't be able to do under
-//			Carbon.  In fact, under Carbon we can't preflight memory at all -- so this
-//			will have to eventually change again.  For the time being, we're passing in
-//			pre-allocated storage for both the DialogRecord and our own window structure.
-MyWindowPtr GetNewMyAlert(short template,UPtr wStorage,MyWindowPtr win,WindowPtr behind,StageList *stages)
+//                      a world of opaque data structures.  We formerly passed in a pointer to an
+//                      extended DialogRecord in 'wStorage'... which we won't be able to do under
+//                      Carbon.  In fact, under Carbon we can't preflight memory at all -- so this
+//                      will have to eventually change again.  For the time being, we're passing in
+//                      pre-allocated storage for both the DialogRecord and our own window structure.
+MyWindowPtr GetNewMyAlert(short template, UPtr wStorage, MyWindowPtr win,
+			  WindowPtr behind, StageList * stages)
 {
-	DialogPtr	theDialog;
-	AlertTemplate theTemplate,**theAlertHandle;
-	Handle	itemListHandle;
-	Rect 		screenRect;
-	
-	if (win == nil)
-	{
-		if (HandyMyWindow)
-		{
+	DialogPtr theDialog;
+	AlertTemplate theTemplate, **theAlertHandle;
+	Handle itemListHandle;
+	Rect screenRect;
+
+	if (win == nil) {
+		if (HandyMyWindow) {
 			win = HandyMyWindow;
 			HandyMyWindow = nil;
-		}
-		else if ((win=New(MyWindow))==nil)
+		} else if ((win = New(MyWindow)) == nil)
 			return (nil);
 	}
 	WriteZero(win, sizeof(MyWindow));
 
 	GetQDGlobalsScreenBitsBounds(&screenRect);
-	theAlertHandle = (void **)GetResource('ALRT',template);
+	theAlertHandle = (void **) GetResource('ALRT', template);
 	theTemplate = **theAlertHandle;
-	itemListHandle = GetResource('DITL',theTemplate.itemsID);
+	itemListHandle = GetResource('DITL', theTemplate.itemsID);
 	MyHandToHand(&itemListHandle);
-	
-	
+
+
 	*stages = theTemplate.stages;
-	ThirdCenterRectIn(&theTemplate.boundsRect,&screenRect);
-	theDialog = ThereIsColor?
-		NewColorDialog((void*)wStorage,&theTemplate.boundsRect,"\p",false,5,behind,false,CREATOR,itemListHandle)
-		: NewDialog((void*)wStorage,&theTemplate.boundsRect,"\p",false,5,behind,false,CREATOR,itemListHandle);
-	if (theDialog==nil) { ZapPtr (win); return(nil); }
-	
-	SetDialogMyWindowPtr (theDialog, win);
+	ThirdCenterRectIn(&theTemplate.boundsRect, &screenRect);
+	theDialog = ThereIsColor ?
+	    NewColorDialog((void *) wStorage, &theTemplate.boundsRect,
+			   "\p", false, 5, behind, false, CREATOR,
+			   itemListHandle)
+	    : NewDialog((void *) wStorage, &theTemplate.boundsRect, "\p",
+			false, 5, behind, false, CREATOR, itemListHandle);
+	if (theDialog == nil) {
+		ZapPtr(win);
+		return (nil);
+	}
+
+	SetDialogMyWindowPtr(theDialog, win);
 	win->theWindow = GetDialogWindow(theDialog);
-	
+
 	win->isDialog = win->isRunt = True;
 	SetPort(GetDialogPort(theDialog));
-	GetDialogPortBounds(theDialog,&win->contR);
-	SetMyWindowPrivateData (win, CREATOR);
-	MySetThemeWindowBackground(win, kThemeActiveModelessDialogBackgroundBrush, false);
+	GetDialogPortBounds(theDialog, &win->contR);
+	SetMyWindowPrivateData(win, CREATOR);
+	MySetThemeWindowBackground(win,
+				   kThemeActiveModelessDialogBackgroundBrush,
+				   false);
 	win->backBrush = kThemeActiveModelessDialogBackgroundBrush;
-	return(win);
+	return (win);
 }
 
 
-pascal short MovableAlert(short alertID,short which,ModalFilterUPP theFilterProc)
+pascal short MovableAlert(short alertID, short which,
+			  ModalFilterUPP theFilterProc)
 {
-	MyWindowPtr	theAlertWin = nil;
-	DialogPtr	theAlert = nil;
+	MyWindowPtr theAlertWin = nil;
+	DialogPtr theAlert = nil;
 	StageList theStageList;
-	short	item = REAL_BIG;
-	short	numOfItems;
-	Handle	itemListHandle;
-	MenuHandle	tempMenuHandle = nil;
-	uLong		oldForceSend;
-	
+	short item = REAL_BIG;
+	short numOfItems;
+	Handle itemListHandle;
+	MenuHandle tempMenuHandle = nil;
+	uLong oldForceSend;
+
 	PushGWorld();
-	
-	theAlertWin = GetNewMyAlert(alertID,nil,nil,InFront,&theStageList);	
+
+	theAlertWin =
+	    GetNewMyAlert(alertID, nil, nil, InFront, &theStageList);
 	theAlert = GetMyWindowDialogPtr(theAlertWin);
-	if (!theAlert)
-	{
+	if (!theAlert) {
 		PopGWorld();
 		return (-1);
 	}
 
 	numOfItems = CountDITL(theAlert);
-	switch (which)
-	{
-		case Normal:
-			break;
-		case Stop:
-			itemListHandle = GetResource('DITL',STOP_ICON_DITL);
-			break;
-		case Note:	
-			itemListHandle = GetResource('DITL',NOTE_ICON_DITL);
-			break;
-		case Caution:
-			itemListHandle = GetResource('DITL',CAUTION_ICON_DITL);
-			break;
-		default:
-			which = Normal;
-			break;
+	switch (which) {
+	case Normal:
+		break;
+	case Stop:
+		itemListHandle = GetResource('DITL', STOP_ICON_DITL);
+		break;
+	case Note:
+		itemListHandle = GetResource('DITL', NOTE_ICON_DITL);
+		break;
+	case Caution:
+		itemListHandle = GetResource('DITL', CAUTION_ICON_DITL);
+		break;
+	default:
+		which = Normal;
+		break;
 	}
-	
-	if (which != Normal)
-	{
+
+	if (which != Normal) {
 		if (!MyHandToHand(&itemListHandle))
-			AppendDITL(theAlert,itemListHandle,overlayDITL);
+			AppendDITL(theAlert, itemListHandle, overlayDITL);
 	}
-	
-	SetDialogDefaultItem(theAlert,1);
+
+	SetDialogDefaultItem(theAlert, 1);
 	theAlertWin->dontControl = true;
 	ShowWindow(GetDialogWindow(theAlert));
 	SetPort(GetDialogPort(theAlert));
 	HiliteMenu(0);
-	
+
 	PushModalWindow(GetDialogWindow(theAlert));
-	if (gMenuBarIsSetup)
-	{
+	if (gMenuBarIsSetup) {
 		tempMenuHandle = GetMHandle(FILE_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(APPLE_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,1);
+			DisableItem(tempMenuHandle, 1);
 
 		tempMenuHandle = GetMHandle(MAILBOX_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(EDIT_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(MESSAGE_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(TRANSFER_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(SPECIAL_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
 		tempMenuHandle = GetMHandle(WINDOW_MENU);
 		if (tempMenuHandle)
-			DisableItem(tempMenuHandle,0);
+			DisableItem(tempMenuHandle, 0);
 
-		
+
 		DrawMenuBar();
 	}
 	oldForceSend = ForceSend;
 	ForceSend = 1;
-	do
-	{
-		MovableModalDialog(theAlert,theFilterProc,&item);
+	do {
+		MovableModalDialog(theAlert, theFilterProc, &item);
 	} while (item >= numOfItems);
 	ForceSend = oldForceSend;
 	DisposDialog_(theAlert);
@@ -536,10 +567,10 @@ pascal short MovableAlert(short alertID,short which,ModalFilterUPP theFilterProc
 	return (item);
 }
 
-void HandleModalEvent(EventRecord *theEvent,DialogPtr theDialog)
+void HandleModalEvent(EventRecord * theEvent, DialogPtr theDialog)
 {
-		if (theEvent->what == mouseDown)
-					HandleMouseDown(theEvent,theDialog);
+	if (theEvent->what == mouseDown)
+		HandleMouseDown(theEvent, theDialog);
 
 }
 
@@ -550,38 +581,39 @@ void HandleModalEvent(EventRecord *theEvent,DialogPtr theDialog)
  *
  ****/
 
-void HandleMouseDown (EventRecord	*theEvent,DialogPtr theDialog)
-
+void HandleMouseDown(EventRecord * theEvent, DialogPtr theDialog)
 {
-	WindowPtr	theWindow;
-	int			windowCode = FindWindow (theEvent->where, &theWindow);
-	Rect		screenBits;
+	WindowPtr theWindow;
+	int windowCode = FindWindow(theEvent->where, &theWindow);
+	Rect screenBits;
 
-    switch (windowCode)
-      {
-	  case inMenuBar:
-	    HandleMenu(MenuSelect(theEvent->where),theDialog);
-	    break;
-	  
-	  case kHighLevelEvent:
-	  	break;
-	  case inDrag:
-	  		if (theWindow==theDialog)
-	  			DragWindow(theWindow, theEvent->where,GetQDGlobalsScreenBitsBounds(&screenBits));
-	  		else
-	  			SysBeep(20);
-	  	  break;
-	  	  
-	  case inContent:
-	  		if (theWindow!=GetDialogWindow(theDialog))
-	  			SysBeep(20);
+	switch (windowCode) {
+	case inMenuBar:
+		HandleMenu(MenuSelect(theEvent->where), theDialog);
+		break;
 
-	  	break;
-	  	
-	  case inGoAway:
-	  	  break;
-      }
+	case kHighLevelEvent:
+		break;
+	case inDrag:
+		if (theWindow == theDialog)
+			DragWindow(theWindow, theEvent->where,
+				   GetQDGlobalsScreenBitsBounds
+				   (&screenBits));
+		else
+			SysBeep(20);
+		break;
+
+	case inContent:
+		if (theWindow != GetDialogWindow(theDialog))
+			SysBeep(20);
+
+		break;
+
+	case inGoAway:
+		break;
+	}
 }
+
 /* end HandleMouseDown */
 
 
@@ -598,112 +630,108 @@ enum {
 	appleID = 128,
 	fileID,
 	editID
-	};
+};
 
 enum {
-	kCutItem=3,
+	kCutItem = 3,
 	kCopyItem,
 	kPasteItem,
-	};
+};
 
 
-void HandleMenu (long mSelect,DialogPtr theDialog)
-
+void HandleMenu(long mSelect, DialogPtr theDialog)
 {
-	int			menuID = HiWord(mSelect);
-	int			menuItem = LoWord(mSelect);
-	
-	switch (menuID)
-	  {
-	  case	editID:
-		switch (menuItem)
-			{
-				case kCutItem:
-					DialogCut(theDialog);
-					break;
-				case kCopyItem:
-					DialogCopy(theDialog);
-					break;
-				case kPasteItem:
-					DialogPaste(theDialog);
-					break;
-			}
+	int menuID = HiWord(mSelect);
+	int menuItem = LoWord(mSelect);
+
+	switch (menuID) {
+	case editID:
+		switch (menuItem) {
+		case kCutItem:
+			DialogCut(theDialog);
+			break;
+		case kCopyItem:
+			DialogCopy(theDialog);
+			break;
+		case kPasteItem:
+			DialogPaste(theDialog);
+			break;
+		}
 		break;
-		
-	  }
-	  HiliteMenu(0);
+
+	}
+	HiliteMenu(0);
 }
+
 /* end HandleMenu */
 
 
 //
-//	MyIsDialogEvent
+//      MyIsDialogEvent
 //
 
-Boolean MyIsDialogEvent (const EventRecord *theEvent)
-
+Boolean MyIsDialogEvent(const EventRecord * theEvent)
 {
-	GrafPtr			oldPort;
-	Boolean			result;
-	
-	GetPort (&oldPort);
-	result = IsDialogEvent (theEvent);
-	SetPort (oldPort);
+	GrafPtr oldPort;
+	Boolean result;
+
+	GetPort(&oldPort);
+	result = IsDialogEvent(theEvent);
+	SetPort(oldPort);
 	return (result);
 }
 
 
 //
-//	MyDialogSelect
+//      MyDialogSelect
 //
-//		Hack to move dialogs in front of floaters (temporarily) before calling DialogSelect
+//              Hack to move dialogs in front of floaters (temporarily) before calling DialogSelect
 //
 
-Boolean MyDialogSelect(const EventRecord *theEvent, DialogPtr *theDialog, short *itemHit)
-
+Boolean MyDialogSelect(const EventRecord * theEvent, DialogPtr * theDialog,
+		       short *itemHit)
 {
-	GrafPtr			oldPort;
-	Boolean			result;
-	
-	GetPort (&oldPort);
-	result = DialogSelect (theEvent, theDialog, itemHit);
-	SetPort (oldPort);
+	GrafPtr oldPort;
+	Boolean result;
+
+	GetPort(&oldPort);
+	result = DialogSelect(theEvent, theDialog, itemHit);
+	SetPort(oldPort);
 	return (result);
 }
 
-Boolean IsModelessDialog (WindowPtr theWindow)
-
+Boolean IsModelessDialog(WindowPtr theWindow)
 {
-	return (IsMyWindow (theWindow) && GetWindowKind(theWindow) == dialogKind && GetWindowGoAwayFlag (theWindow));
+	return (IsMyWindow(theWindow)
+		&& GetWindowKind(theWindow) == dialogKind
+		&& GetWindowGoAwayFlag(theWindow));
 }
 
 //
-//	MySendBehind
+//      MySendBehind
 //
-//		Like SendBehind, but just fiddles with the windowlist -- without generating update and activate events
+//              Like SendBehind, but just fiddles with the windowlist -- without generating update and activate events
 //
 
-void MySendBehind (WindowPtr targetWindow, WindowPtr behindWindow)
-
+void MySendBehind(WindowPtr targetWindow, WindowPtr behindWindow)
 {
-	SendBehind(targetWindow,behindWindow);
+	SendBehind(targetWindow, behindWindow);
 }
 
-//	Previously, all of the storage we allocated when creating a dialog was disposed by the Dialog Manager,
-//	simply by disposing of thedialog itself.  Since we can no longer use extended dialog records we have
-//	to hang our own window structure off of the dialog's refcon field, so we have to manage disposal of
-//	this data ourselves
-void MyDisposeDialog (DialogPtr dlog)
-
+//      Previously, all of the storage we allocated when creating a dialog was disposed by the Dialog Manager,
+//      simply by disposing of thedialog itself.  Since we can no longer use extended dialog records we have
+//      to hang our own window structure off of the dialog's refcon field, so we have to manage disposal of
+//      this data ourselves
+void MyDisposeDialog(DialogPtr dlog)
 {
-	MyWindowPtr	dlogWin;
-	
-	if (IsMyWindow (GetDialogWindow(dlog))) {
-		dlogWin = GetDialogMyWindowPtr (dlog);
-		ZapPtr (dlogWin);
-		SetDialogMyWindowPtr (dlog, dlogWin);
+	MyWindowPtr dlogWin;
+
+	if (IsMyWindow(GetDialogWindow(dlog))) {
+		dlogWin = GetDialogMyWindowPtr(dlog);
+		ZapPtr(dlogWin);
+		SetDialogMyWindowPtr(dlog, dlogWin);
 	}
-	DisposeDialog (dlog);
+	DisposeDialog(dlog);
 }
 
 /************************************************************************
@@ -711,24 +739,22 @@ void MyDisposeDialog (DialogPtr dlog)
  ************************************************************************/
 Boolean AreAllModalsPlugwindows()
 {
-	Boolean		isModalPlugwindow = IsPlugwindow(ModalWindow);
-	
-	if (isModalPlugwindow && ModalStack && ((*ModalStack)->elCount > 1))
-	{
-		WindowPtr	theModalWindow;
-		long		elCount = (*ModalStack)->elCount;
-		short		i;
-		
-		for (i = 1; i < elCount; i++)
-		{
-			StackItem(&theModalWindow,i,ModalStack);
-			if (!IsPlugwindow(theModalWindow))
-			{
+	Boolean isModalPlugwindow = IsPlugwindow(ModalWindow);
+
+	if (isModalPlugwindow && ModalStack
+	    && ((*ModalStack)->elCount > 1)) {
+		WindowPtr theModalWindow;
+		long elCount = (*ModalStack)->elCount;
+		short i;
+
+		for (i = 1; i < elCount; i++) {
+			StackItem(&theModalWindow, i, ModalStack);
+			if (!IsPlugwindow(theModalWindow)) {
 				isModalPlugwindow = false;
 				break;
 			}
 		}
 	}
-	
+
 	return isModalPlugwindow;
 }

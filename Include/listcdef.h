@@ -34,6 +34,6 @@
 #define LISTCDEF_H
 
 ListHandle LCGetList(ControlHandle cntl);
-void LCSetList(ControlHandle cntl,ListHandle list);
+void LCSetList(ControlHandle cntl, ListHandle list);
 
 #endif

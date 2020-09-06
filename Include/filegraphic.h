@@ -39,108 +39,125 @@
 
 #define kFileInProcessType 0
 
-//	File graphic flags
-enum
-{
-	fgDisplayInline		= 0x0001,
-	fgAttachment			= 0x0002,
-	fgDontCopyToClip	= 0x0004,
-	fgCenterInWindow	= 0x0008,
-	fgEmoticon				= 0x0010
+//      File graphic flags
+enum {
+	fgDisplayInline = 0x0001,
+	fgAttachment = 0x0002,
+	fgDontCopyToClip = 0x0004,
+	fgCenterInWindow = 0x0008,
+	fgEmoticon = 0x0010
 };
 
-typedef struct
-{
-	//	Hashes to identify the part
-	uLong	cid;
+typedef struct {
+	//      Hashes to identify the part
+	uLong cid;
 	uLong url;
 	uLong withBase;
 	uLong withSource;
-	//	Image attributes
-	short	height;
-	short	width;
-	short	border;
-	short	hSpace;
-	short	vSpace;
-	short	pictResID;
-	PicHandle	pictHandle;
-	StringPtr	alt;	//	Just a ptr, not string itself. Valid only when passing in to PeteFileGraphicRange
+	//      Image attributes
+	short height;
+	short width;
+	short border;
+	short hSpace;
+	short vSpace;
+	short pictResID;
+	PicHandle pictHandle;
+	StringPtr alt;		//      Just a ptr, not string itself. Valid only when passing in to PeteFileGraphicRange
 	StringHandle absURL;
 	HTMLAlignEnum align;
 } HTMLGraphicInfo;
 
-typedef struct GraphicFileRef
-{
+typedef struct GraphicFileRef {
 	AliasHandle alias;
-	short	count;
+	short count;
 } GraphicFileRef, *GFileRefPtr, **GFileRefHandle;
 
-//	Info for QuickTime images. May be used by multiple graphics
-//	in case of duplicates
+//      Info for QuickTime images. May be used by multiple graphics
+//      in case of duplicates
 typedef struct QTImageInfoStruct **QTImageHandle;
-typedef struct QTImageInfoStruct
-{
-	QTImageHandle	next;
+typedef struct QTImageInfoStruct {
+	QTImageHandle next;
 	GraphicsImportComponent importer;
 	Handle hData;
 	Component component;
-	Rect		rBounds;
-	FSSpec	spec;
-	uLong	modDate;
-	short	refCount;
+	Rect rBounds;
+	FSSpec spec;
+	uLong modDate;
+	short refCount;
 } QTImageInfo, QTImagePtr;
 
-typedef struct FileGraphicInfo
-{
+typedef struct FileGraphicInfo {
 	PETEGraphicInfo pgi;
 	FSSpec spec;
 	OSType type;
 	OSType creator;
 	GFileRefHandle fileRef;
 	Boolean displayInline;
-	Boolean	noImage;
-	Boolean	clone;
-	Boolean	notDownloaded;
-	Boolean	wasDownloaded;
+	Boolean noImage;
+	Boolean clone;
+	Boolean notDownloaded;
+	Boolean wasDownloaded;
 	Boolean urlLink;
 	Boolean attachment;
-	Boolean	centerInWin;
-	Boolean	isEmoticon;
- 	HTMLGraphicInfo	htmlInfo;
-	long	peteID;
-	short	width, height;
-	union
-	{
-		//	Data for each display type
-		struct { Handle suite; IconRef iconRef; Boolean attachmentStub; Boolean sharedSuite;} icon;
-		struct { PicHandle picture; Boolean spool; } pict;
-		struct { QTImageHandle hQTImage; } image;
-		struct { Movie theMovie; MovieController aController; Boolean animatedGraphic; } movie;
-		struct { Handle hPlugin; } plugin;
+	Boolean centerInWin;
+	Boolean isEmoticon;
+	HTMLGraphicInfo htmlInfo;
+	long peteID;
+	short width, height;
+	union {
+		//      Data for each display type
+		struct {
+			Handle suite;
+			IconRef iconRef;
+			Boolean attachmentStub;
+			Boolean sharedSuite;
+		} icon;
+		struct {
+			PicHandle picture;
+			Boolean spool;
+		} pict;
+		struct {
+			QTImageHandle hQTImage;
+		} image;
+		struct {
+			Movie theMovie;
+			MovieController aController;
+			Boolean animatedGraphic;
+		} movie;
+		struct {
+			Handle hPlugin;
+		} plugin;
 	} u;
 	Str127 name;
-	GDHandle	gd;	
-	CGrafPtr port;	//	May be offscreen port	
-	Ptr pURLInfo;	//	For downloading graphics
-	long	maxWidth;
+	GDHandle gd;
+	CGrafPtr port;		//      May be offscreen port   
+	Ptr pURLInfo;		//      For downloading graphics
+	long maxWidth;
 } FileGraphicInfo, *FGIPtr, **FGIHandle;
 
 #define kAcceptableGraphicDrag 'gd'
 
 #ifdef ATT_ICONS
-OSErr PeteFileGraphicRange(PETEHandle pte,long start,long stop,FSSpecPtr spec,long flags);
-OSErr PeteFileGraphicStyle(PETEHandle pte,FSSpecPtr spec,HTMLGraphicInfo *html,PETEStyleEntryPtr pse,long flags);
+OSErr PeteFileGraphicRange(PETEHandle pte, long start, long stop,
+			   FSSpecPtr spec, long flags);
+OSErr PeteFileGraphicStyle(PETEHandle pte, FSSpecPtr spec,
+			   HTMLGraphicInfo * html, PETEStyleEntryPtr pse,
+			   long flags);
 #endif
 Boolean IsGraphicFile(FSSpecPtr spec);
 Boolean HaveQuickTime(short minVersion);
-Boolean FindPart(StackHandle parts,uLong hash,PartDesc *pd,Boolean checkCID);
+Boolean FindPart(StackHandle parts, uLong hash, PartDesc * pd,
+		 Boolean checkCID);
 Boolean DisplayGetGraphics(MyWindowPtr win);
 void GraphicDownloadIdle(void);
-void GetCacheSpec(StringPtr sURL,FSSpec *spec,Boolean useAdCache);
-void SetupPNGTransparency(GraphicsImportComponent importer,FSSpec *spec);
-Boolean GetPNGTransColor(GraphicsImportComponent importer,FSSpec *spec,RGBColor *transColor);
-OSErr FileGraphicChangeGraphic(PETEHandle pte,long offset,FSSpecPtr spec);
+void GetCacheSpec(StringPtr sURL, FSSpec * spec, Boolean useAdCache);
+void SetupPNGTransparency(GraphicsImportComponent importer, FSSpec * spec);
+Boolean GetPNGTransColor(GraphicsImportComponent importer, FSSpec * spec,
+			 RGBColor * transColor);
+OSErr FileGraphicChangeGraphic(PETEHandle pte, long offset,
+			       FSSpecPtr spec);
 PicHandle SpecResPicture(FSSpecPtr spec);
-pascal OSErr FileGraphic(PETEHandle pte,FGIHandle graphic,long offset,PETEGraphicMessage message,void *data);
+pascal OSErr FileGraphic(PETEHandle pte, FGIHandle graphic, long offset,
+			 PETEGraphicMessage message, void *data);
 
 #endif

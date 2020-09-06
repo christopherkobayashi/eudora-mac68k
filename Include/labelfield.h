@@ -33,17 +33,17 @@
 #define LABELEDFIELD_H
 
 typedef enum {
-	anchorFrame,			// What the hell should these things mean?
+	anchorFrame,		// What the hell should these things mean?
 	anchorPoint,
 	anchorText
 } LabeledFieldAnchorType;
 
 typedef enum {
-	labelNoFlags						 = 0x00000000,
-	labelAutoSize						 = 0x00000001,
-	labelDisplayAboveField	 = 0x00000002,
-	labelWrapLabel					 = 0x00000004,
-	labelWrapField					 = 0x00000008,
+	labelNoFlags = 0x00000000,
+	labelAutoSize = 0x00000001,
+	labelDisplayAboveField = 0x00000002,
+	labelWrapLabel = 0x00000004,
+	labelWrapField = 0x00000008,
 	labelAutoSizeFieldHeight = 0x00000010
 } LabelFieldFlagType;
 
@@ -55,13 +55,20 @@ typedef enum {
 #define	GetLabelFieldPete(aControlHandle)								(PETEHandle) GetControlReference (aControlHandle)
 #define SetLabelFieldString(aControlHandle,s)						SetLabelFieldText (aControlHandle,(s)+1,*(s))
 
-ControlHandle	CreateLabelField (MyWindowPtr win, Rect *boundsRect, Str255 title, short labelWidth, short labelJustification, LabelFieldFlagType flags, PETEDocInitInfoPtr initInfo, uLong pteFlags);
-void					DisposeLabelField (ControlHandle theControl);
-void					MoveLabelField (ControlHandle theControl, int h, int v, int w, int t);
+ControlHandle CreateLabelField(MyWindowPtr win, Rect * boundsRect,
+			       Str255 title, short labelWidth,
+			       short labelJustification,
+			       LabelFieldFlagType flags,
+			       PETEDocInitInfoPtr initInfo,
+			       uLong pteFlags);
+void DisposeLabelField(ControlHandle theControl);
+void MoveLabelField(ControlHandle theControl, int h, int v, int w, int t);
 
-void		SetLabelFieldText (ControlHandle theControl, UPtr text, long len);
-Handle	GetLabelFieldText (ControlHandle theControl);
-PStr		GetLabelFieldString (ControlHandle theControl, PStr string);
-Rect		*GetRelevantLabelFieldBounds (ControlHandle theControl, RelativeFlagsType flags, Rect *boundsRect);
+void SetLabelFieldText(ControlHandle theControl, UPtr text, long len);
+Handle GetLabelFieldText(ControlHandle theControl);
+PStr GetLabelFieldString(ControlHandle theControl, PStr string);
+Rect *GetRelevantLabelFieldBounds(ControlHandle theControl,
+				  RelativeFlagsType flags,
+				  Rect * boundsRect);
 
 #endif

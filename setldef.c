@@ -37,97 +37,105 @@
 
 #pragma segment Main
 short SettingsIconId(PStr name);
-void SetListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
-void SetListHilite(Rect *lRect,Cell lCell,ListHandle lHandle);
-void SetListCalc(ListHandle lHandle,short resId,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn);
-PStr GetResNameAndStripFeature(PStr into,ResType type,short id,Boolean *hasFeature);
-pascal void SettingsListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell,
-	short lDataOffset, short lDataLen, ListHandle lHandle)
+void SetListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		 ListHandle lHandle);
+void SetListHilite(Rect * lRect, Cell lCell, ListHandle lHandle);
+void SetListCalc(ListHandle lHandle, short resId, Rect * lRect, PStr name,
+		 Rect * iconR, Point * textP, RgnHandle iRgn);
+PStr GetResNameAndStripFeature(PStr into, ResType type, short id,
+			       Boolean * hasFeature);
+pascal void SettingsListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			    Cell lCell, short lDataOffset, short lDataLen,
+			    ListHandle lHandle)
 {
 #pragma unused(lDataOffset,lDataLen)
 	Rect fullRect;
-	if (lMessage==lDrawMsg || lMessage==lHiliteMsg)
-	{
+	if (lMessage == lDrawMsg || lMessage == lHiliteMsg) {
 		fullRect = *lRect;
 		fullRect.bottom = fullRect.top + (*lHandle)->cellSize.v;
 	}
-	switch (lMessage)
-	{
-		case lDrawMsg:
-			SetListDraw(lSelect,&fullRect,lCell,lHandle);
-			break;
-		case lHiliteMsg:
-			SetListHilite(&fullRect,lCell,lHandle);
-			break;
+	switch (lMessage) {
+	case lDrawMsg:
+		SetListDraw(lSelect, &fullRect, lCell, lHandle);
+		break;
+	case lHiliteMsg:
+		SetListHilite(&fullRect, lCell, lHandle);
+		break;
 	}
 }
 
-void SetListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void SetListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		 ListHandle lHandle)
 {
 	short resId;
-	short junk=sizeof(short);
+	short junk = sizeof(short);
 	Str255 name;
 	Rect iconR;
 	Point textP;
 	Boolean hasFeature;
 	SAVE_STUFF;
 	SET_COLORS;
-	
+
 	/*
 	 * erase the rectangle first
 	 */
 	EraseRect(lRect);
 	SetSmallSysFont();
-	
+
 	/*
 	 * fetch the resource id and name
 	 */
-	LGetCell((Ptr)&resId,&junk,lCell,lHandle);
-	GetResNameAndStripFeature(name,'DITL',resId,&hasFeature);
-		
+	LGetCell((Ptr) & resId, &junk, lCell, lHandle);
+	GetResNameAndStripFeature(name, 'DITL', resId, &hasFeature);
+
 	/*
 	 * calculate boxes and regions and stuff
 	 */
-	SetListCalc(lHandle,resId,lRect,name,&iconR,&textP,nil);
-	
+	SetListCalc(lHandle, resId, lRect, name, &iconR, &textP, nil);
+
 	/*
 	 * draw the text
 	 */
 	if (!hasFeature)
-		TextMode (grayishTextOr);
-	MoveTo(textP.h,textP.v); DrawString(name);
-	
+		TextMode(grayishTextOr);
+	MoveTo(textP.h, textP.v);
+	DrawString(name);
+
 	/*
 	 * and the icon
 	 */
-	if (iconR.bottom)
-	{
+	if (iconR.bottom) {
 		short iconId = SettingsIconId(name);
-		if (iconId) PlotIconID(&iconR, atAbsoluteCenter, hasFeature ? ttNone : ttDisabled, iconId);
+		if (iconId)
+			PlotIconID(&iconR, atAbsoluteCenter,
+				   hasFeature ? ttNone : ttDisabled,
+				   iconId);
 		if (!hasFeature) {
-			TextMode (srcCopy);
-			iconR.left  -= 20;
-			iconR.right  = iconR.left + 16;
-			iconR.top	  +=  4;
+			TextMode(srcCopy);
+			iconR.left -= 20;
+			iconR.right = iconR.left + 16;
+			iconR.top += 4;
 			iconR.bottom = iconR.top + 16;
-			PlotIconID (&iconR, atAbsoluteCenter, ttNone, PRO_ONLY_ICON);
+			PlotIconID(&iconR, atAbsoluteCenter, ttNone,
+				   PRO_ONLY_ICON);
 		}
 	}
-	if (lSelect) SetListHilite(lRect,lCell,lHandle);
-	
+	if (lSelect)
+		SetListHilite(lRect, lCell, lHandle);
+
 	REST_STUFF;
 }
 
 short SettingsIconId(PStr name)
 {
-	short id = Names2Icon(name,"");
-	return(id ? id : 2000);
+	short id = Names2Icon(name, "");
+	return (id ? id : 2000);
 }
 
-void SetListHilite(Rect *lRect,Cell lCell,ListHandle lHandle)
+void SetListHilite(Rect * lRect, Cell lCell, ListHandle lHandle)
 {
 	short resId;
-	short junk=sizeof(short);
+	short junk = sizeof(short);
 	Rect iconR;
 	Point textP;
 	RgnHandle iRgn = NewRgn();
@@ -135,60 +143,63 @@ void SetListHilite(Rect *lRect,Cell lCell,ListHandle lHandle)
 	Boolean hasFeature;
 	SAVE_STUFF;
 	SET_COLORS;
-	
-	LGetCell((Ptr)&resId,&junk,lCell,lHandle);
-	if (iRgn)
-	{		SetListCalc(lHandle,resId,lRect,GetResNameAndStripFeature(name,'DITL',resId,&hasFeature),&iconR,&textP,iRgn);
+
+	LGetCell((Ptr) & resId, &junk, lCell, lHandle);
+	if (iRgn) {
+		SetListCalc(lHandle, resId, lRect,
+			    GetResNameAndStripFeature(name, 'DITL', resId,
+						      &hasFeature), &iconR,
+			    &textP, iRgn);
 		HiInvertRgn(iRgn);
 		DisposeRgn(iRgn);
-	}
-	else
-	{
+	} else {
 		HiInvertRect(lRect);
 	}
 	REST_STUFF;
 }
 
-void SetListCalc(ListHandle lHandle,short resId,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn)
+void SetListCalc(ListHandle lHandle, short resId, Rect * lRect, PStr name,
+		 Rect * iconR, Point * textP, RgnHandle iRgn)
 {
 	RgnHandle iconRgn = nil;
 
-	NamedIconCalc(lRect,name,(*lHandle)->indent.h,(*lHandle)->indent.v,iconR,textP);
+	NamedIconCalc(lRect, name, (*lHandle)->indent.h,
+		      (*lHandle)->indent.v, iconR, textP);
 
 	/*
 	 * invert region begins as whole rectangle
 	 */
-	if (iRgn)
-	{
-		RectRgn(iRgn,lRect);
-	
+	if (iRgn) {
+		RectRgn(iRgn, lRect);
+
 		/*
 		 * punch icon mask out of invert region
 		 */
-		if (lRect->bottom-lRect->top>18 && (iconRgn = NewRgn()))
-		{
+		if (lRect->bottom - lRect->top > 18
+		    && (iconRgn = NewRgn())) {
 			short iconId = SettingsIconId(name);
-			IconIDToRgn(iconRgn,iconR,atAbsoluteCenter,iconId);
-			DiffRgn(iRgn,iconRgn,iRgn);
+			IconIDToRgn(iconRgn, iconR, atAbsoluteCenter,
+				    iconId);
+			DiffRgn(iRgn, iconRgn, iRgn);
 			DisposeRgn(iconRgn);
 		}
 	}
 }
 
 
-PStr GetResNameAndStripFeature(PStr into,ResType type,short id,Boolean *hasFeature)
-
+PStr GetResNameAndStripFeature(PStr into, ResType type, short id,
+			       Boolean * hasFeature)
 {
-	FeatureType	feature;
-	UPtr				spot;
+	FeatureType feature;
+	UPtr spot;
 
 	GetResName(into, type, id);
-	
+
 	*hasFeature = true;
 	into[*into + 1] = 0;
 	if (spot = PPtrFindSub("\p¡", into + 1, *into)) {
-		feature = Atoi(spot+1);
-		*hasFeature = HasFeature (feature);
+		feature = Atoi(spot + 1);
+		*hasFeature = HasFeature(feature);
 		into[0] = spot - into - 1;
 	}
 	return (into);

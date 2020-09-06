@@ -50,15 +50,20 @@ void DialModem(StringPtr number);
  ************************************************************************/
 void Dial(StringPtr number, short mode)
 {
-	if (!*number) return;	//	nothing to dial
-	
-	if (!mode)
-		mode = PrefIsSet(PREF_DIAL_MODE) ? kDialModem : kDialSpeaker;
+	if (!*number)
+		return;		//      nothing to dial
 
-	switch (mode)
-	{
-		case kDialSpeaker:	DialSpeaker(number); break;
-		case kDialModem:	DialModem(number); break;
+	if (!mode)
+		mode =
+		    PrefIsSet(PREF_DIAL_MODE) ? kDialModem : kDialSpeaker;
+
+	switch (mode) {
+	case kDialSpeaker:
+		DialSpeaker(number);
+		break;
+	case kDialModem:
+		DialModem(number);
+		break;
 	}
 }
 
@@ -67,49 +72,48 @@ void Dial(StringPtr number, short mode)
  ************************************************************************/
 void DialSpeaker(StringPtr number)
 {
-	short	i;
-	
-	for(i=1;i<=*number;i++)
-	{
-		char	c=number[i];
-		long	finalTicks;
-		short	soundID;
+	short i;
+
+	for (i = 1; i <= *number; i++) {
+		char c = number[i];
+		long finalTicks;
+		short soundID;
 
 		soundID = 0;
-		switch (c)
-		{
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				soundID = DIAL_0_SND + c - '0'; break;
-			case '*':
-				soundID = DIAL_STAR_SND; break;
-			case '#':
-				soundID = DIAL_POUND_SND; break;
-				break;
-			
-			case ',':
-				// pause on comma
-				Delay(kPauseSeconds*60, &finalTicks);
-				break;
-		
+		switch (c) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			soundID = DIAL_0_SND + c - '0';
+			break;
+		case '*':
+			soundID = DIAL_STAR_SND;
+			break;
+		case '#':
+			soundID = DIAL_POUND_SND;
+			break;
+			break;
+
+		case ',':
+			// pause on comma
+			Delay(kPauseSeconds * 60, &finalTicks);
+			break;
+
 		}
-		
-		if (soundID)
-		{		
+
+		if (soundID) {
 			// dial this digit
-			Handle	hSound;
-					
-			if (hSound = GetResource('snd ',soundID))
-			{
-				SndPlay(nil,hSound,false);
+			Handle hSound;
+
+			if (hSound = GetResource('snd ', soundID)) {
+				SndPlay(nil, hSound, false);
 				ReleaseResource(hSound);
 			}
 		}

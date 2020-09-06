@@ -117,8 +117,8 @@ static OSErr TransferUndoBox(XfUndoPtr pxfu, short *allCount,
 				*pTicks = TickCount();
 			}
 			if (err =
-			    TOCFindMessByMID((*(uLong **) xfu.
-					      ids.data)[count - 1], toTocH,
+			    TOCFindMessByMID((*(uLong **) xfu.ids.
+					      data)[count - 1], toTocH,
 					     &sumNum)) {
 				WarnUser(CANT_XF_UNDO, fnfErr);
 				return err;

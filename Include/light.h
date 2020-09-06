@@ -36,13 +36,14 @@
 #define	LIGHTFUNCTIONS_H
 
 #define	keywordsFromTwo 32300
-extern Boolean	Light;
+extern Boolean Light;
 
-void 		LightEnableIf(MenuHandle mh, short item, Boolean enabledIf, Boolean enabledIfLight);
-void 		MarkAsProOnly(MenuHandle theMenu, short item);
+void LightEnableIf(MenuHandle mh, short item, Boolean enabledIf,
+		   Boolean enabledIfLight);
+void MarkAsProOnly(MenuHandle theMenu, short item);
 
-#ifdef	USED_FOR_DECAYING_VERSION	
+#ifdef	USED_FOR_DECAYING_VERSION
 Boolean DecayIntoLight(void);
-#endif	//USED_FOR_DECAYING_VERSION	
+#endif				//USED_FOR_DECAYING_VERSION
 
 #endif

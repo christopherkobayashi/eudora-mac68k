@@ -62,16 +62,16 @@
 /*----------------------------------------------------------------------*/
 /*                   Definition of Basic Types                          */
 /*----------------------------------------------------------------------*/
- 
+
 #ifndef _UINT16
 typedef unsigned short uint16;
 #endif
 #ifndef _UINT32
 #if defined(__alpha)
 typedef unsigned int uint32;
-#else /* __alpha */
+#else				/* __alpha */
 typedef unsigned long uint32;
-#endif /* __alpha */
+#endif				/* __alpha */
 #endif
 #ifndef _INT16
 typedef short int16;
@@ -79,9 +79,9 @@ typedef short int16;
 #ifndef _INT32
 #if defined(__alpha)
 typedef int int32;
-#else /* __alpha */
+#else				/* __alpha */
 typedef long int32;
-#endif /* __alpha */
+#endif				/* __alpha */
 #endif
 
 #ifndef FALSE
@@ -94,11 +94,11 @@ typedef long int32;
 #define NULL (0L)
 #endif
 
-typedef unsigned char	NPBool;
-typedef void*			NPEvent;
-typedef int16			NPError;
-typedef int16			NPReason;
-typedef char*			NPMIMEType;
+typedef unsigned char NPBool;
+typedef void *NPEvent;
+typedef int16 NPError;
+typedef int16 NPReason;
+typedef char *NPMIMEType;
 
 
 
@@ -109,47 +109,42 @@ typedef char*			NPMIMEType;
 /*
  *  NPP is a plug-in's opaque instance handle
  */
-typedef struct _NPP
-{
-    void*	pdata;			/* plug-in private data */
-    void*	ndata;			/* netscape private data */
+typedef struct _NPP {
+	void *pdata;		/* plug-in private data */
+	void *ndata;		/* netscape private data */
 } NPP_t;
 
-typedef NPP_t*  NPP;
+typedef NPP_t *NPP;
 
 
-typedef struct _NPStream
-{
-    void*		pdata;		/* plug-in private data */
-    void*		ndata;		/* netscape private data */
-    const char*		url;
-    uint32		end;
-    uint32		lastmodified;
-    void*		notifyData;
+typedef struct _NPStream {
+	void *pdata;		/* plug-in private data */
+	void *ndata;		/* netscape private data */
+	const char *url;
+	uint32 end;
+	uint32 lastmodified;
+	void *notifyData;
 } NPStream;
 
 
-typedef struct _NPByteRange
-{
-    int32	offset;			/* negative offset means from the end */
-    uint32	length;
-    struct _NPByteRange* next;
+typedef struct _NPByteRange {
+	int32 offset;		/* negative offset means from the end */
+	uint32 length;
+	struct _NPByteRange *next;
 } NPByteRange;
 
 
-typedef struct _NPSavedData
-{
-    int32	len;
-    void*	buf;
+typedef struct _NPSavedData {
+	int32 len;
+	void *buf;
 } NPSavedData;
 
 
-typedef struct _NPRect
-{
-    uint16	top;
-    uint16	left;
-    uint16	bottom;
-    uint16	right;
+typedef struct _NPRect {
+	uint16 top;
+	uint16 left;
+	uint16 bottom;
+	uint16 right;
 } NPRect;
 
 
@@ -168,18 +163,16 @@ enum {
 	NP_SETWINDOW = 1
 };
 
-typedef struct
-{
-    int32		type;
+typedef struct {
+	int32 type;
 } NPAnyCallbackStruct;
 
-typedef struct
-{
-    int32			type;
-    Display*		display;
-    Visual*			visual;
-    Colormap		colormap;
-    unsigned int	depth;
+typedef struct {
+	int32 type;
+	Display *display;
+	Visual *visual;
+	Colormap colormap;
+	unsigned int depth;
 } NPSetWindowCallbackStruct;
 
 /*
@@ -198,47 +191,42 @@ typedef enum {
 	NPNVxtAppContext
 } NPNVariable;
 
-#endif /* XP_UNIX */
+#endif				/* XP_UNIX */
 
 
-typedef struct _NPWindow 
-{
-    void*	window;		/* Platform specific window handle */
-    uint32	x;			/* Position of top left corner relative */
-    uint32	y; 			/*	to a netscape page.					*/
-    uint32	width;		/* Maximum window size */
-    uint32	height;
-    NPRect	clipRect;	/* Clipping rectangle in port coordinates */
-						/* Used by MAC only.                      */
+typedef struct _NPWindow {
+	void *window;		/* Platform specific window handle */
+	uint32 x;		/* Position of top left corner relative */
+	uint32 y;		/*      to a netscape page.                                     */
+	uint32 width;		/* Maximum window size */
+	uint32 height;
+	NPRect clipRect;	/* Clipping rectangle in port coordinates */
+	/* Used by MAC only.                      */
 #ifdef XP_UNIX
-    void *	ws_info;	/* Platform-dependent additonal data */
-#endif /* XP_UNIX */
+	void *ws_info;		/* Platform-dependent additonal data */
+#endif				/* XP_UNIX */
 } NPWindow;
 
 
-typedef struct _NPFullPrint
-{
-    NPBool	pluginPrinted;	/* Set TRUE if plugin handled fullscreen */
-							/*	printing							 */
-    NPBool	printOne;		/* TRUE if plugin should print one copy  */
-							/*	to default printer					 */
-    void*	platformPrint;	/* Platform-specific printing info */
+typedef struct _NPFullPrint {
+	NPBool pluginPrinted;	/* Set TRUE if plugin handled fullscreen */
+	/*      printing                                                         */
+	NPBool printOne;	/* TRUE if plugin should print one copy  */
+	/*      to default printer                                       */
+	void *platformPrint;	/* Platform-specific printing info */
 } NPFullPrint;
 
-typedef struct _NPEmbedPrint
-{
-    NPWindow	window;
-    void*	platformPrint;	/* Platform-specific printing info */
+typedef struct _NPEmbedPrint {
+	NPWindow window;
+	void *platformPrint;	/* Platform-specific printing info */
 } NPEmbedPrint;
 
-typedef struct _NPPrint
-{
-    uint16	mode;						/* NP_FULL or NP_EMBED */
-    union
-    {
-		NPFullPrint		fullPrint;		/* if mode is NP_FULL */
-		NPEmbedPrint	embedPrint;		/* if mode is NP_EMBED */
-    } print;
+typedef struct _NPPrint {
+	uint16 mode;		/* NP_FULL or NP_EMBED */
+	union {
+		NPFullPrint fullPrint;	/* if mode is NP_FULL */
+		NPEmbedPrint embedPrint;	/* if mode is NP_EMBED */
+	} print;
 } NPPrint;
 
 
@@ -246,15 +234,14 @@ typedef struct _NPPrint
 /*
  *  Mac-specific structures and definitions.
  */
- 
+
 #include <Quickdraw.h>
 #include <Events.h>
 
-typedef struct NP_Port
-{
-    CGrafPtr	port;		/* Grafport */
-    int32		portx;		/* position inside the topmost window */
-    int32		porty;
+typedef struct NP_Port {
+	CGrafPtr port;		/* Grafport */
+	int32 portx;		/* position inside the topmost window */
+	int32 porty;
 } NP_Port;
 
 /*
@@ -264,7 +251,7 @@ typedef struct NP_Port
 #define loseFocusEvent      (osEvt + 17)
 #define adjustCursorEvent   (osEvt + 18)
 
-#endif /* XP_MAC */
+#endif				/* XP_MAC */
 
 
 /*
@@ -319,9 +306,9 @@ typedef struct NP_Port
 /*
  *	Don't use these obsolete error codes any more.
  */
- #define NP_NOERR  NP_NOERR_is_obsolete_use_NPERR_NO_ERROR
- #define NP_EINVAL NP_EINVAL_is_obsolete_use_NPERR_GENERIC_ERROR
- #define NP_EABORT NP_EABORT_is_obsolete_use_NPRES_USER_BREAK
+#define NP_NOERR  NP_NOERR_is_obsolete_use_NPERR_NO_ERROR
+#define NP_EINVAL NP_EINVAL_is_obsolete_use_NPERR_GENERIC_ERROR
+#define NP_EABORT NP_EABORT_is_obsolete_use_NPRES_USER_BREAK
 
 /*
  * Version feature information
@@ -350,74 +337,75 @@ extern "C" {
  */
 
 #ifdef XP_UNIX
-char*					NPP_GetMIMEDescription(void);
-NPError					NPP_GetValue(void *instance, NPPVariable variable,
-									 void *value);
-#endif /* XP_UNIX */
-NPError               	NPP_Initialize(void);
-void                  	NPP_Shutdown(void);
-NPError     NP_LOADDS	NPP_New(NPMIMEType pluginType, NPP instance,
-								uint16 mode, int16 argc, char* argn[],
-								char* argv[], NPSavedData* saved);
-NPError     NP_LOADDS	NPP_Destroy(NPP instance, NPSavedData** save);
-NPError     NP_LOADDS	NPP_SetWindow(NPP instance, NPWindow* window);
-NPError     NP_LOADDS	NPP_NewStream(NPP instance, NPMIMEType type,
-									  NPStream* stream, NPBool seekable,
-									  uint16* stype);
-NPError     NP_LOADDS	NPP_DestroyStream(NPP instance, NPStream* stream,
-										  NPReason reason);
-int32       NP_LOADDS	NPP_WriteReady(NPP instance, NPStream* stream);
-int32       NP_LOADDS	NPP_Write(NPP instance, NPStream* stream, int32 offset,
-								  int32 len, void* buffer);
-void        NP_LOADDS	NPP_StreamAsFile(NPP instance, NPStream* stream,
-										 const char* fname);
-void        NP_LOADDS	NPP_Print(NPP instance, NPPrint* platformPrint);
-int16                 	NPP_HandleEvent(NPP instance, void* event);
-void                 	NPP_URLNotify(NPP instance, const char* url,
-									  NPReason reason, void* notifyData);
-jref					NPP_GetJavaClass(void);
+	char *NPP_GetMIMEDescription(void);
+	NPError NPP_GetValue(void *instance, NPPVariable variable,
+			     void *value);
+#endif				/* XP_UNIX */
+	NPError NPP_Initialize(void);
+	void NPP_Shutdown(void);
+	NPError NP_LOADDS NPP_New(NPMIMEType pluginType, NPP instance,
+				  uint16 mode, int16 argc, char *argn[],
+				  char *argv[], NPSavedData * saved);
+	NPError NP_LOADDS NPP_Destroy(NPP instance, NPSavedData ** save);
+	NPError NP_LOADDS NPP_SetWindow(NPP instance, NPWindow * window);
+	NPError NP_LOADDS NPP_NewStream(NPP instance, NPMIMEType type,
+					NPStream * stream, NPBool seekable,
+					uint16 * stype);
+	NPError NP_LOADDS NPP_DestroyStream(NPP instance,
+					    NPStream * stream,
+					    NPReason reason);
+	int32 NP_LOADDS NPP_WriteReady(NPP instance, NPStream * stream);
+	int32 NP_LOADDS NPP_Write(NPP instance, NPStream * stream,
+				  int32 offset, int32 len, void *buffer);
+	void NP_LOADDS NPP_StreamAsFile(NPP instance, NPStream * stream,
+					const char *fname);
+	void NP_LOADDS NPP_Print(NPP instance, NPPrint * platformPrint);
+	int16 NPP_HandleEvent(NPP instance, void *event);
+	void NPP_URLNotify(NPP instance, const char *url,
+			   NPReason reason, void *notifyData);
+	jref NPP_GetJavaClass(void);
 
 
 /*
  * NPN_* functions are provided by the navigator and called by the plugin.
  */
- 
+
 #ifdef XP_UNIX
-NPError			NPN_GetValue(NPP instance, NPNVariable variable,
-							 void *value);
-#endif /* XP_UNIX */
-void        	NPN_Version(int* plugin_major, int* plugin_minor,
-							int* netscape_major, int* netscape_minor);
-NPError     	NPN_GetURLNotify(NPP instance, const char* url,
-								 const char* target, void* notifyData);
-NPError     	NPN_GetURL(NPP instance, const char* url,
-						   const char* target);
-NPError     	NPN_PostURLNotify(NPP instance, const char* url,
-								  const char* target, uint32 len,
-								  const char* buf, NPBool file,
-								  void* notifyData);
-NPError     	NPN_PostURL(NPP instance, const char* url,
-							const char* target, uint32 len,
-							const char* buf, NPBool file);
-NPError     	NPN_RequestRead(NPStream* stream, NPByteRange* rangeList);
-NPError     	NPN_NewStream(NPP instance, NPMIMEType type,
-							  const char* target, NPStream** stream);
-int32       	NPN_Write(NPP instance, NPStream* stream, int32 len,
-						  void* buffer);
-NPError    		NPN_DestroyStream(NPP instance, NPStream* stream,
-								  NPReason reason);
-void        	NPN_Status(NPP instance, const char* message);
-const char* 	NPN_UserAgent(NPP instance);
-void*       	NPN_MemAlloc(uint32 size);
-void        	NPN_MemFree(void* ptr);
-uint32      	NPN_MemFlush(uint32 size);
-void			NPN_ReloadPlugins(NPBool reloadPages);
-JRIEnv*			NPN_GetJavaEnv(void);
-jref			NPN_GetJavaPeer(NPP instance);
+	NPError NPN_GetValue(NPP instance, NPNVariable variable,
+			     void *value);
+#endif				/* XP_UNIX */
+	void NPN_Version(int *plugin_major, int *plugin_minor,
+			 int *netscape_major, int *netscape_minor);
+	NPError NPN_GetURLNotify(NPP instance, const char *url,
+				 const char *target, void *notifyData);
+	NPError NPN_GetURL(NPP instance, const char *url,
+			   const char *target);
+	NPError NPN_PostURLNotify(NPP instance, const char *url,
+				  const char *target, uint32 len,
+				  const char *buf, NPBool file,
+				  void *notifyData);
+	NPError NPN_PostURL(NPP instance, const char *url,
+			    const char *target, uint32 len,
+			    const char *buf, NPBool file);
+	NPError NPN_RequestRead(NPStream * stream,
+				NPByteRange * rangeList);
+	NPError NPN_NewStream(NPP instance, NPMIMEType type,
+			      const char *target, NPStream ** stream);
+	int32 NPN_Write(NPP instance, NPStream * stream, int32 len,
+			void *buffer);
+	NPError NPN_DestroyStream(NPP instance, NPStream * stream,
+				  NPReason reason);
+	void NPN_Status(NPP instance, const char *message);
+	const char *NPN_UserAgent(NPP instance);
+	void *NPN_MemAlloc(uint32 size);
+	void NPN_MemFree(void *ptr);
+	uint32 NPN_MemFlush(uint32 size);
+	void NPN_ReloadPlugins(NPBool reloadPages);
+	JRIEnv *NPN_GetJavaEnv(void);
+	jref NPN_GetJavaPeer(NPP instance);
 
 
 #ifdef __cplusplus
-}  /* end extern "C" */
+}				/* end extern "C" */
 #endif
-
-#endif /* _NPAPI_H_ */
+#endif				/* _NPAPI_H_ */

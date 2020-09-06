@@ -34,25 +34,28 @@
 
 void BeautifySum(MSumPtr sum);
 TOCHandle BuildTOC(FSSpecPtr spec);
-TOCHandle RebuildTOC(FSSpecPtr spec,TOCHandle oldTocH, Boolean resource, Boolean tempToc);
-OSErr ReadSum(MSumPtr sum,Boolean isOut,LineIOP lip,Boolean lookEnvelope);
+TOCHandle RebuildTOC(FSSpecPtr spec, TOCHandle oldTocH, Boolean resource,
+		     Boolean tempToc);
+OSErr ReadSum(MSumPtr sum, Boolean isOut, LineIOP lip,
+	      Boolean lookEnvelope);
 int SumToFrom(MSumPtr sum, UPtr fromLine);
-void CopyHeaderLine(UPtr to,int size,UPtr from);
+void CopyHeaderLine(UPtr to, int size, UPtr from);
 OSStatus HeaderToUTF8(PStr head);
 Boolean IsFromLine(UPtr line);
-Boolean MessagePosition(Boolean save,MyWindowPtr win);
+Boolean MessagePosition(Boolean save, MyWindowPtr win);
 long FindTOCSpot(TOCHandle tocH, long length);
 void BeautifyFrom(UPtr fromStr);
-PStr ComputeLocalDateLo(uLong secs,long origZone,PStr dateStr);
+PStr ComputeLocalDateLo(uLong secs, long origZone, PStr dateStr);
 #ifdef DEBUG
 #define ComputeLocalDate(sum,dateStr) ComputeLocalDateLo(BUG7 ? (sum)->arrivalSeconds : (sum)->seconds,(sum)->origZone,dateStr)
 #else
 #define ComputeLocalDate(sum,dateStr) ComputeLocalDateLo((sum)->seconds,(sum)->origZone,dateStr)
 #endif
-void SecsToLocalDateTime(long secs, long timeZone, Str31 zone, Str255 product);
-uLong BeautifyDate(UPtr dateStr,long *zoneSecs);
+void SecsToLocalDateTime(long secs, long timeZone, Str31 zone,
+			 Str255 product);
+uLong BeautifyDate(UPtr dateStr, long *zoneSecs);
 uLong UnixDate2Secs(PStr date);
-void BeautifySubj(PStr subject,short size);
+void BeautifySubj(PStr subject, short size);
 Boolean RemoveUTF8FromSum(MSumPtr sum);
 
 #endif

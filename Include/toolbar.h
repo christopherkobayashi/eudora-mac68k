@@ -36,9 +36,8 @@
 
 #ifdef TWO
 
-typedef enum
-{
-	tbvBigName=1,
+typedef enum {
+	tbvBigName = 1,
 	tbvBig,
 	tbvSmallName,
 	tbvSmall,
@@ -52,35 +51,41 @@ typedef enum
 
 void OpenToolbar(void);
 OSErr ReloadToolbar(void);
-void ToolbarRect(Rect *r);
-Boolean ToolbarSect(Rect *r);
-void ToolbarReduce(Rect *r);
+void ToolbarRect(Rect * r);
+Boolean ToolbarSect(Rect * r);
+void ToolbarReduce(Rect * r);
 void ShowToolbar(void);
 void HideToolbar(void);
 Boolean ToolbarShowing(void);
 void ToolbarBack(void);
-Boolean TBAddMenuButton(short menu,short item,PStr itemText);
+Boolean TBAddMenuButton(short menu, short item, PStr itemText);
 #endif
 
 void ToolbarCursor(Point mouse);
-Boolean TBEventFilter(EventRecord *event,Boolean oldResult);
-Boolean ToolbarNudge(MyWindowPtr win,Boolean gently);
+Boolean TBEventFilter(EventRecord * event, Boolean oldResult);
+Boolean ToolbarNudge(MyWindowPtr win, Boolean gently);
 void ToolbarNudgeAll(Boolean gently);
 void TBClearBalloon(void);
-Boolean ToolbarNudgeRect(MyWindowPtr win, Rect *newRect,Boolean gently);
+Boolean ToolbarNudgeRect(MyWindowPtr win, Rect * newRect, Boolean gently);
 void ToolbarIdleControls(void);
 Boolean IsTPIdleControlVisible(void);
 void AssignCmdKey(short modifiers);
 void ChangeCmdKeys(void);
 void TBDisable(void);
-OSErr TBRemoveDefunctMenuButton(short menu,short item);
+OSErr TBRemoveDefunctMenuButton(short menu, short item);
 void TBRemoveDefunctNicknameButton(PStr nickname);
 void TBAddAdButtons(TBAdHandle hTBAds);
-void TBUpdateAdButtonIcon(AdId adId,Handle iconSuite);
+void TBUpdateAdButtonIcon(AdId adId, Handle iconSuite);
 void TBForceIdle(void);
-Boolean TBRenameNickButton (PStr oldName, PStr newName);
-void GetButtonAlignment(ToolbarVEnum varCode, ControlButtonTextAlignment *alignment, ControlButtonTextPlacement *placement, short *textOffset, ControlButtonGraphicAlignment *gAlignment, Point *gOffset);
-OSErr TellToolMBRename(FSSpecPtr spec,FSSpecPtr newSpec,Boolean folder,Boolean will,Boolean dontWarn);
-Boolean ConfiguringToolbarMenuItem(short menuId,short item);
+Boolean TBRenameNickButton(PStr oldName, PStr newName);
+void GetButtonAlignment(ToolbarVEnum varCode,
+			ControlButtonTextAlignment * alignment,
+			ControlButtonTextPlacement * placement,
+			short *textOffset,
+			ControlButtonGraphicAlignment * gAlignment,
+			Point * gOffset);
+OSErr TellToolMBRename(FSSpecPtr spec, FSSpecPtr newSpec, Boolean folder,
+		       Boolean will, Boolean dontWarn);
+Boolean ConfiguringToolbarMenuItem(short menuId, short item);
 
 #endif

@@ -89,14 +89,15 @@
 /**********************************************************************
  * Routines
  **********************************************************************/
-Boolean HaveKeyFor(PStr address,Boolean fromPrivate);
+Boolean HaveKeyFor(PStr address, Boolean fromPrivate);
 Boolean HaveAllKeys(MessHandle messH);
-Boolean HaveKeysFrom(Handle text,PStr missing,Boolean fromPrivate);
-short PGPSendMessage(TransStream stream,MessHandle messH,Boolean chatter);
-OSErr BuildAddressList(Handle addresses,AEDescList *list);
-OSErr PGPFetchResult(AppleEvent *reply, FSSpecPtr spec);
+Boolean HaveKeysFrom(Handle text, PStr missing, Boolean fromPrivate);
+short PGPSendMessage(TransStream stream, MessHandle messH,
+		     Boolean chatter);
+OSErr BuildAddressList(Handle addresses, AEDescList * list);
+OSErr PGPFetchResult(AppleEvent * reply, FSSpecPtr spec);
 
-OSErr StartPGP(ProcessSerialNumber *psn);
+OSErr StartPGP(ProcessSerialNumber * psn);
 
 #define kNoAsciiArmor	False
 #define kAsciiArmor	True

@@ -37,16 +37,14 @@
 #define appCdefForceIcon	4
 
 
-typedef struct
-{
+typedef struct {
 	OSType creator;
 	OSType type;
 	short id;
 	Handle suite;
 } MyIconStuff;
 
-typedef struct
-{
+typedef struct {
 	MyIconStuff old;
 	MyIconStuff cur;
 	Rect iconR;
@@ -59,11 +57,12 @@ typedef struct
 	Style style;
 } AppData, *AppDataPtr, **AppDataHandle;
 
-void AppCdefSetIcon(ControlHandle theControl, short id, OSType type, OSType creator,Handle suite);
-void AppCdefSetColor(ControlHandle theControl, RGBColor *color);
+void AppCdefSetIcon(ControlHandle theControl, short id, OSType type,
+		    OSType creator, Handle suite);
+void AppCdefSetColor(ControlHandle theControl, RGBColor * color);
 void AppCdefSetStyle(ControlHandle theControl, Style style);
-void AppCdefSetBGColor(ControlHandle theControl, RGBColor *color);
-OSErr AppCdefGetData(ControlHandle theControl,AppDataPtr data);
+void AppCdefSetBGColor(ControlHandle theControl, RGBColor * color);
+OSErr AppCdefGetData(ControlHandle theControl, AppDataPtr data);
 void AppCdefBGChange(MyWindowPtr win);
 
 #endif

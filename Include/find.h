@@ -37,16 +37,16 @@
  * declarations for finding things
  ************************************************************************/
 
-void DoFind(short item,short modifiers);
+void DoFind(short item, short modifiers);
 void EnableFindMenu(Boolean all);
 WindowPtr FindTopUserWindow(void);
-long FindSub(UPtr sub,UHandle	text,long offset);
-Boolean FindInPTE(MyWindowPtr win,PETEHandle pte,PStr what);
-Boolean FindListView(MyWindowPtr win,ViewListPtr pView,PStr what);
+long FindSub(UPtr sub, UHandle text, long offset);
+Boolean FindInPTE(MyWindowPtr win, PETEHandle pte, PStr what);
+Boolean FindListView(MyWindowPtr win, ViewListPtr pView, PStr what);
 void FindEnterSelection(PStr what, Boolean searchToo);
 Boolean GetFindString(PStr what);
 Boolean SetFindString(PStr what, PETEHandle pte);
 void DoWebFindStr(PStr s);
-Boolean DoWebFindWarning(short menu,short item);
+Boolean DoWebFindWarning(short menu, short item);
 
 #endif

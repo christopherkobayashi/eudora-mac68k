@@ -48,19 +48,20 @@
 extern "C" {
 #endif
 
-//	General interrogation - can we get certs from somewhere?
-Boolean	CanReadCertificates ();
+//      General interrogation - can we get certs from somewhere?
+	Boolean CanReadCertificates();
 
-typedef	SSLErr (*AddCertProc) ( SSLContext *, SSLBuffer, uint32 );
+	typedef SSLErr(*AddCertProc) (SSLContext *, SSLBuffer, uint32);
 
-//	Get the certificates from somewhere
-OSStatus ReadCertsFromStore ( SSLContext *sslContext, AddCertProc addCerts );
+//      Get the certificates from somewhere
+	OSStatus ReadCertsFromStore(SSLContext * sslContext,
+				    AddCertProc addCerts);
 
-//	Add a cert to the cert store
-OSStatus AddCertToStore ( SSLContext *sslContext, SSLCertificateChain *certs );
+//      Add a cert to the cert store
+	OSStatus AddCertToStore(SSLContext * sslContext,
+				SSLCertificateChain * certs);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

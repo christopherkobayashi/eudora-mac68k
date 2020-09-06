@@ -38,28 +38,31 @@
 /************************************************************************
  * declarations for printing
  ************************************************************************/
-int PrintOneMessage(MyWindowPtr win,Boolean select,Boolean now);
-int PrintSelectedMessages(TOCHandle tocH,Boolean select,Boolean now, long beginSel, long endSel, PETEHandle printMe);
-void PrintMessageHeader(UPtr title, short pageNum, short height, short bottom, short left, short right);
-void PrintBottomHeader(short pageNum,Rect *uRect);
-void GetURect(Rect *useRect);
+int PrintOneMessage(MyWindowPtr win, Boolean select, Boolean now);
+int PrintSelectedMessages(TOCHandle tocH, Boolean select, Boolean now,
+			  long beginSel, long endSel, PETEHandle printMe);
+void PrintMessageHeader(UPtr title, short pageNum, short height,
+			short bottom, short left, short right);
+void PrintBottomHeader(short pageNum, Rect * uRect);
+void GetURect(Rect * useRect);
 void SetupPrintFont(void);
-OSErr PrintPreamble(PMPrintContext *printContext, Rect *uRect,Boolean now);
-OSErr PrintCleanup(PMPrintContext printContext,OSErr err);
+OSErr PrintPreamble(PMPrintContext * printContext, Rect * uRect,
+		    Boolean now);
+OSErr PrintCleanup(PMPrintContext printContext, OSErr err);
 OSErr PrintYield(void);
-int PrintClosedMessage(TOCHandle tocH,short sumNum,Boolean now);
+int PrintClosedMessage(TOCHandle tocH, short sumNum, Boolean now);
 void DoPageSetup(void);
 
 #ifdef	GX_PRINTING
 typedef struct MySpoolDataRec {
-		gxRectangle		pageArea;					// Page rectangle.
-		gxViewPort		printViewPort;		// ViewPort we're printing with.
-		Boolean				printThisShape;		// indicates whether we should actually draw the shape
+	gxRectangle pageArea;	// Page rectangle.
+	gxViewPort printViewPort;	// ViewPort we're printing with.
+	Boolean printThisShape;	// indicates whether we should actually draw the shape
 } MySpoolDataRec, *MySpoolDataPtr;
 
 //Initialization and cleanup
-void 	InitGXPrinting(void);
-void 	CleanUpGXPrinting(void);
+void InitGXPrinting(void);
+void CleanUpGXPrinting(void);
 
 //Handling the GXPageSetup gxJob
 OSErr GetGXPageSetup(void);
@@ -67,20 +70,23 @@ OSErr SaveGXPageSetup(void);
 OSErr UpdateGXPageSetup(void);
 
 //QDGX Print and Page Setup dialogs
-OSErr GXPrintingEventOverride(EventRecord *anEvent, Boolean filterEvent);
-void	DisableMenusForGXDialogs(void);
-OSErr GXPrintPreamble(gxRectangle *GXURect, Str255 docTitle, long *firstPage, long *numPages, Boolean now);
-void	GXGetURect(gxRectangle *useRect);
+OSErr GXPrintingEventOverride(EventRecord * anEvent, Boolean filterEvent);
+void DisableMenusForGXDialogs(void);
+OSErr GXPrintPreamble(gxRectangle * GXURect, Str255 docTitle,
+		      long *firstPage, long *numPages, Boolean now);
+void GXGetURect(gxRectangle * useRect);
 
 //Actual printing
-int 	GXPrintSelectedMessages(TOCHandle tocH, Boolean select, Boolean now, long beginSel, long endSel);
-void 	MyGXInstallQDTranslator(CGrafPtr port, gxRectangle *pageArea, gxViewPort *viewPort, Boolean printThisPage);
-void 	MyGXRemoveQDTranslator(CGrafPtr port);
+int GXPrintSelectedMessages(TOCHandle tocH, Boolean select, Boolean now,
+			    long beginSel, long endSel);
+void MyGXInstallQDTranslator(CGrafPtr port, gxRectangle * pageArea,
+			     gxViewPort * viewPort, Boolean printThisPage);
+void MyGXRemoveQDTranslator(CGrafPtr port);
 OSErr MyPrintAShape(gxShape currentShape, long refCon);
 OSErr GXPrintCleanup(void);
 
 //nasty fixed to int conversion routines
-void  GXRectToRect(gxRectangle *theGXRect, Rect *theRect);
-#endif	//GX_PRINTING
+void GXRectToRect(gxRectangle * theGXRect, Rect * theRect);
+#endif				//GX_PRINTING
 
 #endif

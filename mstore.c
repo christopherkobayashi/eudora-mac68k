@@ -59,12 +59,11 @@ void DebugMimeStore(void)
 	FSSpec spec;
 	OSErr err;
 	MStoreBoxHandle boxH;
-	
-	FSMakeFSSpec(Root.vRef,Root.dirId,"\pMimeStore",&spec);
-	err = MSCreateMailbox(&spec,&boxH);
-	if (boxH)
-	{
-		MSCloseMailbox(boxH,True);
+
+	FSMakeFSSpec(Root.vRef, Root.dirId, "\pMimeStore", &spec);
+	err = MSCreateMailbox(&spec, &boxH);
+	if (boxH) {
+		MSCloseMailbox(boxH, True);
 		DisposeMSBoxH(boxH);
 	}
 }
@@ -73,108 +72,102 @@ void DebugMimeStore(void)
 /************************************************************************
  * MSCreateMailbox - create a new mailbox
  ************************************************************************/
-OSErr MSCreateMailbox(FSSpecPtr spec,MStoreBoxHandle *boxHPtr)
+OSErr MSCreateMailbox(FSSpecPtr spec, MStoreBoxHandle * boxHPtr)
 {
 	long dirId;
 	OSErr err;
-	MStoreBoxHandle boxH=nil;
+	MStoreBoxHandle boxH = nil;
 	MSSubFileEnum i;
-	
+
 	// Create the folder
-	if (!(err = FSpDirCreate(spec, smSystemScript, &dirId)))
-	{
+	if (!(err = FSpDirCreate(spec, smSystemScript, &dirId))) {
 		// Create the box handle
-		if (boxH=NewMSBoxH())
-		{
+		if (boxH = NewMSBoxH()) {
 			(*boxH)->dir.vRef = spec->vRefNum;
 			(*boxH)->dir.dirId = dirId;
 			(*boxH)->spec = *spec;
-			BMD(MSSubs,(*boxH)->subs,mssfLimit*sizeof(MStoreSubFile));
-			
-			for (i=0;!err && i<mssfLimit;i++)
-				err = (*(*boxH)->subs[i].func)(msfcCreate,boxH);
-			if (!err) err = MSOpenMailbox(nil,&boxH);
-		}
-		else
+			BMD(MSSubs, (*boxH)->subs,
+			    mssfLimit * sizeof(MStoreSubFile));
+
+			for (i = 0; !err && i < mssfLimit; i++)
+				err =
+				    (*(*boxH)->subs[i].func) (msfcCreate,
+							      boxH);
+			if (!err)
+				err = MSOpenMailbox(nil, &boxH);
+		} else
 			err = MemError();
-			
-		if (err)
-		{
+
+		if (err) {
 			// Something went wrong; destroy our creation
 			MSDestroyMailbox(boxH);
 			DisposeMSBoxH(boxH);
 			boxH = nil;
 		}
-	}
-	else
-		FileSystemError(CREATING_MAILBOX,spec->name,err);
-	
+	} else
+		FileSystemError(CREATING_MAILBOX, spec->name, err);
+
 	if (boxHPtr)
 		*boxHPtr = boxH;
 	else if (boxH)
-		MSCloseMailbox(boxH,True);
-		
-	return(err);
+		MSCloseMailbox(boxH, True);
+
+	return (err);
 }
 
 /************************************************************************
  * MSOpenMailbox - open a mailbox
  ************************************************************************/
-OSErr MSOpenMailbox(FSSpecPtr spec,MStoreBoxHandle *boxH)
+OSErr MSOpenMailbox(FSSpecPtr spec, MStoreBoxHandle * boxH)
 {
 	OSErr err = noErr;
 	FSSpec localSpec;
 	MSSubFileEnum i;
-	
+
 	/*
 	 * is it open already?
 	 */
-	if (spec && (*boxH = MSFindMailbox(spec)))
-	{
+	if (spec && (*boxH = MSFindMailbox(spec))) {
 		(**boxH)->refCount++;
-		return(noErr);
+		return (noErr);
 	}
-	
+
 	/*
 	 * if we're passed a filespec, use it
 	 */
-	if (spec && !FSpExists(spec))
-	{
-		IsAlias(spec,&localSpec);
-		if (err=FSpIsItAFolder(&localSpec))
-		{
-			if (err==1) err = dupFNErr;
-			FileSystemError(OPEN_MBOX,localSpec.name,err);
+	if (spec && !FSpExists(spec)) {
+		IsAlias(spec, &localSpec);
+		if (err = FSpIsItAFolder(&localSpec)) {
+			if (err == 1)
+				err = dupFNErr;
+			FileSystemError(OPEN_MBOX, localSpec.name, err);
 		}
-		if (!(*boxH=NewMSBoxH()))
-			WarnUser(OPEN_MBOX,err=MemError());
-		else
-		{
+		if (!(*boxH = NewMSBoxH()))
+			WarnUser(OPEN_MBOX, err = MemError());
+		else {
 			(**boxH)->spec = *spec;
 			localSpec.parID = SpecDirId(&localSpec);
 			(**boxH)->dir.vRef = localSpec.vRefNum;
 			(**boxH)->dir.dirId = localSpec.parID;
 		}
 	}
-	
+
 	/*
 	 * the box handle has the file info in it.  Go open the files
 	 */
-	for (i=0;!err && i<mssfLimit;i++)
-		err = (*(**boxH)->subs[i].func)(msfcOpen,*boxH);
-	if (!err)
-	{
+	for (i = 0; !err && i < mssfLimit; i++)
+		err = (*(**boxH)->subs[i].func) (msfcOpen, *boxH);
+	if (!err) {
 		/*
 		 * all files open.  check for consistency
 		 */
 		err = MSFixMailbox(*boxH);
+	} else {
+		MSCloseMailbox(*boxH, True);
+		if (spec)
+			ZapHandle(*boxH);
 	}
-	else
-	{
-		MSCloseMailbox(*boxH,True);
-		if (spec) ZapHandle(*boxH);
-	}
-	return(err);
+	return (err);
 }
 
 /************************************************************************
@@ -184,37 +177,42 @@ OSErr MSFlushMailbox(MStoreBoxHandle boxH)
 {
 	OSErr err = noErr;
 	MSSubFileEnum i;
-	
-	for (i=0;!err && i<mssfLimit;i++)
-		err = (*(*boxH)->subs[i].func)(msfcFlush,boxH);
 
-	return(err);
+	for (i = 0; !err && i < mssfLimit; i++)
+		err = (*(*boxH)->subs[i].func) (msfcFlush, boxH);
+
+	return (err);
 }
 
 /************************************************************************
  * MSCloseMailbox - close a mailbox
  ************************************************************************/
-OSErr MSCloseMailbox(MStoreBoxHandle boxH,Boolean force)
+OSErr MSCloseMailbox(MStoreBoxHandle boxH, Boolean force)
 {
 	OSErr err = noErr;
 	MSSubFileEnum i;
-	
-	if (boxH)
-	{
+
+	if (boxH) {
 		// is the mailbox in use?
-		if (--(*boxH)->refCount) return(fBsyErr);
-		
+		if (--(*boxH)->refCount)
+			return (fBsyErr);
+
 		// write the files
 		err = MSFlushMailbox(boxH);
-		if (force) err = noErr;	// if force, we want it to close in spite of error
-		
-		// close the files
-		for (i=0;!err && i<mssfLimit;i++)
-			err = (*(*boxH)->subs[i].func)(force ? msfcCloseHard:msfcClose,boxH);
+		if (force)
+			err = noErr;	// if force, we want it to close in spite of error
 
-		if (err) ++(*boxH)->refCount;	// error; not closing after all
+		// close the files
+		for (i = 0; !err && i < mssfLimit; i++)
+			err =
+			    (*(*boxH)->subs[i].
+			     func) (force ? msfcCloseHard : msfcClose,
+				    boxH);
+
+		if (err)
+			++(*boxH)->refCount;	// error; not closing after all
 	}
-	return(err);
+	return (err);
 }
 
 /************************************************************************
@@ -224,70 +222,84 @@ OSErr MSCloseMailbox(MStoreBoxHandle boxH,Boolean force)
 /************************************************************************
  * MSCreateSubFile - create a file in a mailbox
  ************************************************************************/
-OSErr MSCreateSubFile(MStoreBoxHandle boxH,MSSubFileEnum file)
+OSErr MSCreateSubFile(MStoreBoxHandle boxH, MSSubFileEnum file)
 {
 	FSSpec spec;
 	Str63 name;
-	
-	SimpleMakeFSSpec((*boxH)->dir.vRef,(*boxH)->dir.dirId,GetRString(name,(*boxH)->subs[file].fileNameID),&spec);
-	return(FSpCreate(&spec,CREATOR,(*boxH)->subs[file].fileType,smSystemScript));
+
+	SimpleMakeFSSpec((*boxH)->dir.vRef, (*boxH)->dir.dirId,
+			 GetRString(name, (*boxH)->subs[file].fileNameID),
+			 &spec);
+	return (FSpCreate
+		(&spec, CREATOR, (*boxH)->subs[file].fileType,
+		 smSystemScript));
 }
 
 /************************************************************************
  * MSCloseSubFile - close a subfile
  ************************************************************************/
-OSErr MSCloseSubFile(MStoreBoxHandle boxH,MSSubFileEnum file)
+OSErr MSCloseSubFile(MStoreBoxHandle boxH, MSSubFileEnum file)
 {
 	OSErr err = noErr;
-	
-	if ((*boxH)->subs[file].refN)
-	{
+
+	if ((*boxH)->subs[file].refN) {
 		err = MyFSClose((*boxH)->subs[file].refN);
-		if (!err) (*boxH)->subs[file].refN = 0;
+		if (!err)
+			(*boxH)->subs[file].refN = 0;
 	}
-	
-	return(err);
+
+	return (err);
 }
 
 /************************************************************************
  * MSOpenSubFile - open a file in a mailbox
  ************************************************************************/
-OSErr MSOpenSubFile(MStoreBoxHandle boxH,MSSubFileEnum file)
+OSErr MSOpenSubFile(MStoreBoxHandle boxH, MSSubFileEnum file)
 {
 	FSSpec spec;
 	Str63 name;
-	short refN=0;
-	OSErr err = FSMakeFSSpec((*boxH)->dir.vRef,(*boxH)->dir.dirId,GetRString(name,(*boxH)->subs[file].fileNameID),&spec);
-	
-	if (!err) err = FSpOpenDF(&spec,fsRdWrPerm,&refN);
-	
+	short refN = 0;
+	OSErr err =
+	    FSMakeFSSpec((*boxH)->dir.vRef, (*boxH)->dir.dirId,
+			 GetRString(name, (*boxH)->subs[file].fileNameID),
+			 &spec);
+
+	if (!err)
+		err = FSpOpenDF(&spec, fsRdWrPerm, &refN);
+
 	(*boxH)->subs[file].refN = refN;
-	
-	if (err) FileSystemError(OPEN_MBOX,name,err);
-	
-	return(err);	
+
+	if (err)
+		FileSystemError(OPEN_MBOX, name, err);
+
+	return (err);
 }
 
 /************************************************************************
  * MSDestroySubFile - destroy a file in a mailbox
  ************************************************************************/
-OSErr MSDestroySubFile(MStoreBoxHandle boxH,MSSubFileEnum file)
+OSErr MSDestroySubFile(MStoreBoxHandle boxH, MSSubFileEnum file)
 {
 	Str63 name;
 	FSSpec spec;
-	OSErr err = FSMakeFSSpec((*boxH)->dir.vRef,(*boxH)->dir.dirId,GetRString(name,(*boxH)->subs[file].fileNameID),&spec);
+	OSErr err =
+	    FSMakeFSSpec((*boxH)->dir.vRef, (*boxH)->dir.dirId,
+			 GetRString(name, (*boxH)->subs[file].fileNameID),
+			 &spec);
 
-	if (!err) err = ChainDelete(&spec);
-	
-	if (err) FileSystemError(OPEN_MBOX,name,err);
-	
-	return(err);		
+	if (!err)
+		err = ChainDelete(&spec);
+
+	if (err)
+		FileSystemError(OPEN_MBOX, name, err);
+
+	return (err);
 }
 
 /************************************************************************
  * Private functions
  ************************************************************************/
- 
+
 /************************************************************************
  * NewMSBoxH - allocate a new mailbox handle
  ************************************************************************/
@@ -296,31 +308,29 @@ MStoreBoxHandle NewMSBoxH(void)
 	MStoreBoxHandle boxH;
 	StackHandle stack;
 	OSErr err;
-	
+
 	// Allocate the handle and some stacks
-	if (boxH = NewZH(MStoreBox))
-	{
+	if (boxH = NewZH(MStoreBox)) {
 		(*boxH)->refCount = 1;
-		if (!(err = StackInit(sizeof(MStoreMemIDDB),&stack)))
-		{
+		if (!(err = StackInit(sizeof(MStoreMemIDDB), &stack))) {
 			(*boxH)->iddb = stack;
-			if (!(err = StackInit(sizeof(MStoreSummary),&stack)))
-			{
+			if (!
+			    (err =
+			     StackInit(sizeof(MStoreSummary), &stack))) {
 				(*boxH)->summaries = stack;
 			}
 		}
-	}
-	else err = MemError();
-	
+	} else
+		err = MemError();
+
 	// Did we win?
-	if (err)
-	{
-		WarnUser(MEM_ERR,MemError());
+	if (err) {
+		WarnUser(MEM_ERR, MemError());
 		DisposeMSBoxH(boxH);
 		boxH = nil;
 	}
-	
-	return(boxH);
+
+	return (boxH);
 }
 
 /************************************************************************
@@ -328,8 +338,7 @@ MStoreBoxHandle NewMSBoxH(void)
  ************************************************************************/
 void DisposeMSBoxH(MStoreBoxHandle boxH)
 {
-	if (boxH)
-	{
+	if (boxH) {
 		ZapHandle((*boxH)->iddb);
 		ZapHandle((*boxH)->summaries);
 	}
@@ -343,21 +352,22 @@ OSErr MSDestroyMailbox(MStoreBoxHandle boxH)
 	OSErr err;
 	FSSpec spec = (*boxH)->spec;
 	MSSubFileEnum i;
-	
+
 	// are we in use?
-	if ((*boxH)->refCount>1) return(fBsyErr);
-	
+	if ((*boxH)->refCount > 1)
+		return (fBsyErr);
+
 	// close it first
-	if (!(err=MSCloseMailbox(boxH,True)))
+	if (!(err = MSCloseMailbox(boxH, True)))
 		// destroy all the files
-		for (i=0;!err && i<mssfLimit;i++)
-			err = (*(*boxH)->subs[i].func)(msfcDestroy,boxH);
+		for (i = 0; !err && i < mssfLimit; i++)
+			err = (*(*boxH)->subs[i].func) (msfcDestroy, boxH);
 
 	// if all went well, we can nuke the directory
 	if (!err)
 		err = RemoveDir(&spec);
 
-	return(err);
+	return (err);
 }
 
 /************************************************************************
@@ -365,7 +375,7 @@ OSErr MSDestroyMailbox(MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSFixMailbox(MStoreBoxHandle boxH)
 {
-	return(noErr);
+	return (noErr);
 }
 
 /************************************************************************
@@ -373,5 +383,5 @@ OSErr MSFixMailbox(MStoreBoxHandle boxH)
  ************************************************************************/
 MStoreBoxHandle MSFindMailbox(FSSpecPtr spec)
 {
-	return(nil);
+	return (nil);
 }

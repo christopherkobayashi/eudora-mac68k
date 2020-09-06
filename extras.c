@@ -39,27 +39,26 @@
 #include <extras.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <wchar.h>  
-#include <wctype.h>  
-#include <ctype.h>	
-#include <errno.h>	
-#include <string.h> 
-#include <stdlib.h>	
+#include <wchar.h>
+#include <wctype.h>
+#include <ctype.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include <file_io.h>
 #include "ansi_files.h"
 
-char * _MSL_CDECL strdup(const char *str) _MSL_CANT_THROW
+char *_MSL_CDECL strdup(const char *str) _MSL_CANT_THROW
 {
-		return __msl_strdup(str);
+	return __msl_strdup(str);
 }
 
-char * _MSL_CDECL strlwr (char *string) _MSL_CANT_THROW
+char *_MSL_CDECL strlwr(char *string) _MSL_CANT_THROW
 {
 	char *s = string;
-	
-	while (*s)
-	{
-		*s = tolower (*s);
+
+	while (*s) {
+		*s = tolower(*s);
 		s++;
 	}
 
@@ -67,76 +66,80 @@ char * _MSL_CDECL strlwr (char *string) _MSL_CANT_THROW
 }
 
 /* Convert unsigned integer to a string */
-char * _MSL_CDECL ultoa(unsigned long val, char *str, int radix) _MSL_CANT_THROW 
+char *_MSL_CDECL ultoa(unsigned long val, char *str,
+		       int radix) _MSL_CANT_THROW
 {
 	unsigned long theNum = val;
 	int StrIndex = 0;
 
-	do 
-	{
+	do {
 		int CurDigit = theNum % radix;
 		if (CurDigit > 9)
 			str[StrIndex++] = CurDigit + 'A' - 10;
 		else
 			str[StrIndex++] = CurDigit + '0';
-		
+
 		theNum /= radix;
 	} while (theNum);
-		
+
 	str[StrIndex++] = 0;
-	
-	/* Now reverse the string.*/
+
+	/* Now reverse the string. */
 	__msl_strrev(str);
-		
+
 	return str;
 }
 
 /* Convert a value as a g format */
 #ifndef _No_Floating_Point
-char * _MSL_CDECL gcvt(double value, int digits, char *buffer) _MSL_CANT_THROW
+char *_MSL_CDECL gcvt(double value, int digits,
+		      char *buffer) _MSL_CANT_THROW
 {
-    sprintf(buffer, "%.*g", digits, value);
-    return buffer;
+	sprintf(buffer, "%.*g", digits, value);
+	return buffer;
 }
 #endif
 
 /* return unused heap memory */
 int _MSL_CDECL heapmin(void) _MSL_CANT_THROW
 {
-    errno = ENOSYS;
-    return -1;
+	errno = ENOSYS;
+	return -1;
 }
 
 /* Compare lexigraphically two strings */
 int _MSL_CDECL stricmp(const char *s1, const char *s2) _MSL_CANT_THROW
 {
-    char c1, c2;
-    while (1)
-    {
-    	c1 = tolower(*s1++);
-    	c2 = tolower(*s2++);
-        if (c1 < c2) return -1;
-        if (c1 > c2) return 1;
-        if (c1 == 0) return 0;
-    }
+	char c1, c2;
+	while (1) {
+		c1 = tolower(*s1++);
+		c2 = tolower(*s2++);
+		if (c1 < c2)
+			return -1;
+		if (c1 > c2)
+			return 1;
+		if (c1 == 0)
+			return 0;
+	}
 #if CodeTEST
 	return 1;		/*- ejs 030428: NOTREACHED but avoid warning due to complex code -*/
-#endif    
+#endif
 }
 
 /* Compare lexigraphically two strings up to a max length */
-int _MSL_CDECL strnicmp(const char *s1, const char *s2, size_t n) _MSL_CANT_THROW
+int _MSL_CDECL strnicmp(const char *s1, const char *s2,
+			size_t n) _MSL_CANT_THROW
 {
-    return __msl_strnicmp(s1,s2, n);	
+	return __msl_strnicmp(s1, s2, n);
 }
 
 /* Uppercase a string */
-char * _MSL_CDECL strupr(char *str) _MSL_CANT_THROW
+char *_MSL_CDECL strupr(char *str) _MSL_CANT_THROW
 {
 	char *temp = str;							/*- mm 010116 -*/
-	while (*temp)								/*- mm 010116 -*/
-	{
-		*temp= toupper(*temp);					/*- mm 010116 -*/
+	while (*temp) {
+/*- mm 010116 -*/
+		*temp = toupper(*temp);					/*- mm 010116 -*/
 		temp++;									/*- mm 010116 -*/
 	}
 	return str;
@@ -145,35 +148,33 @@ char * _MSL_CDECL strupr(char *str) _MSL_CANT_THROW
 
 /* Get the date in a string */
 #ifndef _No_Time_OS_Support
-char * _MSL_CDECL strdate(char *str) _MSL_CANT_THROW
+char *_MSL_CDECL strdate(char *str) _MSL_CANT_THROW
 {
-    time_t timer;
-    time(&timer);
-    strftime(str, 10, "%m/%d/%y", localtime(&timer));
-    return str;
+	time_t timer;
+	time(&timer);
+	strftime(str, 10, "%m/%d/%y", localtime(&timer));
+	return str;
 }
-#endif /* _No_Time_OS_Support */
+#endif				/* _No_Time_OS_Support */
 
 /* Set characters of string to character */
-char * _MSL_CDECL strset(char *str, int c) _MSL_CANT_THROW
+char *_MSL_CDECL strset(char *str, int c) _MSL_CANT_THROW
 {
 	char *save = str;
 
-	while (*str)
-	{
+	while (*str) {
 		*str++ = c;
 	}
-	
+
 	return save;
 }
 
 /* Set first n characters of string to character */
-char * _MSL_CDECL strnset(char *str, int c, size_t n) _MSL_CANT_THROW
+char *_MSL_CDECL strnset(char *str, int c, size_t n) _MSL_CANT_THROW
 {
 	char *save = str;
 
-	while (n && *str)
-	{
+	while (n && *str) {
 		*(str++) = c;
 		n--;
 	}
@@ -182,59 +183,63 @@ char * _MSL_CDECL strnset(char *str, int c, size_t n) _MSL_CANT_THROW
 }
 
 /* return pointer to first character in s1 that isn't in s2 */
-char * _MSL_CDECL strspnp(char *s1, const char *s2) _MSL_CANT_THROW
+char *_MSL_CDECL strspnp(char *s1, const char *s2) _MSL_CANT_THROW
 {
 	int len;						/*- mm 020906 -*/
 	len = strspn(s1, s2);			/*- mm 020906 -*/
-	if (len < strlen(s1))			/*- mm 020906 -*/
-		return(s1+len);				/*- mm 020906 -*/
-	else							/*- mm 020906 -*/
+	if (len < strlen(s1))			  /*- mm 020906 -*/
+		return (s1 + len);			/*- mm 020906 -*/
+	else							  /*- mm 020906 -*/
 		return NULL;				/*- mm 020906 -*/
 }
 
 /* Case-insensitive string comparison */
-int	_MSL_CDECL strncasecmp(const char *s1, const char *s2, size_t n) _MSL_CANT_THROW
+int _MSL_CDECL strncasecmp(const char *s1, const char *s2,
+			   size_t n) _MSL_CANT_THROW
 {
-	return __msl_strnicmp(s1,s2, n);	
+	return __msl_strnicmp(s1, s2, n);
 }
 
 int _MSL_CDECL strcmpi(const char *s1, const char *s2) _MSL_CANT_THROW
 {
-	return stricmp(s1,s2);
+	return stricmp(s1, s2);
 }
 
-int _MSL_CDECL strncmpi(const char *s1, const char *s2, size_t n) _MSL_CANT_THROW
+int _MSL_CDECL strncmpi(const char *s1, const char *s2,
+			size_t n) _MSL_CANT_THROW
 {
-	return __msl_strnicmp(s1,s2, n);	
-}	
-	
+	return __msl_strnicmp(s1, s2, n);
+}
+
 int _MSL_CDECL strcasecmp(const char *s1, const char *s2) _MSL_CANT_THROW
-{
-	return stricmp(s1,s2);
-}
-
-int _MSL_CDECL stricoll(const char *s1, const char *s2)  _MSL_CANT_THROW
 {
 	return stricmp(s1, s2);
 }
 
-int _MSL_CDECL strncoll(const char *s1, const char *s2, __std(size_t) sz) _MSL_CANT_THROW
+int _MSL_CDECL stricoll(const char *s1, const char *s2) _MSL_CANT_THROW
+{
+	return stricmp(s1, s2);
+}
+
+int _MSL_CDECL strncoll(const char *s1, const char *s2,
+			__std(size_t) sz) _MSL_CANT_THROW
 {
 	return strncmp(s1, s2, sz);
 }
 
-int _MSL_CDECL strnicoll(const char *s1, const char *s2, __std(size_t) sz) _MSL_CANT_THROW  
+int _MSL_CDECL strnicoll(const char *s1, const char *s2,
+			 __std(size_t) sz) _MSL_CANT_THROW
 {
 	return strnicmp(s1, s2, sz);
 }
 
-char * _MSL_CDECL itoa(int val, char *str, int radix) _MSL_CANT_THROW
+char *_MSL_CDECL itoa(int val, char *str, int radix) _MSL_CANT_THROW
 {
 	return __msl_itoa(val, str, radix);
 }
 
 /* reverse a string in place */
-char * _MSL_CDECL strrev(char * str) _MSL_CANT_THROW
+char *_MSL_CDECL strrev(char *str) _MSL_CANT_THROW
 {
 	return __msl_strrev(str);
 }
@@ -243,292 +248,286 @@ char * _MSL_CDECL strrev(char * str) _MSL_CANT_THROW
 int _MSL_CDECL filelength(int fileno) _MSL_CANT_THROW
 {
 	struct stat st;
-	if (fstat(fileno, &st)) return -1;
+	if (fstat(fileno, &st))
+		return -1;
 	return st.st_size;
 }
 #endif
 
 #ifndef _No_Disk_File_OS_Support
 #if ((__dest_os == __win32_os || __dest_os == __mac_os) && _MSL_POSIX)
-	
-	int _MSL_CDECL chsize( int handle, long size ) _MSL_CANT_THROW
-	{
-		FILE			*infile;
-		struct stat		buff;
-		int 			status;
-		long int		file_size;
-		int 			i;
-		
-		/* check the size */
-		if( size < 0 )
-		{
-			errno = EINVAL;
-			return -1;
-		}
 
-		/* check if we have write permission */
-		if((fstat( handle, &buff)) == 0)
-		{		
-			if(!( buff.st_mode & S_IWUSR))
-			{
-				/* we don't have write permission */
-				errno = EACCES;
-				return -1;
-			}
-		}	
-		else
-		{   
-			/* fstat not able to obtain the file-status information -- errno set by fstat */
-			return -1;
-		}
-	  
-	 	if( (infile = fdopen( handle, "w" ))== NULL) 	
-		{
-			errno = EIO;
-			return -1;
-		}
-			
-		file_size = (unsigned long) buff.st_size;
+int _MSL_CDECL chsize(int handle, long size) _MSL_CANT_THROW
+{
+	FILE *infile;
+	struct stat buff;
+	int status;
+	long int file_size;
+	int i;
 
-		if((size - file_size) == 0)
-			return 0; 
-		else 
-		{
-			if( (unsigned long) size > file_size ) /* need to extend the file */
-			{
-				if((fseek( infile, 0, SEEK_END )) != 0 )
-				{
-					errno = EIO;
-					return -1;
-				}	
-
-				for( i = file_size; i < size; i++ )
-				{	
-					if((fputc( 0, infile )) == EOF )
-					{
-						errno = EIO;
-						return -1;
-					}
-				}
-				
-				/*flush the stream for the new eof to take effect */
-				if((status = fflush( infile )) != 0 )
-				{
-					errno = EIO;
-					return -1;
-				}		
-				
-			}
-			else /* need to truncate the file */
-			{	
-				/*flush the stream before changing the size */
-				status = fflush( infile );
-				if( status != 0 )
-				{
-					errno = EIO;
-					return -1;
-				}
-				
-				status = __msl_setfilesize(handle, size);
-				if( status != 0 )
-				{
-					errno = EIO;
-					return -1;
-				}
-			}
-			return 0; 
-		}
+	/* check the size */
+	if (size < 0) {
+		errno = EINVAL;
+		return -1;
 	}
 
-#endif
-#endif /* _No_Disk_File_OS_Support */
+	/* check if we have write permission */
+	if ((fstat(handle, &buff)) == 0) {
+		if (!(buff.st_mode & S_IWUSR)) {
+			/* we don't have write permission */
+			errno = EACCES;
+			return -1;
+		}
+	} else {
+		/* fstat not able to obtain the file-status information -- errno set by fstat */
+		return -1;
+	}
 
-#if _MSL_WIDE_CHAR		
+	if ((infile = fdopen(handle, "w")) == NULL) {
+		errno = EIO;
+		return -1;
+	}
+
+	file_size = (unsigned long) buff.st_size;
+
+	if ((size - file_size) == 0)
+		return 0;
+	else {
+		if ((unsigned long) size > file_size) {	/* need to extend the file */
+			if ((fseek(infile, 0, SEEK_END)) != 0) {
+				errno = EIO;
+				return -1;
+			}
+
+			for (i = file_size; i < size; i++) {
+				if ((fputc(0, infile)) == EOF) {
+					errno = EIO;
+					return -1;
+				}
+			}
+
+			/*flush the stream for the new eof to take effect */
+			if ((status = fflush(infile)) != 0) {
+				errno = EIO;
+				return -1;
+			}
+
+		} else {	/* need to truncate the file */
+			/*flush the stream before changing the size */
+			status = fflush(infile);
+			if (status != 0) {
+				errno = EIO;
+				return -1;
+			}
+
+			status = __msl_setfilesize(handle, size);
+			if (status != 0) {
+				errno = EIO;
+				return -1;
+			}
+		}
+		return 0;
+	}
+}
+
+#endif
+#endif				/* _No_Disk_File_OS_Support */
+
+#if _MSL_WIDE_CHAR
 
 /* lowercase all characters in str */
-int _MSL_CDECL wtoi(const wchar_t *_a) _MSL_CANT_THROW    
+int _MSL_CDECL wtoi(const wchar_t *_a) _MSL_CANT_THROW
 {
 	return wcstol(_a, NULL, 10);
 }
 
 
-wchar_t * _MSL_CDECL wcslwr (wchar_t *str) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcslwr(wchar_t *str) _MSL_CANT_THROW
 {
 	wchar_t *saved = str;
 
-	while (*str)
-	{
-		*str = towlower (*str);
+	while (*str) {
+		*str = towlower(*str);
 		str++;
 	}
-  
+
 	return saved;
 }
 
 /* uppercase all characters in str  */
-wchar_t * _MSL_CDECL wcsupr (wchar_t *str) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsupr(wchar_t *str) _MSL_CANT_THROW
 {
 	wchar_t *saved = str;
 
-	while (*str)
-	{
-		*str = towupper (*str);
+	while (*str) {
+		*str = towupper(*str);
 		str++;
 	}
-  
+
 	return saved;
 }
 
-int _MSL_CDECL wcsicmp(const wchar_t *s1, const wchar_t *s2) _MSL_CANT_THROW
+int _MSL_CDECL wcsicmp(const wchar_t *s1,
+		       const wchar_t *s2) _MSL_CANT_THROW
 {
-    wchar_t c1, c2;
-    while (1)
-    {
-    	c1 = towlower(*s1++);
-    	c2 = towlower(*s2++);
-        if (c1 < c2) return -1;
-        if (c1 > c2) return 1;
-        if (c1 == 0) return 0;
-    }
+	wchar_t c1, c2;
+	while (1) {
+		c1 = towlower(*s1++);
+		c2 = towlower(*s2++);
+		if (c1 < c2)
+			return -1;
+		if (c1 > c2)
+			return 1;
+		if (c1 == 0)
+			return 0;
+	}
 #if CodeTEST
 	return 1;		/*- ejs 030428: NOTREACHED but avoid warning due to complex code -*/
-#endif    
+#endif
 }
 
 /* case-insensitive compare of s1, s2, stopping after n characters  */
-int _MSL_CDECL wcsnicmp(const wchar_t *s1, const wchar_t *s2, size_t n) _MSL_CANT_THROW
+int _MSL_CDECL wcsnicmp(const wchar_t *s1, const wchar_t *s2,
+			size_t n) _MSL_CANT_THROW
 {
-    int i;
-    wchar_t c1, c2;
-    for (i=0; i<n; i++)
-    {
-        c1 = towlower(*s1++);
-        c2 = towlower(*s2++);
-        if (c1 < c2) return -1;
-        if (c1 > c2) return 1;
-        if (!c1) return 0;
-    }
-    return 0;
+	int i;
+	wchar_t c1, c2;
+	for (i = 0; i < n; i++) {
+		c1 = towlower(*s1++);
+		c2 = towlower(*s2++);
+		if (c1 < c2)
+			return -1;
+		if (c1 > c2)
+			return 1;
+		if (!c1)
+			return 0;
+	}
+	return 0;
 }
 
 /* reverse order of characters in str */
-wchar_t * _MSL_CDECL wcsrev(wchar_t *str) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsrev(wchar_t *str) _MSL_CANT_THROW
 {
 	int SmallIndex = 0;
 	int BigIndex = wcslen(str) - 1;
-	
+
 	while (SmallIndex < BigIndex) {
 		wchar_t Temp = str[SmallIndex];
-		
+
 		str[SmallIndex] = str[BigIndex];
 		str[BigIndex] = Temp;
-		
+
 		SmallIndex++;
 		BigIndex--;
 	}
-	
+
 	return str;
 }
 
 /* set all characters of str to wc  */
-wchar_t * _MSL_CDECL wcsset(wchar_t *str, wchar_t wc) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsset(wchar_t *str, wchar_t wc) _MSL_CANT_THROW
 {
 	wchar_t *saved = str;
 
-	while (*str)
-	{
+	while (*str) {
 		*str++ = wc;
 	}
-  
+
 	return saved;
 }
 
 
 /* set characters of str to wc, up to max of n characters */
-wchar_t * _MSL_CDECL wcsnset(wchar_t *str, wchar_t wc, size_t n) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsnset(wchar_t *str, wchar_t wc,
+			    size_t n) _MSL_CANT_THROW
 {
 	wchar_t *saved = str;
 
-	while (*str && n--)
-	{
+	while (*str && n--) {
 		*str = wc;
 	}
-  
+
 	return saved;
 }
 
 /* return pointer to first character in s1 that isn't in s2 */
-wchar_t * _MSL_CDECL wcsspnp(const wchar_t *s1, const wchar_t *s2) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsspnp(const wchar_t *s1,
+			    const wchar_t *s2) _MSL_CANT_THROW
 {
 	int len;								/*- mm 020906 -*/
 	len = wcsspn(s1, s2);					/*- mm 020906 -*/
-	if (len < wcslen(s1))					/*- mm 020906 -*/
-		return((wchar_t*)(s1+len));			/*- mm 020906 -*/
-	else									/*- mm 020906 -*/
+	if (len < wcslen(s1))					  /*- mm 020906 -*/
+		return ((wchar_t *) (s1 + len));		/*- mm 020906 -*/
+	else									  /*- mm 020906 -*/
 		return NULL;						/*- mm 020906 -*/
 }
 
-wchar_t * _MSL_CDECL wcsdup (const wchar_t *str) _MSL_CANT_THROW
+wchar_t *_MSL_CDECL wcsdup(const wchar_t *str) _MSL_CANT_THROW
 {
-	wchar_t * rval = (wchar_t *)__std(malloc)((__std(wcslen)(str)+1) * sizeof (wchar_t));
-				
-	if (rval) {
-		__std(wcscpy)(rval, str);
-	}
-	
-	return rval;
-}	
+	wchar_t *rval =
+	    (wchar_t *) __std(malloc) ((__std(wcslen) (str) + 1) *
+				       sizeof(wchar_t));
 
-wchar_t * _MSL_CDECL wstrrev(wchar_t * str) _MSL_CANT_THROW
+	if (rval) {
+		__std(wcscpy) (rval, str);
+	}
+
+	return rval;
+}
+
+wchar_t *_MSL_CDECL wstrrev(wchar_t *str) _MSL_CANT_THROW
 {
 	int SmallIndex = 0;
 	int BigIndex = wcslen(str) - 1;
-	
+
 	while (SmallIndex < BigIndex) {
 		wchar_t Temp = str[SmallIndex];
-		
+
 		str[SmallIndex] = str[BigIndex];
 		str[BigIndex] = Temp;
-		
+
 		SmallIndex++;
 		BigIndex--;
 	}
-	
+
 	return str;
 }
 
-int _MSL_CDECL wcsicoll(const wchar_t *s1, const wchar_t *s2)  _MSL_CANT_THROW
+int _MSL_CDECL wcsicoll(const wchar_t *s1,
+			const wchar_t *s2) _MSL_CANT_THROW
 {
 	return wcsicmp(s1, s2);
 }
 
-int _MSL_CDECL wcsncoll(const wchar_t *s1, const wchar_t *s2, __std(size_t) sz) _MSL_CANT_THROW 
+int _MSL_CDECL wcsncoll(const wchar_t *s1, const wchar_t *s2,
+			__std(size_t) sz) _MSL_CANT_THROW
 {
 	return wcsncmp(s1, s2, sz);
 }
 
-int _MSL_CDECL wcsnicoll(const wchar_t *s1, const wchar_t *s2, __std(size_t) sz) _MSL_CANT_THROW  
+int _MSL_CDECL wcsnicoll(const wchar_t *s1, const wchar_t *s2,
+			 __std(size_t) sz) _MSL_CANT_THROW
 {
 	return wcsnicmp(s1, s2, sz);
 }
 
-wchar_t * _MSL_CDECL itow(int val, wchar_t *str, int radix)  _MSL_CANT_THROW
+wchar_t *_MSL_CDECL itow(int val, wchar_t *str, int radix) _MSL_CANT_THROW
 {
 	char IsNegative = 0;
 	int theNum = val;
 	unsigned int theUNum;							/*- mm 000209 -*/
 	int StrIndex = 0;
 
-	if (val < 0)									/*- mm 000209 -*/
-	{												/*- mm 000209 -*/
-		theUNum    = -val;							/*- mm 000209 -*/
+	if (val < 0) {									  /*- mm 000209 -*/
+
+/*- mm 000209 -*/
+		theUNum = -val;								/*- mm 000209 -*/
 		IsNegative = 1;								/*- mm 000209 -*/
-	}												/*- mm 000209 -*/
-	else											/*- mm 000209 -*/
+	}												  /*- mm 000209 -*/
+	else											  /*- mm 000209 -*/
 		theUNum = val;								/*- mm 000209 -*/
 
-	do 												
-	{												
+	do {
 		int CurDigit = theUNum % radix;				/*- mm 000209 -*/
 		if (CurDigit > 9)
 			str[StrIndex++] = CurDigit + L'A' - 10;
@@ -537,19 +536,19 @@ wchar_t * _MSL_CDECL itow(int val, wchar_t *str, int radix)  _MSL_CANT_THROW
 
 		theUNum /= radix;							/*- mm 000209 -*/
 	} while (theUNum);								/*- mm 000209 -*/
-	if (IsNegative) 
+	if (IsNegative)
 		str[StrIndex++] = '-';
 	str[StrIndex++] = 0;
 
-		/* Now reverse the string.*/
+	/* Now reverse the string. */
 	wstrrev(str);
 
 	return str;
 }
 
-double _MSL_CDECL watof(const wchar_t * str) _MSL_CANT_THROW
+double _MSL_CDECL watof(const wchar_t *str) _MSL_CANT_THROW
 {
-	return(wcstod(str, NULL));
+	return (wcstod(str, NULL));
 }
 
 #endif

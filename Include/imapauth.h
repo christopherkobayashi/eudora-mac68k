@@ -38,7 +38,7 @@
  *
  *		This file contains the functions that do IMAP authentication.
  **********************************************************************/
- 
+
 #ifndef IMAPAUTH_H
 #define IMAPAUTH_H
 
@@ -46,13 +46,17 @@
 // IMAP CRAM-MD5.
 //
 
-long CramMD5Authenticator(authchallenge_t challenger, authrespond_t responder, NETMBX *mb, void *s, unsigned long *trial, char *user);
+long CramMD5Authenticator(authchallenge_t challenger,
+			  authrespond_t responder, NETMBX * mb, void *s,
+			  unsigned long *trial, char *user);
 
-//			      
+//                            
 // KERBEROS V4
 //
 
-long KrbV4Authenticator(authchallenge_t challenger, authrespond_t responder, NETMBX *mb, void *s,  unsigned long *trial, char *user);
+long KrbV4Authenticator(authchallenge_t challenger,
+			authrespond_t responder, NETMBX * mb, void *s,
+			unsigned long *trial, char *user);
 void UsedKerberos(void);
 Boolean KerberosWasUsed(void);
 
@@ -60,12 +64,14 @@ Boolean KerberosWasUsed(void);
 // GSSAPI (Kerberos V5)
 //
 
-long GssapiAuthenticator(authchallenge_t challenger, authrespond_t responder, NETMBX *mb, void *s,  unsigned long *trial, char *user);
+long GssapiAuthenticator(authchallenge_t challenger,
+			 authrespond_t responder, NETMBX * mb, void *s,
+			 unsigned long *trial, char *user);
 
 //
 // Hack for Kfm40 bug
 //
 void Kfm40Hack(void);
 
-		      
-#endif //IMAPAUTH_H
+
+#endif				//IMAPAUTH_H

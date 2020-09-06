@@ -38,17 +38,19 @@
 #define FILE_NUM 99
 #pragma segment AppearanceUtil
 
-static void RefreshWinAppearance ( void );
-static void RefreshMenuAppearance ( void );
-static void ReplaceScrollbars ( void );
-OSErr SetBevelIconLo(ControlHandle theControl, short id, OSType type, OSType creator, Handle suite, IconRef iconRef);
-pascal Boolean StdAlertFilter(DialogPtr dgPtr,EventRecord *event,short *item);
+static void RefreshWinAppearance(void);
+static void RefreshMenuAppearance(void);
+static void ReplaceScrollbars(void);
+OSErr SetBevelIconLo(ControlHandle theControl, short id, OSType type,
+		     OSType creator, Handle suite, IconRef iconRef);
+pascal Boolean StdAlertFilter(DialogPtr dgPtr, EventRecord * event,
+			      short *item);
 
 /**********************************************************************
  * InitAppearanceMgr - register Appearance client if specified in preferences
  **********************************************************************/
 
-void InitAppearanceMgr ( void )
+void InitAppearanceMgr(void)
 {
 	if (gUseAppearance = !PrefIsSet(PREF_NO_APPEARANCE))
 		RegisterAppearanceClient();
@@ -60,14 +62,13 @@ void InitAppearanceMgr ( void )
  * RefreshAppearance - toggle Appearance on/off depending on preferences
  **********************************************************************/
 
-void RefreshAppearance (void)
+void RefreshAppearance(void)
 {
-	if (gUseAppearance != !PrefIsSet(PREF_NO_APPEARANCE))
-	{
+	if (gUseAppearance != !PrefIsSet(PREF_NO_APPEARANCE)) {
 		gUseAppearance = !PrefIsSet(PREF_NO_APPEARANCE);
 		if (gUseAppearance)
 			RegisterAppearanceClient();
-		else 
+		else
 			UnregisterAppearanceClient();
 		if (gUseLiveScroll != PrefIsSet(PREF_LIVE_SCROLL))
 			gUseLiveScroll = PrefIsSet(PREF_LIVE_SCROLL);
@@ -75,12 +76,11 @@ void RefreshAppearance (void)
 		RefreshWinAppearance();
 		return;
 	}
-	if (gUseLiveScroll != PrefIsSet(PREF_LIVE_SCROLL))
-	{
+	if (gUseLiveScroll != PrefIsSet(PREF_LIVE_SCROLL)) {
 		gUseLiveScroll = PrefIsSet(PREF_LIVE_SCROLL);
 		ReplaceScrollbars();
 	}
-	
+
 }
 
 /**********************************************************************
@@ -88,12 +88,14 @@ void RefreshAppearance (void)
  **********************************************************************/
 short AppearanceVersion(void)
 {
-	static short	theVersion;
-	SInt32			gestaltResult;
-	
+	static short theVersion;
+	SInt32 gestaltResult;
+
 	if (!theVersion)
-		//	This gestalt doesn't exist for version 1.0
-		theVersion = Gestalt(gestaltAppearanceVersion,&gestaltResult) ? 0x0100 : gestaltResult;
+		//      This gestalt doesn't exist for version 1.0
+		theVersion =
+		    Gestalt(gestaltAppearanceVersion,
+			    &gestaltResult) ? 0x0100 : gestaltResult;
 	return theVersion;
 }
 
@@ -101,7 +103,7 @@ short AppearanceVersion(void)
  * RefreshWinAppearance - refresh appearance on menus and all windows
  **********************************************************************/
 
-void RefreshWinAppearance (void)
+void RefreshWinAppearance(void)
 {
 	SaveAll();
 	RememberOpenWindows();
@@ -114,25 +116,23 @@ void RefreshWinAppearance (void)
  * RefreshWinMenuAppearance - refresh appearance on menus and all windows
  **********************************************************************/
 
-void RefreshMenuAppearance (void)
+void RefreshMenuAppearance(void)
 {
 	MenuEnum mInt;
 	HierMenuEnum hmInt;
 	MenuHandle menu;
-	
-	for (mInt=APPLE_MENU;mInt<MENU_LIMIT2;mInt++)
-	{
+
+	for (mInt = APPLE_MENU; mInt < MENU_LIMIT2; mInt++) {
 		if (menu = GetMenuHandle(mInt))
 			CalcMenuSize(menu);
 	}
 
-	for (hmInt=FIND_HIER_MENU;hmInt<HIER_MENU_LIMIT;hmInt++)
-	{
+	for (hmInt = FIND_HIER_MENU; hmInt < HIER_MENU_LIMIT; hmInt++) {
 		if (menu = GetMenuHandle(hmInt))
 			CalcMenuSize(menu);
 	}
 
-	DrawMenuBar();	
+	DrawMenuBar();
 }
 
 
@@ -140,36 +140,66 @@ void RefreshMenuAppearance (void)
  * ReplaceScrollbars - replace live scrollbars w/ plain scrollbars or vice versa
  **********************************************************************/
 
-void ReplaceScrollbars (void)
+void ReplaceScrollbars(void)
 {
-	WindowPtr	winWP;
+	WindowPtr winWP;
 	MyWindowPtr win;
 	ControlHandle oldScroll, newScroll;
 	Rect controlRect;
-	DECLARE_UPP(ScrollAction,ControlAction);
-		
-	INIT_UPP(ScrollAction,ControlAction);
-	for (winWP = FrontWindow (); winWP; winWP = GetNextWindow (winWP))
-		if (IsKnownWindowMyWindow(winWP) && GetWindowKind(winWP)==MBOX_WIN)
-		{
-			win = GetWindowMyWindowPtr (winWP);
-			if(win->vBar)
-			{
+	DECLARE_UPP(ScrollAction, ControlAction);
+
+	INIT_UPP(ScrollAction, ControlAction);
+	for (winWP = FrontWindow(); winWP; winWP = GetNextWindow(winWP))
+		if (IsKnownWindowMyWindow(winWP)
+		    && GetWindowKind(winWP) == MBOX_WIN) {
+			win = GetWindowMyWindowPtr(winWP);
+			if (win->vBar) {
 				oldScroll = win->vBar;
-				controlRect = *GetControlBounds(oldScroll,&controlRect);
-				newScroll = NewControl(GetControlOwner(oldScroll), &controlRect, nil, IsControlVisible(oldScroll), GetControlValue(oldScroll), GetControlMinimum(oldScroll), GetControlMaximum(oldScroll), gUseLiveScroll ? kControlScrollBarLiveProc : kControlScrollBarProc, GetControlReference(oldScroll));
+				controlRect =
+				    *GetControlBounds(oldScroll,
+						      &controlRect);
+				newScroll =
+				    NewControl(GetControlOwner(oldScroll),
+					       &controlRect, nil,
+					       IsControlVisible(oldScroll),
+					       GetControlValue(oldScroll),
+					       GetControlMinimum
+					       (oldScroll),
+					       GetControlMaximum
+					       (oldScroll),
+					       gUseLiveScroll ?
+					       kControlScrollBarLiveProc :
+					       kControlScrollBarProc,
+					       GetControlReference
+					       (oldScroll));
 				win->vBar = newScroll;
-				SetControlAction(win->vBar,ScrollActionUPP);
+				SetControlAction(win->vBar,
+						 ScrollActionUPP);
 				DisposeControl(oldScroll);
 				Draw1Control(win->vBar);
 			}
-			if(win->hBar)
-			{
+			if (win->hBar) {
 				oldScroll = win->hBar;
-				controlRect = *GetControlBounds(oldScroll,&controlRect);
-				newScroll = NewControl(GetControlOwner(oldScroll), &controlRect, nil, IsControlVisible(oldScroll), GetControlValue(oldScroll), GetControlMinimum(oldScroll), GetControlMaximum(oldScroll), gUseLiveScroll ? kControlScrollBarLiveProc : kControlScrollBarProc, GetControlReference(oldScroll));
+				controlRect =
+				    *GetControlBounds(oldScroll,
+						      &controlRect);
+				newScroll =
+				    NewControl(GetControlOwner(oldScroll),
+					       &controlRect, nil,
+					       IsControlVisible(oldScroll),
+					       GetControlValue(oldScroll),
+					       GetControlMinimum
+					       (oldScroll),
+					       GetControlMaximum
+					       (oldScroll),
+					       gUseLiveScroll ?
+					       kControlScrollBarLiveProc :
+					       kControlScrollBarProc,
+					       GetControlReference
+					       (oldScroll));
 				win->hBar = newScroll;
-				SetControlAction(win->hBar,ScrollActionUPP);
+				SetControlAction(win->hBar,
+						 ScrollActionUPP);
 				DisposeControl(oldScroll);
 				Draw1Control(win->hBar);
 			}
@@ -180,14 +210,15 @@ void ReplaceScrollbars (void)
 /************************************************************************
  * SetBevelIcon - set the icon for a bevel control
  ************************************************************************/
-OSErr SetBevelIcon(ControlHandle theControl, short id, OSType type, OSType creator, Handle suite)
+OSErr SetBevelIcon(ControlHandle theControl, short id, OSType type,
+		   OSType creator, Handle suite)
 {
 	IconRef ref = nil;
 	IconFamilyHandle iconFamilyH = nil;
-	
-	if (id && (iconFamilyH=GetResource('icns',id)))
-	{
-		RegisterIconRefFromIconFamily('CSOm',('IC'<<16) | id,iconFamilyH,&ref);
+
+	if (id && (iconFamilyH = GetResource('icns', id))) {
+		RegisterIconRefFromIconFamily('CSOm', ('IC' << 16) | id,
+					      iconFamilyH, &ref);
 		id = 0;
 	}
 	return SetBevelIconLo(theControl, id, type, creator, suite, ref);
@@ -196,53 +227,57 @@ OSErr SetBevelIcon(ControlHandle theControl, short id, OSType type, OSType creat
 /************************************************************************
  * SetBevelIconLo - set the icon for a bevel control
  ************************************************************************/
-OSErr SetBevelIconLo(ControlHandle theControl, short id, OSType type, OSType creator, Handle suite, IconRef iconRef)
+OSErr SetBevelIconLo(ControlHandle theControl, short id, OSType type,
+		     OSType creator, Handle suite, IconRef iconRef)
 {
 	long junk;
 	ControlButtonContentInfo ci;
-	OSErr err = GetControlData(theControl,0,kControlBevelButtonContentTag,sizeof(ci),(void*)&ci,&junk);
+	OSErr err =
+	    GetControlData(theControl, 0, kControlBevelButtonContentTag,
+			   sizeof(ci), (void *) &ci, &junk);
 
 	if (SettingsRefN)
 		UseResFile(SettingsRefN);
-		
-	if (!err)
-	{
+
+	if (!err) {
 		// make sure it's not the same icon
-		if (id && ci.contentType==kControlContentIconSuiteRes && ci.u.resID==id) return(noErr);
-		if (suite && ci.contentType==kControlContentIconSuiteHandle && ci.u.iconSuite==suite) return(noErr);
-		if (iconRef && ci.contentType==kControlContentIconRef && ci.u.iconRef==iconRef) return(noErr);
-		
+		if (id && ci.contentType == kControlContentIconSuiteRes
+		    && ci.u.resID == id)
+			return (noErr);
+		if (suite
+		    && ci.contentType == kControlContentIconSuiteHandle
+		    && ci.u.iconSuite == suite)
+			return (noErr);
+		if (iconRef && ci.contentType == kControlContentIconRef
+		    && ci.u.iconRef == iconRef)
+			return (noErr);
+
 		// work to do
 		KillBevelIcon(theControl);	// destroy the old icon
-		
+
 		// fill out info for new icon
- 		Zero(ci);
- 		if (id)
- 		{
-	 		ci.u.resID = id;
-	 		ci.contentType = kControlContentIconSuiteRes;
-	 	}
-	 	else if (suite)
-	 	{
-	 		ci.u.iconSuite = suite;
-	 		ci.contentType = kControlContentIconSuiteHandle;
-	 	}
-	 	else if (type)
-	 	{
-	 		DupDeskIconSuite(type,creator,&ci.u.iconSuite);
-	 		ci.contentType = kControlContentIconSuiteHandle;
-	 	}
-	 	else if (iconRef)
-	 	{
-	 		ci.u.iconRef = iconRef;
-	 		ci.contentType = kControlContentIconRef;
-	 	}
-	 	
-	 	// and set it
- 		err = SetControlData(theControl,0,kControlBevelButtonContentTag,sizeof(ci),(void*)&ci);
- 		Draw1Control(theControl);
- 	}
- 	return(err);
+		Zero(ci);
+		if (id) {
+			ci.u.resID = id;
+			ci.contentType = kControlContentIconSuiteRes;
+		} else if (suite) {
+			ci.u.iconSuite = suite;
+			ci.contentType = kControlContentIconSuiteHandle;
+		} else if (type) {
+			DupDeskIconSuite(type, creator, &ci.u.iconSuite);
+			ci.contentType = kControlContentIconSuiteHandle;
+		} else if (iconRef) {
+			ci.u.iconRef = iconRef;
+			ci.contentType = kControlContentIconRef;
+		}
+		// and set it
+		err =
+		    SetControlData(theControl, 0,
+				   kControlBevelButtonContentTag,
+				   sizeof(ci), (void *) &ci);
+		Draw1Control(theControl);
+	}
+	return (err);
 }
 
 /************************************************************************
@@ -250,7 +285,7 @@ OSErr SetBevelIconLo(ControlHandle theControl, short id, OSType type, OSType cre
  ************************************************************************/
 OSErr SetBevelIconIconRef(ControlHandle theControl, IconRef iconRef)
 {
-	return SetBevelIconLo(theControl,0,nil,nil,nil,iconRef);
+	return SetBevelIconLo(theControl, 0, nil, nil, nil, iconRef);
 }
 
 /************************************************************************
@@ -260,91 +295,107 @@ OSErr KillBevelIcon(ControlHandle theControl)
 {
 	long junk;
 	ControlButtonContentInfo ci;
-	OSErr err = GetControlData(theControl,0,kControlBevelButtonContentTag,sizeof(ci),(void*)&ci,&junk);
-	
-	if (!err)
-	{
+	OSErr err =
+	    GetControlData(theControl, 0, kControlBevelButtonContentTag,
+			   sizeof(ci), (void *) &ci, &junk);
+
+	if (!err) {
 		// Dispose of suite if need be
-		if (ci.contentType==kControlContentIconSuiteHandle && ci.u.iconSuite)
-		{
-			if ((*(ICacheHandle)ci.u.iconSuite)->magic!='iCaC')
-				DisposeIconSuite(ci.u.iconSuite,True);
-		}
-		else if (ci.contentType==kControlContentIconRef && ci.u.iconRef)
+		if (ci.contentType == kControlContentIconSuiteHandle
+		    && ci.u.iconSuite) {
+			if ((*(ICacheHandle) ci.u.iconSuite)->magic !=
+			    'iCaC')
+				DisposeIconSuite(ci.u.iconSuite, True);
+		} else if (ci.contentType == kControlContentIconRef
+			   && ci.u.iconRef)
 			ReleaseIconRef(ci.u.iconRef);
 
 		// icon id of zero to clear
 		Zero(ci);
- 		ci.contentType = kControlContentIconSuiteRes;
- 		err = SetControlData(theControl,0,kControlBevelButtonContentTag,sizeof(ci),(void*)&ci);
- 	}
- 	return(err);
+		ci.contentType = kControlContentIconSuiteRes;
+		err =
+		    SetControlData(theControl, 0,
+				   kControlBevelButtonContentTag,
+				   sizeof(ci), (void *) &ci);
+	}
+	return (err);
 }
 
 /************************************************************************
  * SetBevelColor - set the fg color for a bevel button
  ************************************************************************/
-OSErr SetBevelColor(ControlHandle theControl, RGBColor *color)
-{	
+OSErr SetBevelColor(ControlHandle theControl, RGBColor * color)
+{
 	ControlFontStyleRec fs;
 	long junk;
-	OSErr err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
-	
-	if (err) return(err);
-	if (SAME_COLOR(fs.foreColor,*color)) return(noErr);
+	OSErr err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
+
+	if (err)
+		return (err);
+	if (SAME_COLOR(fs.foreColor, *color))
+		return (noErr);
 	fs.foreColor = *color;
 	fs.flags |= kControlUseForeColorMask;
-	return (SetControlFontStyle(theControl,&fs));
+	return (SetControlFontStyle(theControl, &fs));
 }
 
 /************************************************************************
  * SetBevelMode - set the text mode for a button
  ************************************************************************/
 OSErr SetBevelMode(ControlHandle theControl, short mode)
-{	
+{
 	ControlFontStyleRec fs;
 	long junk;
-	OSErr err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
+	OSErr err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
 
 	fs.mode = mode;
 	fs.flags |= kControlUseModeMask;
-	return (SetControlFontStyle(theControl,&fs));
+	return (SetControlFontStyle(theControl, &fs));
 }
 
 /************************************************************************
  * SetBevelStyle - set the text style for a bevel button
  ************************************************************************/
 OSErr SetBevelStyle(ControlHandle theControl, Style style)
-{	
+{
 	ControlFontStyleRec fs;
 	long junk;
-	OSErr err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
+	OSErr err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
 
-	if (!err && fs.style != style)
-	{
+	if (!err && fs.style != style) {
 		fs.style = style;
 		fs.flags |= kControlUseFaceMask;
-		err = SetControlFontStyle(theControl,&fs);
+		err = SetControlFontStyle(theControl, &fs);
 		Draw1Control(theControl);
 	}
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * GetBevelStyle - get the text style from a bevel button
  ************************************************************************/
-OSErr GetBevelStyle(ControlHandle theControl, Style *style)
-{	
+OSErr GetBevelStyle(ControlHandle theControl, Style * style)
+{
 	ControlFontStyleRec fs;
 	long junk;
 	OSErr err;
-	
+
 	Zero(fs);
-	err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
-	
-	if (!err) *style = fs.style;
-	else *style = 0;
-	return(err);
+	err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
+
+	if (!err)
+		*style = fs.style;
+	else
+		*style = 0;
+	return (err);
 }
 
 
@@ -352,95 +403,115 @@ OSErr GetBevelStyle(ControlHandle theControl, Style *style)
  * SetBevelJust - set the text justification for a bevel button
  ************************************************************************/
 OSErr SetBevelJust(ControlHandle theControl, SInt16 just)
-{	
+{
 	ControlFontStyleRec fs;
 	long junk;
-	OSErr err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
+	OSErr err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
 
-	if (!err && fs.just != just)
-	{
+	if (!err && fs.just != just) {
 		fs.just = just;
 		fs.flags |= kControlUseJustMask;
-		err = SetControlFontStyle(theControl,&fs);
+		err = SetControlFontStyle(theControl, &fs);
 		Draw1Control(theControl);
 	}
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * SetBevelFontSize - set font & size for a bevel button
  ************************************************************************/
-OSErr SetBevelFontSize(ControlHandle theControl,short font,short size)
+OSErr SetBevelFontSize(ControlHandle theControl, short font, short size)
 {
 	ControlFontStyleRec fs;
 	long junk;
-	OSErr err = GetControlData(theControl,0,kControlFontStyleTag,sizeof(fs),(void*)&fs,&junk);
-	
+	OSErr err =
+	    GetControlData(theControl, 0, kControlFontStyleTag, sizeof(fs),
+			   (void *) &fs, &junk);
+
 	fs.font = font;
 	fs.size = size;
 	fs.flags |= kControlUseFontMask | kControlUseSizeMask;
-	return (SetControlFontStyle(theControl,&fs));
+	return (SetControlFontStyle(theControl, &fs));
 }
 
 /************************************************************************
  * SetBevelMenu - install a menu
  ************************************************************************/
-OSErr SetBevelMenu(ControlHandle theControl, short menuID, MenuHandle mHandle)
+OSErr SetBevelMenu(ControlHandle theControl, short menuID,
+		   MenuHandle mHandle)
 {
-	if (!mHandle) mHandle = GetMHandle(menuID);
-	if (!mHandle) return(fnfErr);
-	return(SetControlData(theControl,0,kControlBevelButtonMenuHandleTag,sizeof(mHandle),(void*)&mHandle));
+	if (!mHandle)
+		mHandle = GetMHandle(menuID);
+	if (!mHandle)
+		return (fnfErr);
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonMenuHandleTag,
+		 sizeof(mHandle), (void *) &mHandle));
 }
 
 /************************************************************************
  * SetBevelMenuValue - set the value of a bevel menu
  ************************************************************************/
-OSErr SetBevelMenuValue(ControlHandle theControl,short value)
+OSErr SetBevelMenuValue(ControlHandle theControl, short value)
 {
-	return(SetControlData(theControl,0,kControlBevelButtonMenuValueTag,sizeof(value),(void*)&value));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonMenuValueTag,
+		 sizeof(value), (void *) &value));
 }
 
 /************************************************************************
  * SetBevelTextOffset - set the text offset of a bevel menu
  ************************************************************************/
-OSErr SetBevelTextOffset(ControlHandle theControl,short h)
+OSErr SetBevelTextOffset(ControlHandle theControl, short h)
 {
-	return(SetControlData(theControl,0,kControlBevelButtonTextOffsetTag,sizeof(h),(void*)&h));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonTextOffsetTag,
+		 sizeof(h), (void *) &h));
 }
 
 /************************************************************************
  * SetBevelGraphicOffset - set the text offset of a bevel menu
  ************************************************************************/
-OSErr SetBevelGraphicOffset(ControlHandle theControl,short h)
+OSErr SetBevelGraphicOffset(ControlHandle theControl, short h)
 {
 	Point pt;
 	pt.h = h;
 	pt.v = 0;
-	return(SetControlData(theControl,0,kControlBevelButtonGraphicOffsetTag,sizeof(pt),(void*)&pt));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonGraphicOffsetTag,
+		 sizeof(pt), (void *) &pt));
 }
 
 /************************************************************************
  * SetBevelTextAlign - set the text alignment of a bevel menu
  ************************************************************************/
-OSErr SetBevelTextAlign(ControlHandle theControl,short value)
+OSErr SetBevelTextAlign(ControlHandle theControl, short value)
 {
-	return(SetControlData(theControl,0,kControlBevelButtonTextAlignTag,sizeof(value),(void*)&value));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonTextAlignTag,
+		 sizeof(value), (void *) &value));
 }
 
 /************************************************************************
  * SetBevelGraphicAlign - set the graphic alignment of a bevel menu
  ************************************************************************/
-OSErr SetBevelGraphicAlign(ControlHandle theControl,short value)
+OSErr SetBevelGraphicAlign(ControlHandle theControl, short value)
 {
-	return(SetControlData(theControl,0,kControlBevelButtonGraphicAlignTag,sizeof(value),(void*)&value));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonGraphicAlignTag,
+		 sizeof(value), (void *) &value));
 }
 
 /************************************************************************
  * SetBevelTextPlace - set the text placement of a bevel menu
  ************************************************************************/
-OSErr SetBevelTextPlace(ControlHandle theControl,short value)
+OSErr SetBevelTextPlace(ControlHandle theControl, short value)
 {
-	return(SetControlData(theControl,0,kControlBevelButtonTextPlaceTag,sizeof(value),(void*)&value));
+	return (SetControlData
+		(theControl, 0, kControlBevelButtonTextPlaceTag,
+		 sizeof(value), (void *) &value));
 }
 
 /************************************************************************
@@ -450,8 +521,12 @@ MenuHandle GetBevelMenu(ControlHandle theControl)
 {
 	long junk;
 	MenuHandle mHandle;
-	if (GetControlData(theControl,0,kControlBevelButtonMenuHandleTag,sizeof(mHandle),(void*)&mHandle,&junk)) return(nil);
-	else return(mHandle);
+	if (GetControlData
+	    (theControl, 0, kControlBevelButtonMenuHandleTag,
+	     sizeof(mHandle), (void *) &mHandle, &junk))
+		return (nil);
+	else
+		return (mHandle);
 }
 
 /************************************************************************
@@ -461,49 +536,57 @@ short GetBevelMenuValue(ControlHandle theControl)
 {
 	long junk;
 	short value;
-	if (GetControlData(theControl,0,kControlBevelButtonMenuValueTag,sizeof(value),(void*)&value,&junk)) return(0);
-	else return(value);
+	if (GetControlData
+	    (theControl, 0, kControlBevelButtonMenuValueTag, sizeof(value),
+	     (void *) &value, &junk))
+		return (0);
+	else
+		return (value);
 }
 
 /************************************************************************
  * SetControlText - set the text of a control, if it has changed
  ************************************************************************/
-OSErr SetTextControlText(ControlHandle theControl,PStr textStr,UHandle textHandle)
+OSErr SetTextControlText(ControlHandle theControl, PStr textStr,
+			 UHandle textHandle)
 {
 	Str255 oldText;
 	Str255 newText;
 	long oldCount;
 	long newCount;
 	UPtr textPtr;
-	OSErr err = GetControlData(theControl,0,kControlStaticTextTextTag,sizeof(oldText)-2,oldText+1,&oldCount);
-	
-	if (!err)
-	{
+	OSErr err =
+	    GetControlData(theControl, 0, kControlStaticTextTextTag,
+			   sizeof(oldText) - 2, oldText + 1, &oldCount);
+
+	if (!err) {
 		*oldText = oldCount;
 		if (textStr)
-			PCopy(newText,textStr);
-		else
-		{
+			PCopy(newText, textStr);
+		else {
 			newCount = GetHandleSize(textHandle);
-			MakePStr(newText,*textHandle,newCount);
+			MakePStr(newText, *textHandle, newCount);
 		}
-		
-		if (EqualString(newText,oldText,True,True)) return(noErr);	// no difference
-		
-		if (textStr)
-		{
-			textPtr = textStr+1;
+
+		if (EqualString(newText, oldText, True, True))
+			return (noErr);	// no difference
+
+		if (textStr) {
+			textPtr = textStr + 1;
 			newCount = *textStr;
-		}
-		else
+		} else
 			textPtr = LDRef(textHandle);
 
-		err = SetControlData(theControl,0,kControlStaticTextTextTag,newCount,textPtr);
+		err =
+		    SetControlData(theControl, 0,
+				   kControlStaticTextTextTag, newCount,
+				   textPtr);
 		Draw1Control(theControl);
-		
-		if (textHandle) LDRef(textHandle);
+
+		if (textHandle)
+			LDRef(textHandle);
 	}
-	return(err);
+	return (err);
 }
 
 
@@ -512,28 +595,36 @@ OSErr SetTextControlText(ControlHandle theControl,PStr textStr,UHandle textHandl
  ************************************************************************/
 Boolean ControlIsUgly(ControlHandle cntl)
 {
-	return (cntl && kControlSupportsNewMessages==SendControlMessage(cntl,kControlMsgTestNewMsgSupport,nil));
+	return (cntl
+		&& kControlSupportsNewMessages == SendControlMessage(cntl,
+								     kControlMsgTestNewMsgSupport,
+								     nil));
 }
 
 /************************************************************************
  * GetNewControlSmall - get a control from a resource, then make it small
  ************************************************************************/
-ControlHandle GetNewControlSmall(short id,WindowPtr win)
+ControlHandle GetNewControlSmall(short id, WindowPtr win)
 {
-	ControlHandle cntl = GetNewControl(id,win);
+	ControlHandle cntl = GetNewControl(id, win);
 	LetsGetSmall(cntl);
-	EmbedInWazoo(cntl,win);
-	return(cntl);
+	EmbedInWazoo(cntl, win);
+	return (cntl);
 }
 
 /************************************************************************
  * NewControlSmall - make a control, then make it small
  ************************************************************************/
-ControlHandle NewControlSmall(WindowPtr theWindow, Rect *boundsRect, PStr title, Boolean visible, short value, short min, short max, short procID, long refCon)
+ControlHandle NewControlSmall(WindowPtr theWindow, Rect * boundsRect,
+			      PStr title, Boolean visible, short value,
+			      short min, short max, short procID,
+			      long refCon)
 {
-	ControlHandle cntl = NewControl(theWindow, boundsRect, title, visible,  value,  min,  max,  procID,  refCon);
+	ControlHandle cntl =
+	    NewControl(theWindow, boundsRect, title, visible, value, min,
+		       max, procID, refCon);
 	LetsGetSmall(cntl);
-	return(cntl);
+	return (cntl);
 }
 
 /************************************************************************
@@ -541,57 +632,67 @@ ControlHandle NewControlSmall(WindowPtr theWindow, Rect *boundsRect, PStr title,
  ************************************************************************/
 void LetsGetSmall(ControlHandle cntl)
 {
-	if (cntl) SetBevelFontSize(cntl,kControlFontSmallSystemFont,0);
+	if (cntl)
+		SetBevelFontSize(cntl, kControlFontSmallSystemFont, 0);
 }
 
 /**********************************************************************
  * CreateControl - create a control for the find window
  **********************************************************************/
-ControlHandle CreateControl(MyWindowPtr win,ControlHandle embed,short strID,short procID,Boolean fit)
+ControlHandle CreateControl(MyWindowPtr win, ControlHandle embed,
+			    short strID, short procID, Boolean fit)
 {
 	ControlHandle cntl;
 	Rect r;
 	Str255 s;
-	
-	SetRect(&r,-50,-50,-20,-20);
-	cntl = NewControlSmall(GetMyWindowWindowPtr(win),&r,GetRString(s,strID),
-											True,0,0,1,procID,0);	
+
+	SetRect(&r, -50, -50, -20, -20);
+	cntl =
+	    NewControlSmall(GetMyWindowWindowPtr(win), &r,
+			    GetRString(s, strID), True, 0, 0, 1, procID,
+			    0);
 	if (embed)
-		EmbedControl(cntl,embed);
-	if (fit) ButtonFit(cntl);
+		EmbedControl(cntl, embed);
+	if (fit)
+		ButtonFit(cntl);
 	return cntl;
 }
 
 /**********************************************************************
  * CreateMenuControl - create a menu control
  **********************************************************************/
-ControlHandle CreateMenuControl(MyWindowPtr win,ControlHandle embed,PStr title,short menuID,short variant,short value,Boolean autoCalcTitle)
+ControlHandle CreateMenuControl(MyWindowPtr win, ControlHandle embed,
+				PStr title, short menuID, short variant,
+				short value, Boolean autoCalcTitle)
 {
-	WindowPtr	winWP = GetMyWindowWindowPtr (win);
+	WindowPtr winWP = GetMyWindowWindowPtr(win);
 	ControlHandle cntl;
 	Rect r;
-	ControlCalcSizeRec	calcSize;
-	MenuHandle	mh;
+	ControlCalcSizeRec calcSize;
+	MenuHandle mh;
 
-	if (!menuID) return NULL;
-	
-	SetRect(&r,-4000,-4000,-4000+20,-4000+20);
-	cntl = NewControl(winWP,&r,title,true,0,menuID,
-		autoCalcTitle ? -1 : 0, kControlPopupButtonProc + variant,0);
+	if (!menuID)
+		return NULL;
+
+	SetRect(&r, -4000, -4000, -4000 + 20, -4000 + 20);
+	cntl = NewControl(winWP, &r, title, true, 0, menuID,
+			  autoCalcTitle ? -1 : 0,
+			  kControlPopupButtonProc + variant, 0);
 	LetsGetSmall(cntl);
-	
-	SetControlValue(cntl,value);
+
+	SetControlValue(cntl, value);
 
 	// set optimal size
-	SendControlMessage(cntl,kControlMsgCalcBestRect,(void*)&calcSize);
-	SizeControl(cntl,calcSize.width,calcSize.height);	
-	
+	SendControlMessage(cntl, kControlMsgCalcBestRect,
+			   (void *) &calcSize);
+	SizeControl(cntl, calcSize.width, calcSize.height);
+
 	// make sure it's enabled
 	if (mh = GetPopupMenuHandle(cntl))
-		EnableItem(mh,0);
+		EnableItem(mh, 0);
 
 	if (embed)
-		EmbedControl(cntl,embed);
+		EmbedControl(cntl, embed);
 	return cntl;
 }
 
@@ -600,10 +701,11 @@ ControlHandle CreateMenuControl(MyWindowPtr win,ControlHandle embed,PStr title,s
  **********************************************************************/
 MenuHandle GetPopupMenuHandle(ControlHandle cntl)
 {
-	Size	junk;
-	MenuHandle	mh = nil;
+	Size junk;
+	MenuHandle mh = nil;
 
-	GetControlData(cntl,0,kControlPopupButtonMenuHandleTag,sizeof(mh),(void*)&mh,&junk);
+	GetControlData(cntl, 0, kControlPopupButtonMenuHandleTag,
+		       sizeof(mh), (void *) &mh, &junk);
 	return mh;
 }
 
@@ -613,30 +715,31 @@ MenuHandle GetPopupMenuHandle(ControlHandle cntl)
 /************************************************************************
  * StdAlertFilter - filter for standard alerts
  ************************************************************************/
-pascal Boolean StdAlertFilter(DialogPtr dgPtr,EventRecord *event,short *item)
+pascal Boolean StdAlertFilter(DialogPtr dgPtr, EventRecord * event,
+			      short *item)
 {
-	Boolean oldCmdPeriod=CommandPeriod;
+	Boolean oldCmdPeriod = CommandPeriod;
 	Boolean retVal = false;
-	
-#ifdef THREADING_ON	
+
+#ifdef THREADING_ON
 	if (NEED_YIELD)
 		MyYieldToAnyThread();
 #endif
 
 #ifdef CTB
-	if (CnH) CMIdle(CnH);
+	if (CnH)
+		CMIdle(CnH);
 #endif
 
-//	Handle command-period first
-	if (MiniMainLoop(event) || HasCommandPeriod())
-	{
+//      Handle command-period first
+	if (MiniMainLoop(event) || HasCommandPeriod()) {
 		*item = kAlertStdAlertCancelButton;
-		MyStdFilterProc(dgPtr,event,item);
-		return(True);
+		MyStdFilterProc(dgPtr, event, item);
+		return (True);
 	}
-	
+
 	if (event->what != nullEvent)
-		retVal = MyStdFilterProc(dgPtr,event,item); 
+		retVal = MyStdFilterProc(dgPtr, event, item);
 	return retVal;
 }
 
@@ -673,7 +776,7 @@ pascal Boolean StdAlertFilter(DialogPtr dgPtr,EventRecord *event,short *item)
  *							characters.
  *
  ************************************************************************/
-short ComposeStdAlert(AlertType type,short template,...)
+short ComposeStdAlert(AlertType type, short template, ...)
 {
 	Str255 error;
 	Str255 explanation;
@@ -690,164 +793,204 @@ short ComposeStdAlert(AlertType type,short template,...)
 #ifdef THREADING_ON
 	Boolean inAThread = InAThread();
 	Boolean silent = false;
-	DECLARE_UPP(StdAlertFilter,ModalFilter);
-	
-	INIT_UPP(StdAlertFilter,ModalFilter);
-	if (silent = (template < 0))	template *= -1;
-	
+	DECLARE_UPP(StdAlertFilter, ModalFilter);
+
+	INIT_UPP(StdAlertFilter, ModalFilter);
+	if (silent = (template < 0))
+		template *= -1;
+
 	/*
-		Note:
-		STR# entries for ALERTS with task progress translations belong in strndefs with ALRTStringsStrn.
-		There should be two per alert:
-		1) ALERT dialog format string
-		2) Task Progress format string 				
-	*/
-	ASSERT(inAThread ? (template > ALRTStringsStrn && template < ALRTStringsStrn+LIMIT_ASTR) : 1);
-	template+=inAThread;
+	   Note:
+	   STR# entries for ALERTS with task progress translations belong in strndefs with ALRTStringsStrn.
+	   There should be two per alert:
+	   1) ALERT dialog format string
+	   2) Task Progress format string                               
+	 */
+	ASSERT(inAThread
+	       ? (template > ALRTStringsStrn
+		  && template < ALRTStringsStrn + LIMIT_ASTR) : 1);
+	template += inAThread;
 #endif
-	
+
 	integral[0] = 'º';
 	integral[1] = 0;
-	
+
 	// suck out the strings
-	GetRString(fmtdError,template);
-	spot = fmtdError+1;
-	PToken(fmtdError,error,&spot,integral);
-	PToken(fmtdError,explanation,&spot,integral);
-	
+	GetRString(fmtdError, template);
+	spot = fmtdError + 1;
+	PToken(fmtdError, error, &spot, integral);
+	PToken(fmtdError, explanation, &spot, integral);
+
 #ifdef THREADING_ON
 	// suck out default button
-	if (inAThread)
-	{
-		buttons[0][0]=0;
-		PToken(fmtdError,buttons[0],&spot,integral);
-		if (buttons[0][0]==1)
-			defWhich = buttons[0][1]-'0';
-	}
-	else
+	if (inAThread) {
+		buttons[0][0] = 0;
+		PToken(fmtdError, buttons[0], &spot, integral);
+		if (buttons[0][0] == 1)
+			defWhich = buttons[0][1] - '0';
+	} else
 #endif
-	// suck out the button texts
-	for (i=0;i<3;i++)
-	{
-		PToken(fmtdError,buttons[i],&spot,integral);
-		if (buttons[i][*buttons[i]] == bulletChar)
-		{
-			defWhich = 3-i;
-			--*buttons[i];
+		// suck out the button texts
+		for (i = 0; i < 3; i++) {
+			PToken(fmtdError, buttons[i], &spot, integral);
+			if (buttons[i][*buttons[i]] == bulletChar) {
+				defWhich = 3 - i;
+				--*buttons[i];
+			}
+			if (buttons[i][*buttons[i]] == '-') {
+				canWhich = 3 - i;
+				--*buttons[i];
+			}
 		}
-		if (buttons[i][*buttons[i]] == '-')
-		{
-			canWhich = 3-i;
-			--*buttons[i];
-		}
-	}
-	
+
 	// compose the explanation
-	va_start(args,template);
-	(void) VaComposeStringDouble(fmtdError,sizeof(fmtdError)-1,error,args,fmtdExplanation,sizeof(fmtdExplanation)-1,explanation);
+	va_start(args, template);
+	(void) VaComposeStringDouble(fmtdError, sizeof(fmtdError) - 1,
+				     error, args, fmtdExplanation,
+				     sizeof(fmtdExplanation) - 1,
+				     explanation);
 	va_end(args);
 
 #ifdef THREADING_ON
 	// if in a thread, add the error to the tp window
-	if (inAThread)
-	{
+	if (inAThread) {
 		if (fmtdError[0] || fmtdExplanation[0])
-		 	AddTaskErrorsS(fmtdError,fmtdExplanation,GetCurrentTaskKind(),(*CurPersSafe)->persId);
-	 	return(defWhich);
- 	}
+			AddTaskErrorsS(fmtdError, fmtdExplanation,
+				       GetCurrentTaskKind(),
+				       (*CurPersSafe)->persId);
+		return (defWhich);
+	}
 #endif
 
 	// fill in the param block
 	param.movable = True;
 	param.helpButton = False;
 	param.filterProc = StdAlertFilterUPP;
-	param.defaultText = *buttons[2] ? buttons[2]:nil;
-	param.cancelText = *buttons[1] ? buttons[1]:nil;
-	param.otherText = *buttons[0] ? buttons[0]:nil;
+	param.defaultText = *buttons[2] ? buttons[2] : nil;
+	param.cancelText = *buttons[1] ? buttons[1] : nil;
+	param.otherText = *buttons[0] ? buttons[0] : nil;
 	param.defaultButton = defWhich;
 	param.cancelButton = canWhich;
 	param.position = kWindowDefaultPosition;
 
 	// Beep if we're not doing a spoken warning
-	if (!silent && !(*fmtdError && fmtdError[1] == 0xA7 && !PrefIsSet (PREF_NO_SPOKEN_WARNINGS)))
-		SysBeep (1);
+	if (!silent
+	    && !(*fmtdError && fmtdError[1] == 0xA7
+		 && !PrefIsSet(PREF_NO_SPOKEN_WARNINGS)))
+		SysBeep(1);
 
 	// do it
-	return (ReallyStandardAlert(type,fmtdError,fmtdExplanation,&param));
+	return (ReallyStandardAlert
+		(type, fmtdError, fmtdExplanation, &param));
 }
 
 //
-//	The refcon is overloaded to contain an identifier and part ID.  Ick.
+//      The refcon is overloaded to contain an identifier and part ID.  Ick.
 //
 
-ControlHandle CreateInsideOutBevelIconButtonUserPane (WindowPtr theWindow, SInt16 iconID, SInt16 textID, Rect *bounds, SInt16 iconSize, SInt16 maxTextWidth, UInt16 buttonID)
-
+ControlHandle CreateInsideOutBevelIconButtonUserPane(WindowPtr theWindow,
+						     SInt16 iconID,
+						     SInt16 textID,
+						     Rect * bounds,
+						     SInt16 iconSize,
+						     SInt16 maxTextWidth,
+						     UInt16 buttonID)
 {
-	ControlHandle	userPaneControl,
-								buttonControl,
-								textControl;
-	Str255				text; 
-	Rect					buttonRect,
-								textRect;
-	OSErr					theError;
-	SInt16				center;
+	ControlHandle userPaneControl, buttonControl, textControl;
+	Str255 text;
+	Rect buttonRect, textRect;
+	OSErr theError;
+	SInt16 center;
 
 	// Figure out where the bevel button should be placed (it's centered and anchored to the top of the user pane)
 	center = (bounds->right - bounds->left) >> 1;
-	buttonRect.left		= bounds->left + center - (iconSize >> 1) - kInsideOutBevelButtonMargin;
-	buttonRect.top		= bounds->top;
-	buttonRect.right	= buttonRect.left + iconSize + (kInsideOutBevelButtonMargin << 1);
-	buttonRect.bottom	= buttonRect.top + iconSize + (kInsideOutBevelButtonMargin << 1);
+	buttonRect.left =
+	    bounds->left + center - (iconSize >> 1) -
+	    kInsideOutBevelButtonMargin;
+	buttonRect.top = bounds->top;
+	buttonRect.right =
+	    buttonRect.left + iconSize +
+	    (kInsideOutBevelButtonMargin << 1);
+	buttonRect.bottom =
+	    buttonRect.top + iconSize + (kInsideOutBevelButtonMargin << 1);
 
 	// Figure out where we'll put the text
 	textRect.top = buttonRect.bottom + kInsideOutBevelButtonTextMargin;
 	textRect.bottom = bounds->bottom;
-	if (maxTextWidth>0) {
-		textRect.left  = bounds->left + center - (maxTextWidth >> 1);
+	if (maxTextWidth > 0) {
+		textRect.left =
+		    bounds->left + center - (maxTextWidth >> 1);
 		textRect.right = textRect.left + maxTextWidth;
-	}
-	else {
-		textRect.left  = bounds->left;
+	} else {
+		textRect.left = bounds->left;
 		textRect.right = bounds->right;
-		if (maxTextWidth<0) InsetRect(&textRect,-maxTextWidth/2,0);
+		if (maxTextWidth < 0)
+			InsetRect(&textRect, -maxTextWidth / 2, 0);
 	}
 
 	// Create away!
-	if (userPaneControl = NewControl (theWindow, bounds, "\p", true, kControlSupportsEmbedding, 0, 0, kControlUserPaneProc, buttonID)) {
-		if (buttonControl = NewControl (theWindow, &buttonRect, "\p", true, 0, ((kControlBehaviorPushbutton | kControlBehaviorToggles) << 8) | kControlContentIconSuiteRes, iconID, kControlBevelButtonNormalBevelProc, (kControlButtonPart << 16) | buttonID))
-			if (textControl = NewControlSmall (theWindow, &textRect, "\p", true, 0, 0, 0, kControlStaticTextProc, (kControlLabelPart << 16) | buttonID)) {
-				theError = EmbedControl (buttonControl, userPaneControl);
+	if (userPaneControl =
+	    NewControl(theWindow, bounds, "\p", true,
+		       kControlSupportsEmbedding, 0, 0,
+		       kControlUserPaneProc, buttonID)) {
+		if (buttonControl =
+		    NewControl(theWindow, &buttonRect, "\p", true, 0,
+			       ((kControlBehaviorPushbutton |
+				 kControlBehaviorToggles) << 8) |
+			       kControlContentIconSuiteRes, iconID,
+			       kControlBevelButtonNormalBevelProc,
+			       (kControlButtonPart << 16) | buttonID))
+			if (textControl =
+			    NewControlSmall(theWindow, &textRect, "\p",
+					    true, 0, 0, 0,
+					    kControlStaticTextProc,
+					    (kControlLabelPart << 16) |
+					    buttonID)) {
+				theError =
+				    EmbedControl(buttonControl,
+						 userPaneControl);
 				if (!theError)
-					theError = EmbedControl (textControl, userPaneControl);
+					theError =
+					    EmbedControl(textControl,
+							 userPaneControl);
 				if (!theError)
-					theError = SetTextControlText (textControl, GetRString (text, textID), nil);
+					theError =
+					    SetTextControlText(textControl,
+							       GetRString
+							       (text,
+								textID),
+							       nil);
 				if (!theError)
-					theError = SetBevelJust (textControl, teCenter);
+					theError =
+					    SetBevelJust(textControl,
+							 teCenter);
 				if (!theError)
 					return (userPaneControl);
 			}
-		DisposeControl (userPaneControl);
+		DisposeControl(userPaneControl);
 		userPaneControl = nil;
 	}
 	return (userPaneControl);
 }
 
 //
-//	GetInsideOutBevelIconButtonControl
+//      GetInsideOutBevelIconButtonControl
 //
-//		Returns the control handle of the button part of a InsideOutBevelIconButton
+//              Returns the control handle of the button part of a InsideOutBevelIconButton
 //
 
-ControlHandle FindInsideOutBevelIconButtonControl (ControlHandle parentCntl, ControlPartCode part)
-
+ControlHandle FindInsideOutBevelIconButtonControl(ControlHandle parentCntl,
+						  ControlPartCode part)
 {
-	ControlHandle	buttonControl;
-	UInt16				count;
-	
-	if (!CountSubControls (parentCntl, &count))
-	for (; count; count--)
-		if (!GetIndexedSubControl (parentCntl, count, &buttonControl))
-			if ((GetControlReference (buttonControl) >> 16) == part)
-				return (buttonControl);
+	ControlHandle buttonControl;
+	UInt16 count;
+
+	if (!CountSubControls(parentCntl, &count))
+		for (; count; count--)
+			if (!GetIndexedSubControl
+			    (parentCntl, count, &buttonControl))
+				if ((GetControlReference(buttonControl) >>
+				     16) == part)
+					return (buttonControl);
 	return (nil);
 }

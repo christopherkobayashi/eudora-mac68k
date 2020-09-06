@@ -40,45 +40,45 @@
 #pragma segment Misc
 
 #define ARRAY(i)				(array+i*size)
-void QSort(UPtr array, int size, int f, int l, int (*compare)(), void (*swap)());
+void QSort(UPtr array, int size, int f, int l, int (*compare)(),
+	   void(*swap)());
 /**********************************************************************
  * QuickSort - sort an array
  * Algorithms, Reingold, Nievergelt, Deo, p. 286
  **********************************************************************/
-void QuickSort(UPtr array, int size, int f, int l, int (*compare)(), void (*swap)())
+void QuickSort(UPtr array, int size, int f, int l, int (*compare)(),
+	       void(*swap)())
 {
-	int i,j;
-	if (f>=l) return;
+	int i, j;
+	if (f >= l)
+		return;
 
 #ifdef NEVER
-	ComposeLogS(-1,nil,"\pSort %d %d",f,l);
-#endif	
+	ComposeLogS(-1, nil, "\pSort %d %d", f, l);
+#endif
 	CycleBalls();
-	
-	(*swap)(ARRAY(f),ARRAY((f+l)/2));
-	
-	for (i=f+1; i<=l && (*compare)(ARRAY(i),ARRAY(f))<0; i++);
-	
-	for (j=l; j>=f && (*compare)(ARRAY(j),ARRAY(f))>0; j--);
-	
-	while (i<j)
-	{
-		(*swap)(ARRAY(i),ARRAY(j));
-		for (i++; (*compare)(ARRAY(i),ARRAY(f))<0; i++);
-		for (j--; (*compare)(ARRAY(j),ARRAY(f))>0; j--);
+
+	(*swap) (ARRAY(f), ARRAY((f + l) / 2));
+
+	for (i = f + 1; i <= l && (*compare) (ARRAY(i), ARRAY(f)) < 0;
+	     i++);
+
+	for (j = l; j >= f && (*compare) (ARRAY(j), ARRAY(f)) > 0; j--);
+
+	while (i < j) {
+		(*swap) (ARRAY(i), ARRAY(j));
+		for (i++; (*compare) (ARRAY(i), ARRAY(f)) < 0; i++);
+		for (j--; (*compare) (ARRAY(j), ARRAY(f)) > 0; j--);
 	}
-	
-	(*swap)(ARRAY(f),ARRAY(j));
-	
-	if ((j-1)-f > l-(j+1))
-	{
-		QuickSort(array,size,j+1,l,compare,swap);
-		QuickSort(array,size,f,j-1,compare,swap);
-	}
-	else
-	{
-		QuickSort(array,size,f,j-1,compare,swap);
-		QuickSort(array,size,j+1,l,compare,swap);
+
+	(*swap) (ARRAY(f), ARRAY(j));
+
+	if ((j - 1) - f > l - (j + 1)) {
+		QuickSort(array, size, j + 1, l, compare, swap);
+		QuickSort(array, size, f, j - 1, compare, swap);
+	} else {
+		QuickSort(array, size, f, j - 1, compare, swap);
+		QuickSort(array, size, j + 1, l, compare, swap);
 	}
 }
 
@@ -87,50 +87,49 @@ void QuickSort(UPtr array, int size, int f, int l, int (*compare)(), void (*swap
  * VQuickSort - sort a vector into something else
  * Algorithms, Reingold, Nievergelt, Deo, p. 286
  **********************************************************************/
-void VQuickSort(short **vector, short f, short l, void *data, int (*compare)())
+void VQuickSort(short **vector, short f, short l, void *data,
+		int (*compare)())
 {
-	int i,j;
-	if (f>=l) return;
+	int i, j;
+	if (f >= l)
+		return;
 
 #ifdef NEVER
-	ComposeLogS(-1,nil,"\pSort %d %d",f,l);
-#endif	
+	ComposeLogS(-1, nil, "\pSort %d %d", f, l);
+#endif
 	CycleBalls();
-	
-	VectorSwap(f,(f+l)/2);
-	
-	for (i=f+1; i<=l && (*compare)(vector,data,i,f)<0; i++);
-	
-	for (j=l; j>=f && (*compare)(vector,data,j,f)>0; j--);
-	
-	while (i<j)
-	{
-		VectorSwap(i,j);
-		for (i++; (*compare)(vector,data,i,f)<0; i++);
-		for (j--; (*compare)(vector,data,j,f)>0; j--);
+
+	VectorSwap(f, (f + l) / 2);
+
+	for (i = f + 1; i <= l && (*compare) (vector, data, i, f) < 0;
+	     i++);
+
+	for (j = l; j >= f && (*compare) (vector, data, j, f) > 0; j--);
+
+	while (i < j) {
+		VectorSwap(i, j);
+		for (i++; (*compare) (vector, data, i, f) < 0; i++);
+		for (j--; (*compare) (vector, data, j, f) > 0; j--);
 	}
-	
-	VectorSwap(f,j);
-	
-	if ((j-1)-f > l-(j+1))
-	{
-		VQuickSort(vector,j+1,l,data,compare);
-		VQuickSort(vector,f,j-1,data,compare);
-	}
-	else
-	{
-		VQuickSort(vector,f,j-1,data,compare);
-		VQuickSort(vector,j+1,l,data,compare);
+
+	VectorSwap(f, j);
+
+	if ((j - 1) - f > l - (j + 1)) {
+		VQuickSort(vector, j + 1, l, data, compare);
+		VQuickSort(vector, f, j - 1, data, compare);
+	} else {
+		VQuickSort(vector, f, j - 1, data, compare);
+		VQuickSort(vector, j + 1, l, data, compare);
 	}
 }
 
 void StrSwap(UPtr s1, UPtr s2)
 {
 	Str255 temp;
-	
-	BMD(s1,temp,*(unsigned char *)s1+1);
-	BMD(s2,s1,*(unsigned char *)s2+1);
-	BMD(temp,s2,*(unsigned char *)temp+1);
+
+	BMD(s1, temp, *(unsigned char *) s1 + 1);
+	BMD(s2, s1, *(unsigned char *) s2 + 1);
+	BMD(temp, s2, *(unsigned char *) temp + 1);
 }
 
 int CStrCompar(UPtr s1, UPtr s2)
@@ -144,8 +143,7 @@ void CStrSwap(UPtr s1, UPtr s2)
 #pragma unused(s1,s2)
 }
 
-int SortStrCompare(UPtr *s1, UPtr *s2)
+int SortStrCompare(UPtr * s1, UPtr * s2)
 {
-	return StringComp(*s1,*s2);
+	return StringComp(*s1, *s2);
 }
-

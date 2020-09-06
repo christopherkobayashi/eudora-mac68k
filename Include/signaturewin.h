@@ -39,8 +39,7 @@
 
 void OpenSignaturesWin(void);
 short SignatureCount(void);
-void GetSignatureName(short item,StringPtr s);
+void GetSignatureName(short item, StringPtr s);
 short GetSignatureIcon(short item);
 void BuildSigList(void);
 #endif
-

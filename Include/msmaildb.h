@@ -31,5 +31,5 @@
 
 #ifndef MSMAILDB_H
 #define MSMAILDB_H
-OSErr MSMailDBFunc(MSSubCallEnum selector,MStoreBoxHandle boxH);
+OSErr MSMailDBFunc(MSSubCallEnum selector, MStoreBoxHandle boxH);
 #endif

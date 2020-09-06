@@ -36,11 +36,14 @@
 
 #include "spool.h"
 
-OSErr GetOtherHeaders(MessHandle messH, AccuPtr a, UHandle *text, long *bodyOffset);
+OSErr GetOtherHeaders(MessHandle messH, AccuPtr a, UHandle * text,
+		      long *bodyOffset);
 Boolean StringStartsHandle(PStr string, Handle h, long offset, long len);
-OSErr SpoolOutTrans(TransStream stream, UPtr text,long size, ...);
+OSErr SpoolOutTrans(TransStream stream, UPtr text, long size, ...);
 
-static TransVector SpoolTrans = {nil,SpoolOutTrans,nil,nil,nil,nil,nil,GenSendWDS,nil,nil,nil};
+static TransVector SpoolTrans =
+    { nil, SpoolOutTrans, nil, nil, nil, nil, nil, GenSendWDS, nil, nil,
+nil };
 
 static short spoolRefNum;
 static StringPtr spoolFileName;
@@ -52,88 +55,88 @@ OSErr SpoolMessage(MessHandle messH, FSSpecPtr theSpec, short refN)
 	OSErr err;
 	OSType creator;
 	Boolean newFile = false;
-	TransVector	saveCurTrans = CurTrans;
+	TransVector saveCurTrans = CurTrans;
 	Handle table;
 	long oldSpot;
-		
+
 	/* Test crap */
-	if(theSpec == nil)
-	{
+	if (theSpec == nil) {
 		PCopy(scratch, "\pMacintosh HD:Desktop Folder:testspool");
 		theSpec = &testSpec;
 		err = FSMakeFSSpec(0, 0L, scratch, theSpec);
-		if(err)
-		{
-			if(err != fnfErr)
-				return(FileSystemError(TEXT_WRITE,scratch,err));
-		}
-		else
-		{
+		if (err) {
+			if (err != fnfErr)
+				return (FileSystemError
+					(TEXT_WRITE, scratch, err));
+		} else {
 			goto TryOpen;
 		}
 	}
 
 	/* Try to create the bugger */
-	GetPref(scratch,PREF_CREATOR);
-	if (*scratch!=4) GetRString(scratch,TEXT_CREATOR);
-	BMD(scratch+1,&creator,4);
+	GetPref(scratch, PREF_CREATOR);
+	if (*scratch != 4)
+		GetRString(scratch, TEXT_CREATOR);
+	BMD(scratch + 1, &creator, 4);
 	err = FSpCreate(theSpec, creator, 'TEXT', smRoman);
-	if(err && (err != dupFNErr)) return(FileSystemError(TEXT_WRITE,theSpec->name,err));
-	if(!err) newFile = true;
+	if (err && (err != dupFNErr))
+		return (FileSystemError(TEXT_WRITE, theSpec->name, err));
+	if (!err)
+		newFile = true;
 
-TryOpen :
+      TryOpen:
 	if (!refN)
 		/* Open up the output file */
 		err = FSpOpenDF(theSpec, fsRdWrPerm, &spoolRefNum);
-	else
-	{
+	else {
 		// position to the end
-		err = SetFPos(refN,fsFromLEOF,0);
-		GetFPos(refN,&oldSpot);
+		err = SetFPos(refN, fsFromLEOF, 0);
+		GetFPos(refN, &oldSpot);
 		spoolRefNum = refN;
 	}
-	
-	if(err) goto DitchFile;
-	
+
+	if (err)
+		goto DitchFile;
+
 	/* File name for error reporting */
 	spoolFileName = &theSpec->name;
-	
+
 	/* Set the trans routine */
 	CurTrans = SpoolTrans;
-	
+
 	err = SetFPos(spoolRefNum, fsFromLEOF, 0);
-	
-	if (!PrefIsSet(PREF_NO_FLATTEN))
-	{
+
+	if (!PrefIsSet(PREF_NO_FLATTEN)) {
 		Flatten = GetFlatten();
 	}
 
-	if (!NewTables && !TransOut && (table=GetResource_('taBL',TransOutTablID())))
-	{
-		BMD(*table,scratch,256);
+	if (!NewTables && !TransOut
+	    && (table = GetResource_('taBL', TransOutTablID()))) {
+		BMD(*table, scratch, 256);
 		TransOut = scratch;
 	}
-	if(!err) err = TransmitMessageForSpool(NULL, messH);
+	if (!err)
+		err = TransmitMessageForSpool(NULL, messH);
 
 	ZapPtr(Flatten);
 	TransOut = nil;
-	
+
 	/* Reset the trans routine */
 	CurTrans = saveCurTrans;
 
-	if (!refN) MyFSClose(spoolRefNum);
-	
-DitchFile :
+	if (!refN)
+		MyFSClose(spoolRefNum);
+
+      DitchFile:
 	/* Ditch the file on error */
-	if (err && refN) 
-	{
-		SetFPos(refN,fsFromStart,oldSpot);
-		SetEOF(refN,oldSpot);
-	}
-	else if(err && newFile) 
+	if (err && refN) {
+		SetFPos(refN, fsFromStart, oldSpot);
+		SetEOF(refN, oldSpot);
+	} else if (err && newFile)
 		FSpDelete(theSpec);
-	
-	if(err) return(FileSystemError(TEXT_WRITE,theSpec->name,err));
+
+	if (err)
+		return (FileSystemError(TEXT_WRITE, theSpec->name, err));
 	return err;
 }
 
@@ -142,149 +145,170 @@ OSErr TransmitMessageForSpool(TransStream stream, MessHandle messH)
 	OSErr err = noErr;
 	Boolean newMess = false, topLevel;
 
-	if(!(topLevel = MessFlagIsSet(messH,FLAG_OUT)) || (AllAttachOnBoardLo(messH, false) != noErr)) {
-		
+	if (!(topLevel = MessFlagIsSet(messH, FLAG_OUT))
+	    || (AllAttachOnBoardLo(messH, false) != noErr)) {
+
 		long bodyOffset;
 		UHandle text;
-		Accumulator a = {0L,0L,nil};
-		
-		if(!topLevel) {
-			if (MessFlagIsSet(messH,FLAG_RICH) || MessOptIsSet(messH,OPT_HTML) || MessOptIsSet(messH,OPT_FLOW))
-			{
-				SetMessFlag(messH,FLAG_WRAP_OUT);
+		Accumulator a = { 0L, 0L, nil };
+
+		if (!topLevel) {
+			if (MessFlagIsSet(messH, FLAG_RICH)
+			    || MessOptIsSet(messH, OPT_HTML)
+			    || MessOptIsSet(messH, OPT_FLOW)) {
+				SetMessFlag(messH, FLAG_WRAP_OUT);
 			}
 
-			err = GetOtherHeaders(messH, &a, &text, &bodyOffset);
+			err =
+			    GetOtherHeaders(messH, &a, &text, &bodyOffset);
 		}
-		
-		if(!err)
-		{
+
+		if (!err) {
 			MyWindowPtr newWin;
 			SignedByte hState;
 			long offset;
-			
-			if(!topLevel)
-			{
+
+			if (!topLevel) {
 				hState = HGetState(text);
 				HNoPurge(text);
-				offset = FindAnAttachment(text,bodyOffset,nil,true,nil,nil,nil);
+				offset =
+				    FindAnAttachment(text, bodyOffset, nil,
+						     true, nil, nil, nil);
 				HSetState(text, hState);
 			}
-			
-			if(topLevel || (offset >= 0))
-			{
-				newWin = DoSalvageMessageLo((*messH)->win,true,true);
-				if(newWin == nil)
-				{
+
+			if (topLevel || (offset >= 0)) {
+				newWin =
+				    DoSalvageMessageLo((*messH)->win, true,
+						       true);
+				if (newWin == nil) {
 					err = userCanceledErr;
-				}
-				else
-				{
-					messH = (MessHandle)GetMyWindowPrivateData(newWin);
+				} else {
+					messH =
+					    (MessHandle)
+					    GetMyWindowPrivateData(newWin);
 					newMess = true;
 				}
 			}
 		}
-		
-		if(!topLevel)
-		{
-			if(!err) err = SendExtras(stream, a.data, True, EffectiveTID(SumOf(messH)->tableId));
-			if(!err) err = BufferSend(stream, nil, nil, 0, true);
+
+		if (!topLevel) {
+			if (!err)
+				err =
+				    SendExtras(stream, a.data, True,
+					       EffectiveTID(SumOf(messH)->
+							    tableId));
+			if (!err)
+				err =
+				    BufferSend(stream, nil, nil, 0, true);
 
 			DisposeHandle(a.data);
-			
-			if(!err)
-			{
+
+			if (!err) {
 				TransmitPB pb;
-				
+
 				Zero(pb);
 				pb.stream = stream;
 				err = TransmitMimeVersion(&pb);
 			}
 		}
 	}
-	
-	if(!err)
-	{
+
+	if (!err) {
 		SetMessRich(messH);
-		err = TransmitMessageLo(stream, messH, False, True, True, nil, False, False, topLevel);
+		err =
+		    TransmitMessageLo(stream, messH, False, True, True,
+				      nil, False, False, topLevel);
 	}
-	
-	if(newMess) DeleteMessageLo((*messH)->tocH, (*messH)->sumNum, true);
+
+	if (newMess)
+		DeleteMessageLo((*messH)->tocH, (*messH)->sumNum, true);
 	return err;
 }
 
-OSErr SpoolOutTrans(TransStream stream, UPtr text,long size, ...)
+OSErr SpoolOutTrans(TransStream stream, UPtr text, long size, ...)
 {
 	long bSize;
 	OSErr err;
-	
-	if (size==0) return(noErr); 	/* allow vacuous sends */
-	if (MiniEvents()) return(userCancelled);
-	
+
+	if (size == 0)
+		return (noErr);	/* allow vacuous sends */
+	if (MiniEvents())
+		return (userCancelled);
+
 	bSize = size;
-	if (err=AWrite(spoolRefNum,&bSize,text))
-		return(FileSystemError(TEXT_WRITE,spoolFileName,err));
+	if (err = AWrite(spoolRefNum, &bSize, text))
+		return (FileSystemError(TEXT_WRITE, spoolFileName, err));
 	{
 		Uptr buffer;
 		va_list extra_buffers;
-		va_start(extra_buffers,size);
-		while (buffer = va_arg(extra_buffers,UPtr))
-		{
-			bSize = va_arg(extra_buffers,int);
-			if (err=SpoolOutTrans(nil,buffer,bSize,nil)) break;
+		va_start(extra_buffers, size);
+		while (buffer = va_arg(extra_buffers, UPtr)) {
+			bSize = va_arg(extra_buffers, int);
+			if (err = SpoolOutTrans(nil, buffer, bSize, nil))
+				break;
 		}
 		va_end(extra_buffers);
 	}
-	return(err);
+	return (err);
 }
 
-OSErr GetOtherHeaders(MessHandle messH, AccuPtr a, UHandle *text, long *bodyOffset)
+OSErr GetOtherHeaders(MessHandle messH, AccuPtr a, UHandle * text,
+		      long *bodyOffset)
 {
 	SignedByte hState;
 	UHandle cache;
 	long cacheOffset = 0, hLen;
 	OSErr err;
 	Str15 content, mimevers;
-	
-	GetRString(mimevers, InterestHeadStrn+hMimeVersion);
+
+	GetRString(mimevers, InterestHeadStrn + hMimeVersion);
 	GetRString(content, MIME_CONTENT_PREFIX);
-	if(!mimevers[0] || !content[0]) return memFullErr;
-	
+	if (!mimevers[0] || !content[0])
+		return memFullErr;
+
 	err = CacheMessage((**messH).tocH, (**messH).sumNum);
-	if(err) return err;
+	if (err)
+		return err;
 	hLen = (*(**messH).tocH)->sums[(**messH).sumNum].length;
 	cache = (*(**messH).tocH)->sums[(**messH).sumNum].cache;
 	hState = HGetState(cache);
 	HNoPurge(cache);
-	
-	/* Skip "From " line */		
-	while(++cacheOffset < hLen && *(*cache + cacheOffset) != 13) ;
+
+	/* Skip "From " line */
+	while (++cacheOffset < hLen && *(*cache + cacheOffset) != 13);
 	++cacheOffset;
 
-	while(!err && cacheOffset < hLen && *(*cache + cacheOffset) != 13)
-	{
+	while (!err && cacheOffset < hLen && *(*cache + cacheOffset) != 13) {
 		long nextOffset = cacheOffset;
 
-		do
-		{
-			while(++nextOffset < hLen && *(*cache + nextOffset) != 13) ;
+		do {
+			while (++nextOffset < hLen
+			       && *(*cache + nextOffset) != 13);
 		}
-		while(++nextOffset < hLen && (*(*cache + nextOffset) == 32 || *(*cache + nextOffset) == 9));
-		
-		if(!StringStartsHandle(content, cache, cacheOffset, nextOffset - cacheOffset) &&
-		   !StringStartsHandle(mimevers, cache, cacheOffset, nextOffset - cacheOffset))
-		{
-			err = AccuAddFromHandle(a, cache, cacheOffset, nextOffset - cacheOffset);
+		while (++nextOffset < hLen
+		       && (*(*cache + nextOffset) == 32
+			   || *(*cache + nextOffset) == 9));
+
+		if (!StringStartsHandle
+		    (content, cache, cacheOffset, nextOffset - cacheOffset)
+		    && !StringStartsHandle(mimevers, cache, cacheOffset,
+					   nextOffset - cacheOffset)) {
+			err =
+			    AccuAddFromHandle(a, cache, cacheOffset,
+					      nextOffset - cacheOffset);
 		}
-		
+
 		cacheOffset = nextOffset;
 	}
-	
-	if(bodyOffset) *bodyOffset = cacheOffset;
-	if(text) *text = cache;
-	
-	if(!err) AccuTrim(a);
+
+	if (bodyOffset)
+		*bodyOffset = cacheOffset;
+	if (text)
+		*text = cache;
+
+	if (!err)
+		AccuTrim(a);
 	HSetState(cache, hState);
 	return err;
 }
@@ -292,21 +316,25 @@ OSErr GetOtherHeaders(MessHandle messH, AccuPtr a, UHandle *text, long *bodyOffs
 Boolean StringStartsHandle(PStr string, Handle h, long offset, long len)
 {
 	Byte i;
-	
-	if(len<0) len = InlineGetHandleSize(h);
 
-	if(*string > len) return false;
-	
-	for(i = *string; i > 0; --i)
-	{
+	if (len < 0)
+		len = InlineGetHandleSize(h);
+
+	if (*string > len)
+		return false;
+
+	for (i = *string; i > 0; --i) {
 		Byte sb = string[i];
 		Byte hb = (*h + offset)[i - 1];
-		
-		if(sb != hb) {
-			if(isupper(sb)) sb = tolower(sb);
-			if(isupper(hb)) hb = tolower(hb);
-			if(sb != hb) break;
+
+		if (sb != hb) {
+			if (isupper(sb))
+				sb = tolower(sb);
+			if (isupper(hb))
+				hb = tolower(hb);
+			if (sb != hb)
+				break;
 		}
 	}
-	return(!i);
+	return (!i);
 }

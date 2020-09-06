@@ -35,36 +35,52 @@
 #define	kInsideOutBevelButtonMargin			4
 #define	kInsideOutBevelButtonTextMargin	2
 
-void InitAppearanceMgr ( void );
-void RefreshAppearance ( void );
-OSErr SetBevelIcon(ControlHandle theControl, short id, OSType type, OSType creator, Handle suite);
+void InitAppearanceMgr(void);
+void RefreshAppearance(void);
+OSErr SetBevelIcon(ControlHandle theControl, short id, OSType type,
+		   OSType creator, Handle suite);
 OSErr SetBevelIconIconRef(ControlHandle theControl, IconRef iconRef);
 OSErr KillBevelIcon(ControlHandle theControl);
-OSErr SetBevelFontSize(ControlHandle theControl, short font,short size);
-OSErr SetBevelColor(ControlHandle theControl, RGBColor *color);
+OSErr SetBevelFontSize(ControlHandle theControl, short font, short size);
+OSErr SetBevelColor(ControlHandle theControl, RGBColor * color);
 OSErr SetBevelStyle(ControlHandle theControl, Style style);
-OSErr GetBevelStyle(ControlHandle theControl, Style *style);
+OSErr GetBevelStyle(ControlHandle theControl, Style * style);
 OSErr SetBevelJust(ControlHandle theControl, SInt16 just);
 OSErr SetBevelMode(ControlHandle theControl, short mode);
-OSErr SetBevelMenu(ControlHandle theControl, short menuID, MenuHandle mHandle);
-OSErr SetBevelMenuValue(ControlHandle theControl,short value);
+OSErr SetBevelMenu(ControlHandle theControl, short menuID,
+		   MenuHandle mHandle);
+OSErr SetBevelMenuValue(ControlHandle theControl, short value);
 short GetBevelMenuValue(ControlHandle theControl);
 MenuHandle GetBevelMenu(ControlHandle theControl);
-OSErr SetBevelTextAlign(ControlHandle theControl,short value);
-OSErr SetBevelTextOffset(ControlHandle theControl,short h);
-OSErr SetBevelGraphicOffset(ControlHandle theControl,short h);
-OSErr SetBevelGraphicAlign(ControlHandle theControl,short value);
-OSErr SetBevelTextPlace(ControlHandle theControl,short value);
-OSErr SetTextControlText(ControlHandle theControl,PStr textStr,UHandle textHandle);
+OSErr SetBevelTextAlign(ControlHandle theControl, short value);
+OSErr SetBevelTextOffset(ControlHandle theControl, short h);
+OSErr SetBevelGraphicOffset(ControlHandle theControl, short h);
+OSErr SetBevelGraphicAlign(ControlHandle theControl, short value);
+OSErr SetBevelTextPlace(ControlHandle theControl, short value);
+OSErr SetTextControlText(ControlHandle theControl, PStr textStr,
+			 UHandle textHandle);
 Boolean ControlIsUgly(ControlHandle cntl);
-ControlHandle GetNewControlSmall(short id,WindowPtr win);
-ControlHandle NewControlSmall(WindowPtr theWindow, Rect *boundsRect, PStr title, Boolean visible, short value, short min, short max, short procID, long refCon);
+ControlHandle GetNewControlSmall(short id, WindowPtr win);
+ControlHandle NewControlSmall(WindowPtr theWindow, Rect * boundsRect,
+			      PStr title, Boolean visible, short value,
+			      short min, short max, short procID,
+			      long refCon);
 void LetsGetSmall(ControlHandle cntl);
-ControlHandle CreateControl(MyWindowPtr win,ControlHandle embed,short strID,short procID,Boolean fit);
-ControlHandle CreateMenuControl(MyWindowPtr win,ControlHandle embed,PStr title,short menuID,short variant,short value,Boolean autoCalcTitle);
+ControlHandle CreateControl(MyWindowPtr win, ControlHandle embed,
+			    short strID, short procID, Boolean fit);
+ControlHandle CreateMenuControl(MyWindowPtr win, ControlHandle embed,
+				PStr title, short menuID, short variant,
+				short value, Boolean autoCalcTitle);
 MenuHandle GetPopupMenuHandle(ControlHandle cntl);
-short ComposeStdAlert(AlertType type,short template,...);
+short ComposeStdAlert(AlertType type, short template, ...);
 short AppearanceVersion(void);
-ControlHandle CreateInsideOutBevelIconButtonUserPane (WindowPtr theWindow, SInt16 iconID, SInt16 textID, Rect *bounds, SInt16 iconSize, SInt16 maxTextWidth, UInt16 buttonID);
-ControlHandle FindInsideOutBevelIconButtonControl (ControlHandle parentCntl, ControlPartCode part);
+ControlHandle CreateInsideOutBevelIconButtonUserPane(WindowPtr theWindow,
+						     SInt16 iconID,
+						     SInt16 textID,
+						     Rect * bounds,
+						     SInt16 iconSize,
+						     SInt16 maxTextWidth,
+						     UInt16 buttonID);
+ControlHandle FindInsideOutBevelIconButtonControl(ControlHandle parentCntl,
+						  ControlPartCode part);
 #endif

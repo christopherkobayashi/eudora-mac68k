@@ -33,31 +33,32 @@
 #define PGPIN_H
 
 #ifndef ONE
-typedef struct PGPContextStruct
-{
+typedef struct PGPContextStruct {
 	PGPEnum type;
 	FSSpec spec;
 	short refN;
-	Str31 intro;	/* how we know it's pgp */
+	Str31 intro;		/* how we know it's pgp */
 	struct PGPContextStruct *next;
 } PGPContext, *PGPCPtr, **PGPCHandle;
 
-typedef struct PGPRecvContextStruct
-{
+typedef struct PGPRecvContextStruct {
 	Str31 intro;
 	LineIOD lio;
 } PGPRecvContext, *PGPRecvContextPtr, **PGPRecvContextHandle;
 
 typedef struct HeaderDesc **HeaderDHandle;
 
-Boolean ConvertPGP(short refN,UPtr buf,long *size,POPLineType lineType,long estSize,PGPCPtr pgpc);
+Boolean ConvertPGP(short refN, UPtr buf, long *size, POPLineType lineType,
+		   long estSize, PGPCPtr pgpc);
 void EndPGP(PGPCPtr pgpc);
 void BeginPGP(PGPCPtr pgpc);
-OSErr ReReadPGPClearText(TransStream stream,short refN,UPtr buf,long bSize,FSSpecPtr spec);
-OSErr PGPRecvLine(TransStream stream,UPtr line,long *size);
+OSErr ReReadPGPClearText(TransStream stream, short refN, UPtr buf,
+			 long bSize, FSSpecPtr spec);
+OSErr PGPRecvLine(TransStream stream, UPtr line, long *size);
 OSErr PGPVerifyFile(FSSpecPtr spec);
 OSErr PGPOpenEncrypted(FSSpecPtr spec);
-OSErr ReadHeadAndBody(TransStream stream,short refN,UPtr buf,long bSize,Boolean display,HeaderDHandle *headersFound);
+OSErr ReadHeadAndBody(TransStream stream, short refN, UPtr buf, long bSize,
+		      Boolean display, HeaderDHandle * headersFound);
 #endif
 
 #endif

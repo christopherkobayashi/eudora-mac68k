@@ -36,7 +36,7 @@
 
 void MySelectWindow(WindowPtr winWP);
 MyWindowPtr FindLastFloater(void);
-void MyDragWindow (WindowPtr winWP, Point start, Rect *boundsRect);
+void MyDragWindow(WindowPtr winWP, Point start, Rect * boundsRect);
 Boolean IsTopNonFloater(WindowPtr theWindow);
 WindowPtr MyFrontNonFloatingWindow(void);
 MyWindowPtr FloaterAtPoint(Point mouse);
@@ -45,10 +45,10 @@ Boolean IsFloating(WindowPtr winWP);
 void SetKeyFocusedFloater(MyWindowPtr win);
 void PositionDockedWindow(WindowPtr winWP);
 void PositionDockedWindows(void);
-void DockedWinReduce(WindowPtr checkWinWP, Rect *winRect, Rect *r);
-void DockedWinRemove(RgnHandle rgn,WindowPtr ignoreWinWP);
+void DockedWinReduce(WindowPtr checkWinWP, Rect * winRect, Rect * r);
+void DockedWinRemove(RgnHandle rgn, WindowPtr ignoreWinWP);
 void FloatingWinIdle(void);
-		
-#endif	//FLOATINGWIN_H
 
-#endif	//FLOAT_WIN
+#endif				//FLOATINGWIN_H
+
+#endif				//FLOAT_WIN

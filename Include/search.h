@@ -35,7 +35,9 @@
 typedef struct Accumulator *AccuPtr;
 
 // Search for a pointer in another pointer
-long SearchPtrPtr(UPtr lookPtr, short lookLen, UPtr textPtr, long offset, long inLen, Boolean sensitive, Boolean words, AccuPtr cache);
+long SearchPtrPtr(UPtr lookPtr, short lookLen, UPtr textPtr, long offset,
+		  long inLen, Boolean sensitive, Boolean words,
+		  AccuPtr cache);
 
 // Search for a pstring in a pointer
 #define SearchStrPtr(l,t,o,tLen,s,w,c)	SearchPtrPtr(l+1,*l,t,o,tLen,s,w,c)
@@ -53,7 +55,9 @@ long SearchPtrPtr(UPtr lookPtr, short lookLen, UPtr textPtr, long offset, long i
 #define FindStrStr(l,t)	SearchStrStr(l,t,Sensitive,WholeWord)
 
 // Search for a pointer in a handle
-long SearchPtrHandle(UPtr lookPtr, short lookLen, UHandle textHandle, long offset, Boolean sensitive, Boolean words, AccuPtr cache);
+long SearchPtrHandle(UPtr lookPtr, short lookLen, UHandle textHandle,
+		     long offset, Boolean sensitive, Boolean words,
+		     AccuPtr cache);
 
 // Search for a pointer in a handle, using find defaults
 #define FindPtrHandle(l,lLen,t,o,c)	SearchPtrHandle(l,lLen,t,o,Sensitive,WholeWord,c)
@@ -64,6 +68,7 @@ long SearchPtrHandle(UPtr lookPtr, short lookLen, UHandle textHandle, long offse
 // Search for a string in a handle, using find defaults
 #define FindStrHandle(l,t,o,c)	SearchStrHandle(l,t,o,Sensitive,WholeWord,c)
 
-OSErr BulkSearch(PStr string,FSSpecPtr spec,long *offset,AccuPtr allOffsets);
+OSErr BulkSearch(PStr string, FSSpecPtr spec, long *offset,
+		 AccuPtr allOffsets);
 
 #endif

@@ -34,9 +34,10 @@
 
 /* Copyright (c) 1996 by Qualcomm, Inc. */
 
-Handle NPluginCheck(FSSpec *pSpec, Rect *pRect);
+Handle NPluginCheck(FSSpec * pSpec, Rect * pRect);
 void NPluginClose(Handle hPlugin);
-void NPluginDraw(Handle hInstance, Rect *pRect,CGrafPtr	port,Boolean fSetWindow);
-void NPluginEvent(Handle hInstance, EventRecord *pEvent);
+void NPluginDraw(Handle hInstance, Rect * pRect, CGrafPtr port,
+		 Boolean fSetWindow);
+void NPluginEvent(Handle hInstance, EventRecord * pEvent);
 
 #endif

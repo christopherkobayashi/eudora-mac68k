@@ -37,7 +37,7 @@
 #pragma segment MIMEStore
 OSErr MSCreateMailDB(MStoreBoxHandle boxH);
 OSErr MSOpenMailDB(MStoreBoxHandle boxH);
-OSErr MSCloseMailDB(MStoreBoxHandle boxH,Boolean force);
+OSErr MSCloseMailDB(MStoreBoxHandle boxH, Boolean force);
 OSErr MSDestroyMailDB(MStoreBoxHandle boxH);
 OSErr MSFlushMailDB(MStoreBoxHandle boxH);
 
@@ -45,17 +45,24 @@ OSErr MSFlushMailDB(MStoreBoxHandle boxH);
 /************************************************************************
  * MSMailDBFunc - dispatcher function
  ************************************************************************/
-OSErr MSMailDBFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
+OSErr MSMailDBFunc(MSSubCallEnum call, MStoreBoxHandle boxH)
 {
-	switch (call)
-	{
-		case msfcCreate: return(MSCreateMailDB(boxH));
-		case msfcOpen: return(MSOpenMailDB(boxH));
-		case msfcClose: return(MSCloseMailDB(boxH,False));
-		case msfcCloseHard: return(MSCloseMailDB(boxH,True));
-		case msfcDestroy: return(MSDestroyMailDB(boxH));
-		case msfcFlush: return(noErr);
-		default: ASSERT(0); return(fnfErr);
+	switch (call) {
+	case msfcCreate:
+		return (MSCreateMailDB(boxH));
+	case msfcOpen:
+		return (MSOpenMailDB(boxH));
+	case msfcClose:
+		return (MSCloseMailDB(boxH, False));
+	case msfcCloseHard:
+		return (MSCloseMailDB(boxH, True));
+	case msfcDestroy:
+		return (MSDestroyMailDB(boxH));
+	case msfcFlush:
+		return (noErr);
+	default:
+		ASSERT(0);
+		return (fnfErr);
 	}
 }
 
@@ -64,14 +71,14 @@ OSErr MSMailDBFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSCreateMailDB(MStoreBoxHandle boxH)
 {
-	OSErr err = MSCreateSubFile(boxH,mssfMailDB);
-	
+	OSErr err = MSCreateSubFile(boxH, mssfMailDB);
+
 	(*boxH)->mailDBHeader.magic = kMStoreMailDBMagic;
 	MStoreCurrentVersion(&(*boxH)->mailDBHeader.highVersion);
 	MStoreCurrentVersion(&(*boxH)->mailDBHeader.lastVersion);
 	(*boxH)->subs[mssfMailDB].dirty = True;
-	
-	return(err);
+
+	return (err);
 }
 
 /************************************************************************
@@ -80,32 +87,33 @@ OSErr MSCreateMailDB(MStoreBoxHandle boxH)
 OSErr MSOpenMailDB(MStoreBoxHandle boxH)
 {
 	OSErr err;
-	
-	if ((*boxH)->subs[mssfMailDB].refN) return(noErr);
-	
-	err = MSOpenSubFile(boxH,mssfMailDB);
-	
-	return(err);
+
+	if ((*boxH)->subs[mssfMailDB].refN)
+		return (noErr);
+
+	err = MSOpenSubFile(boxH, mssfMailDB);
+
+	return (err);
 }
 
 /************************************************************************
  * MSCloseMailDB - close the maildb file
  ************************************************************************/
-OSErr MSCloseMailDB(MStoreBoxHandle boxH,Boolean force)
+OSErr MSCloseMailDB(MStoreBoxHandle boxH, Boolean force)
 {
 	OSErr err = noErr;
-	
-	if ((*boxH)->subs[mssfMailDB].refN)
-	{
+
+	if ((*boxH)->subs[mssfMailDB].refN) {
 		// write changes
 		err = MSFlushMailDB(boxH);
-		if (err && force) err = 0;	// ignore errors if force
-		
+		if (err && force)
+			err = 0;	// ignore errors if force
+
 		// close it up
-		err = MSCloseSubFile(boxH,mssfMailDB);
+		err = MSCloseSubFile(boxH, mssfMailDB);
 	}
-	
-	return(err);
+
+	return (err);
 }
 
 /************************************************************************
@@ -114,24 +122,25 @@ OSErr MSCloseMailDB(MStoreBoxHandle boxH,Boolean force)
 OSErr MSFlushMailDB(MStoreBoxHandle boxH)
 {
 	MStoreBlockHeader hdr;
-	MStoreMailDBHeaderPtr mdbhPtr = (MStoreMailDBHeaderPtr)&hdr;
+	MStoreMailDBHeaderPtr mdbhPtr = (MStoreMailDBHeaderPtr) & hdr;
 	OSErr err = noErr;
-	
-	if (!(*boxH)->subs[mssfMailDB].dirty) return(noErr);
-	
+
+	if (!(*boxH)->subs[mssfMailDB].dirty)
+		return (noErr);
+
 	// flush dirty blocks
-	
+
 	// flush the header
 	Zero(hdr);
 	*mdbhPtr = (*boxH)->mailDBHeader;
-	
+
 	// update the version numbers && mod time
 	MStoreCurrentVersion(&mdbhPtr->lastVersion);
 	if (MStoreOlderVersion(&mdbhPtr->highVersion))
 		MStoreCurrentVersion(&mdbhPtr->highVersion);
 	mdbhPtr->modSeconds = MStoreDateTime();
-	
-	return(err);
+
+	return (err);
 }
 
 /************************************************************************
@@ -140,9 +149,8 @@ OSErr MSFlushMailDB(MStoreBoxHandle boxH)
 OSErr MSDestroyMailDB(MStoreBoxHandle boxH)
 {
 	OSErr err;
-	
-	if (!(err = MSCloseMailDB(boxH,False)))
-		err = MSDestroySubFile(boxH,mssfMailDB);
-	return(err);
-}
 
+	if (!(err = MSCloseMailDB(boxH, False)))
+		err = MSDestroySubFile(boxH, mssfMailDB);
+	return (err);
+}

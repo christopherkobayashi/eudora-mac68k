@@ -37,41 +37,41 @@
 #ifdef TWO
 
 OSErr RegenerateFilters(void);
-OSErr ReadFilters(Handle hFilters,short vRef,long dirID,StringPtr name);
+OSErr ReadFilters(Handle hFilters, short vRef, long dirID, StringPtr name);
 void FiltersDecRef(void);
 Boolean FilterExists(DescType form, long selector);
 OSErr CountFilters(long *howMany);
 TokenTaker GetFilterProperty, GetTermProperty;
-OSErr AECreateFilter(DescType theClass,AEDescPtr inContainer,AppleEvent *event, AppleEvent *reply);
+OSErr AECreateFilter(DescType theClass, AEDescPtr inContainer,
+		     AppleEvent * event, AppleEvent * reply);
 OSErr SetFilterProperty(AEDescPtr token, AEDescPtr data);
 OSErr SetTermProperty(AEDescPtr token, AEDescPtr data);
 OSErr AEDeleteFilter(FilterTokenPtr fp);
 void FRInit(FRPtr fr);
 void DisposeFAction(FActionHandle fa);
 long FilterNewId(void);
-OSErr SaveFiltersLo(FSSpecPtr toSpec,Boolean all,Boolean clean);
+OSErr SaveFiltersLo(FSSpecPtr toSpec, Boolean all, Boolean clean);
 #define SaveFilters()	SaveFiltersLo(nil,true,true)
 #define ZapFAction(f)	while(f){DisposeFAction(f);f=nil;}
 void ZapFilters(void);
 void ZapActions(FActionHandle fa);
-OSErr FWriteKey(short refN,FilterKeywordEnum flk,PStr value);
-OSErr FWriteBool(short refN,FilterKeywordEnum flk,Boolean value);
-OSErr FWriteEnum(short refN,FilterKeywordEnum flk,short e);
+OSErr FWriteKey(short refN, FilterKeywordEnum flk, PStr value);
+OSErr FWriteBool(short refN, FilterKeywordEnum flk, Boolean value);
+OSErr FWriteEnum(short refN, FilterKeywordEnum flk, short e);
 void StudyFilter(FRPtr fr);
-OSErr TellFiltMBRename(FSSpecPtr spec,FSSpecPtr newSpec,Boolean folder,Boolean will,Boolean dontWarn);
-void DisposeFilters(Handle *hFilters);
+OSErr TellFiltMBRename(FSSpecPtr spec, FSSpecPtr newSpec, Boolean folder,
+		       Boolean will, Boolean dontWarn);
+void DisposeFilters(Handle * hFilters);
 void GeneratePluginFilters(void);
-OSErr AppendFilter(FRPtr fr,Handle hFilters);
-typedef struct
-{
+OSErr AppendFilter(FRPtr fr, Handle hFilters);
+typedef struct {
 	FSSpec oldSpec;
 	FSSpec newSpec;
 } MBRenamePB, *MBRenamePBPtr, **MBRenamePBH;
-typedef enum
-{
+typedef enum {
 	fRenameAsk,
 	fRenameChange,
 	fRenameIgnore
-}	FilterRenameEnum;
+} FilterRenameEnum;
 #endif
 #endif

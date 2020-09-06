@@ -32,8 +32,7 @@
 #ifndef URL_H
 #define URL_H
 
-typedef enum
-{
+typedef enum {
 	urlNot,
 	urlNaughty,
 	urlMaybe,
@@ -41,45 +40,52 @@ typedef enum
 	urlGood
 } URLEnum;
 
-OSErr OpenLocalURLLo(PStr url,Handle *result,AEDescList *dox,Boolean spool);
-OSErr OpenLocalURLPtr(PStr url,long len,Handle *result,AEDescList *dox,Boolean spool);
+OSErr OpenLocalURLLo(PStr url, Handle * result, AEDescList * dox,
+		     Boolean spool);
+OSErr OpenLocalURLPtr(PStr url, long len, Handle * result,
+		      AEDescList * dox, Boolean spool);
 #define OpenLocalURL(u,r)	OpenLocalURLLo(u,r,nil,false)
 
-OSErr FindURLApp(PStr proto,AliasHandle *alias,Boolean mayWildCard);
+OSErr FindURLApp(PStr proto, AliasHandle * alias, Boolean mayWildCard);
 
 #define kWildCardOK	True
 #define kNoWildCard	False
 #ifdef TWO
-OSErr OpenOtherURLPtr(PStr proto,UPtr url,short length);
+OSErr OpenOtherURLPtr(PStr proto, UPtr url, short length);
 #endif
 #define urlSelect	1
 #define urlColor	2
 #define urlOpen		4
 #define urlAll		7
-URLEnum URLIsSelected(MyWindowPtr win,PETEHandle pte,long startWith,long endWith,short what,long *start,long *stop);
-URLEnum SlackURL(MyWindowPtr win,PETEHandle pte,long startWith,long endWith,short what,long *start,long *stop);
+URLEnum URLIsSelected(MyWindowPtr win, PETEHandle pte, long startWith,
+		      long endWith, short what, long *start, long *stop);
+URLEnum SlackURL(MyWindowPtr win, PETEHandle pte, long startWith,
+		 long endWith, short what, long *start, long *stop);
 void URLScan(void);
 void FixURLString(PStr url);
-void FixURLPtr(Ptr url,long *len);
-OSErr ParseURL(PStr url,PStr proto,PStr host,PStr query);
-OSErr ParseURLPtr(PStr url,long length,PStr proto,PStr host,Ptr *queryPtr,long *queryLen);
-OSErr ParseProtocolFromURLPtr (UPtr url, short length, PStr proto);
-Boolean ParsePortFromHost(PStr host,PStr server,long *port);
-void PeteURLScan(MyWindowPtr win,PETEHandle pte);
-void URLStyle(PETEHandle pte, long selStart,long selEnd,Boolean rude);
-PStr URLCombine(PStr result,PStr base,PStr rel);
+void FixURLPtr(Ptr url, long *len);
+OSErr ParseURL(PStr url, PStr proto, PStr host, PStr query);
+OSErr ParseURLPtr(PStr url, long length, PStr proto, PStr host,
+		  Ptr * queryPtr, long *queryLen);
+OSErr ParseProtocolFromURLPtr(UPtr url, short length, PStr proto);
+Boolean ParsePortFromHost(PStr host, PStr server, long *port);
+void PeteURLScan(MyWindowPtr win, PETEHandle pte);
+void URLStyle(PETEHandle pte, long selStart, long selEnd, Boolean rude);
+PStr URLCombine(PStr result, PStr base, PStr rel);
 PStr URLEscape(PStr url);
-PStr URLEscapeLo(PStr url,Boolean allPercents);
-void URLEscapeEvenLower (Ptr url, Size count, Boolean allPercents);
+PStr URLEscapeLo(PStr url, Boolean allPercents);
+void URLEscapeEvenLower(Ptr url, Size count, Boolean allPercents);
 PStr URLQueryEscape(PStr query);
-OSErr URLSubstitute(PStr resultURL,PStr mhtmlIDStr,PStr origURL,PETEHandle pte);
+OSErr URLSubstitute(PStr resultURL, PStr mhtmlIDStr, PStr origURL,
+		    PETEHandle pte);
 OSErr InsertURL(PETEHandle pte);
-OSErr InsertURLLo(PETEHandle pte,long start,long stop,PStr url);
+OSErr InsertURLLo(PETEHandle pte, long start, long stop, PStr url);
 Boolean URLOkHere(PETEHandle pte);
-PStr MakeFileURL(PStr url,FSSpecPtr spec, short proto);
-OSErr MakeHelperAlias(FSSpecPtr app,AliasHandle *alias);
-OSErr SaveURLPref(PStr proto,AliasHandle alias);
-OSErr MailtoURLPtr(Ptr query,long queryLen,AEDescList *dox,Boolean spool);
+PStr MakeFileURL(PStr url, FSSpecPtr spec, short proto);
+OSErr MakeHelperAlias(FSSpecPtr app, AliasHandle * alias);
+OSErr SaveURLPref(PStr proto, AliasHandle alias);
+OSErr MailtoURLPtr(Ptr query, long queryLen, AEDescList * dox,
+		   Boolean spool);
 OSErr SettingURL(PStr query);
-Boolean URLHelpTagList(PETEHandle pte,Point mouse);
+Boolean URLHelpTagList(PETEHandle pte, Point mouse);
 #endif

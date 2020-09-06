@@ -42,10 +42,10 @@
 /************************************************************************
  * FirstSelected - find the first selection (if any)
  ************************************************************************/
-Boolean FirstSelected(Cell *c,ListHandle list)
+Boolean FirstSelected(Cell * c, ListHandle list)
 {
 	c->h = c->v = 0;
-	return(LGetSelect(True,c,list));
+	return (LGetSelect(True, c, list));
 }
 
 /************************************************************************
@@ -53,56 +53,60 @@ Boolean FirstSelected(Cell *c,ListHandle list)
  *  in a 1-dimensional list.
  *  returns 0 if no (more) cells selected
  ************************************************************************/
-short Next1Selected(short thisOne,ListHandle list)
+short Next1Selected(short thisOne, ListHandle list)
 {
 	Point c;
 	c.h = 0;
 	c.v = thisOne;
-	if (LGetSelect(True,&c,list)) return(c.v+1);
-	else return(0);
+	if (LGetSelect(True, &c, list))
+		return (c.v + 1);
+	else
+		return (0);
 }
 
 /************************************************************************
  * InWhich1Cell - over which cell (in a 1dim list) is the point?
  ************************************************************************/
-short InWhich1Cell(Point mouse,ListHandle list)
+short InWhich1Cell(Point mouse, ListHandle list)
 {
 	Rect rView = (*list)->rView;
 	short cellHi = (*list)->cellSize.v;
 	short scroll = (*list)->visible.top;
 	short cell;
-	
-	if (!PtInRect(mouse,&rView)) return(0);
-	
-	cell = scroll + (mouse.v-rView.top)/cellHi + 1;
-	return(cell);
+
+	if (!PtInRect(mouse, &rView))
+		return (0);
+
+	cell = scroll + (mouse.v - rView.top) / cellHi + 1;
+	return (cell);
 }
 
 
 /************************************************************************
  * Cell1Selected - is a cell in a 1dim list selected?
  ************************************************************************/
-Boolean Cell1Selected(short which,ListHandle list)
+Boolean Cell1Selected(short which, ListHandle list)
 {
 	Point pt;
-	
-	pt.h = 0; pt.v = which-1;
-	return(LGetSelect(False,&pt,list));
+
+	pt.h = 0;
+	pt.v = which - 1;
+	return (LGetSelect(False, &pt, list));
 }
 
 /************************************************************************
  * SelectSingleCell - select just once cell in a list
  ************************************************************************/
-void SelectSingleCell(short which,ListHandle list)
+void SelectSingleCell(short which, ListHandle list)
 {
 	Point c;
-	
+
 	c.h = c.v = 0;
-	while (LGetSelect(True,&c,list)) LSetSelect(False,c,list);
-	if (which>=0)
-	{
+	while (LGetSelect(True, &c, list))
+		LSetSelect(False, c, list);
+	if (which >= 0) {
 		c.v = which;
-		LSetSelect(True,c,list);
+		LSetSelect(True, c, list);
 		LAutoScroll(list);
 	}
 }
@@ -115,177 +119,185 @@ RgnHandle MyLDragRgn(ListHandle lHand)
 {
 	RgnHandle rgn;
 	short s;
-	Rect first,r;
-	
-	if (rgn = NewRgn())
-	{
+	Rect first, r;
+
+	if (rgn = NewRgn()) {
 		s = 0;
 		first = (*lHand)->rView;
 		first.bottom = first.top + (*lHand)->cellSize.v;
-		OffsetRect(&first,0,-(*lHand)->visible.top*(*lHand)->cellSize.v);
-		
-		while (s=Next1Selected(s,lHand))
-		{
+		OffsetRect(&first, 0,
+			   -(*lHand)->visible.top * (*lHand)->cellSize.v);
+
+		while (s = Next1Selected(s, lHand)) {
 			r = first;
-			OffsetRect(&r,0,(s-1)*(*lHand)->cellSize.v);
-			RgnPlusRect(rgn,&r);
+			OffsetRect(&r, 0, (s - 1) * (*lHand)->cellSize.v);
+			RgnPlusRect(rgn, &r);
 		}
-		OutlineRgn(rgn,1);
+		OutlineRgn(rgn, 1);
 		GlobalizeRgn(rgn);
 	}
-	return(rgn);
+	return (rgn);
 }
+
 /**********************************************************************
  * MyLDragTracker - track a drag in a list rect
  **********************************************************************/
-short MyLDragTracker(DragReference drag,Point pt,short flags,ListHandle lHand)
+short MyLDragTracker(DragReference drag, Point pt, short flags,
+		     ListHandle lHand)
 {
 	Rect r = (*lHand)->rView;
 	short scroll = 0;
 	short theCell = 0;
 	SAVE_STUFF;
 	SET_COLORS;
-	
-	ASSERT(flags&ldtInterstice);
-	
-	if (pt.v<r.top) scroll = -1;
-	else if (pt.v>r.bottom) scroll = 1;
-	
-	if (scroll)
-	{
+
+	ASSERT(flags & ldtInterstice);
+
+	if (pt.v < r.top)
+		scroll = -1;
+	else if (pt.v > r.bottom)
+		scroll = 1;
+
+	if (scroll) {
 		HideDragHilite(drag);
-		LScroll(0,scroll*(*lHand)->cellSize.v,lHand);
+		LScroll(0, scroll * (*lHand)->cellSize.v, lHand);
 	}
-	
-	if (flags&ldtInterstice)
-	{
-		if (pt.v<r.top)
+
+	if (flags & ldtInterstice) {
+		if (pt.v < r.top)
 			theCell = 1;
-		else if (pt.v>r.bottom)
+		else if (pt.v > r.bottom)
 			theCell = (*lHand)->dataBounds.bottom;
 		else
-			theCell = InWhich1Cell(pt,lHand);
-			
-		if (theCell>(*lHand)->dataBounds.bottom)
+			theCell = InWhich1Cell(pt, lHand);
+
+		if (theCell > (*lHand)->dataBounds.bottom)
 			theCell = (*lHand)->dataBounds.bottom;
-		
-		Cell1Rect(lHand,theCell,&r);
-		
-		if (pt.v>(r.top+r.bottom)/2)
-		{
-			r.top = r.bottom-1;
+
+		Cell1Rect(lHand, theCell, &r);
+
+		if (pt.v > (r.top + r.bottom) / 2) {
+			r.top = r.bottom - 1;
 			r.bottom++;
-		}
-		else
-		{
+		} else {
 			theCell--;
 			r.top--;
-			r.bottom = r.top+2;
+			r.bottom = r.top + 2;
 		}
-		InsetRect(&r,-8,0);
-		
-		if (!(flags&ldtIgnoreSelection) &&
-				(theCell==0 && Cell1Selected(1,lHand) ||
-			  Cell1Selected(theCell,lHand) ||
-			  theCell<(*lHand)->dataBounds.bottom && Cell1Selected(theCell+1,lHand)))
-		{	
+		InsetRect(&r, -8, 0);
+
+		if (!(flags & ldtIgnoreSelection) &&
+		    (theCell == 0 && Cell1Selected(1, lHand) ||
+		     Cell1Selected(theCell, lHand) ||
+		     theCell < (*lHand)->dataBounds.bottom
+		     && Cell1Selected(theCell + 1, lHand))) {
 			HideDragHilite(drag);
-			return(-1);
+			return (-1);
 		}
-		ShowDragRectHilite(drag,&r,True);
+		ShowDragRectHilite(drag, &r, True);
 	}
 	REST_STUFF;
-	return(theCell);
+	return (theCell);
 }
 
 /**********************************************************************
  * Cell1Rect - get the rectangle for a given (1-based, 1-dim) cell
  **********************************************************************/
-Rect *Cell1Rect(ListHandle lHand,short cell,Rect *r)
+Rect *Cell1Rect(ListHandle lHand, short cell, Rect * r)
 {
 	*r = (*lHand)->rView;
 	r->bottom = r->top + (*lHand)->cellSize.v;
-	OffsetRect(r,0,(*lHand)->cellSize.v * (cell-(*lHand)->visible.top-1));
-	return(r);
+	OffsetRect(r, 0,
+		   (*lHand)->cellSize.v * (cell - (*lHand)->visible.top -
+					   1));
+	return (r);
 }
 
 /************************************************************************
  * ListApp1 - handle an App1 event for a list
  *  returns True if handled
  ************************************************************************/
-Boolean ListApp1(EventRecord *event, ListHandle lHand)
+Boolean ListApp1(EventRecord * event, ListHandle lHand)
 {
-	short page = RoundDiv((*lHand)->rView.bottom-(*lHand)->rView.top,(*lHand)->cellSize.v)-1;
-	switch(event->message & charCodeMask)
-	{
-		case homeChar:
-			page = -REAL_BIG/2;
-			break;
-		case endChar:
-			page = REAL_BIG/2;
-			break;
-		case pageUpChar:
-			page *= -1;
-			break;
-		case pageDownChar:
-			break;
-		default:
-			return(False);
+	short page =
+	    RoundDiv((*lHand)->rView.bottom - (*lHand)->rView.top,
+		     (*lHand)->cellSize.v) - 1;
+	switch (event->message & charCodeMask) {
+	case homeChar:
+		page = -REAL_BIG / 2;
+		break;
+	case endChar:
+		page = REAL_BIG / 2;
+		break;
+	case pageUpChar:
+		page *= -1;
+		break;
+	case pageDownChar:
+		break;
+	default:
+		return (False);
 	}
-	LScroll(0,page,lHand);
-	return(True);
+	LScroll(0, page, lHand);
+	return (True);
 }
 
 /**********************************************************************
  * LClickWDrag - handle a list click, but allow dragging
  **********************************************************************/
-Boolean LClickWDrag(Point pt, short modifiers, ListHandle lHand, Boolean *drag,void (*hook)(short cell,ListHandle lHand))
+Boolean LClickWDrag(Point pt, short modifiers, ListHandle lHand,
+		    Boolean * drag, void (*hook)(short cell,
+						 ListHandle lHand))
 {
 	Point glob;
 	short cell;
-	
+
 	*drag = False;
 	glob = pt;
 	LocalToGlobal(&glob);
-	
-	if ((*lHand)->rView.right-pt.h<GROW_SIZE) return(LClick(pt,modifiers,lHand));
-	else
-	{
-		cell = InWhich1Cell(pt,lHand);
-		if (hook) (*hook)(cell,lHand);
-		if (*drag = MyWaitMouseMoved(glob,True)) return(False);
-		else if (!hook) return (LClick(pt,modifiers,lHand));
+
+	if ((*lHand)->rView.right - pt.h < GROW_SIZE)
+		return (LClick(pt, modifiers, lHand));
+	else {
+		cell = InWhich1Cell(pt, lHand);
+		if (hook)
+			(*hook) (cell, lHand);
+		if (*drag = MyWaitMouseMoved(glob, True))
+			return (False);
+		else if (!hook)
+			return (LClick(pt, modifiers, lHand));
 	}
-	return(False);
+	return (False);
 }
 
 /**********************************************************************
  * ResizeList - resize a list
  **********************************************************************/
-void ResizeList(ListHandle lHand,Rect *r,Point c)
+void ResizeList(ListHandle lHand, Rect * r, Point c)
 {
 	Rect oldR = (*lHand)->rView;
-	WindowPtr	winWP = (*lHand)->port;
+	WindowPtr winWP = (*lHand)->port;
 	MyWindowPtr win = GetWindowMyWindowPtr(winWP);
-	
-	LSetDrawingMode(False,lHand);
+
+	LSetDrawingMode(False, lHand);
 	(*lHand)->rView = *r;
 	(*lHand)->cellSize = c;
-	LSize(r->right-r->left,r->bottom-r->top,lHand);
-	LSetDrawingMode(True,lHand);
-	InvalWindowRect(winWP,&oldR);
-	InvalWindowRect(winWP,r);
-	if (IsMyWindow(winWP)) win->dontGreyOnMe = *r;
+	LSize(r->right - r->left, r->bottom - r->top, lHand);
+	LSetDrawingMode(True, lHand);
+	InvalWindowRect(winWP, &oldR);
+	InvalWindowRect(winWP, r);
+	if (IsMyWindow(winWP))
+		win->dontGreyOnMe = *r;
 }
 
 /************************************************************************
  * MyListHilite - general hilite function for ldef's to use
  ************************************************************************/
-void MyListHilite(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void MyListHilite(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle)
 {
 	MyWindowPtr win = GetPortMyWindowPtr(GetQDGlobalsThePort());
 	SAVE_STUFF;
-	
+
 	if (win) {
 		RGBBackColor(&win->backColor);
 		HiInvertRect(lRect);
@@ -312,35 +324,153 @@ void MyListHilite(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
 #undef LSetSelect
 #undef LDraw
 
-short MyLAddColumn(short count, short colNum, ListRef lHandle) {short val;SAVE_STUFF;SET_COLORS;val=LAddColumn(count, colNum, lHandle);REST_STUFF;return(val);}
-short MyLAddRow(short count, short rowNum, ListRef lHandle) {short val;SAVE_STUFF;SET_COLORS;val=LAddRow(count, rowNum, lHandle);REST_STUFF;return(val);}
-void MyLDelColumn(short count, short colNum, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LDelColumn(count,  colNum,  lHandle);REST_STUFF;}
-void MyLDelRow(short count, short rowNum, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LDelRow( count,  rowNum,  lHandle);REST_STUFF;}
-void MyLSize(short listWidth, short listHeight, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LSize( listWidth,  listHeight,  lHandle);REST_STUFF;}
-void MyLSetDrawingMode(Boolean drawIt, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LSetDrawingMode( drawIt,  lHandle);REST_STUFF;}
-void MyLScroll(short dCols, short dRows, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LScroll( dCols,  dRows,  lHandle);REST_STUFF;}
-void MyLAutoScroll(ListRef lHandle) {SAVE_STUFF;SET_COLORS;LAutoScroll( lHandle);REST_STUFF;}
-void MyLActivate(Boolean act, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LActivate( act,  lHandle);REST_STUFF;}
-void MyLCellSize(Point cSize, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LCellSize( cSize,  lHandle);REST_STUFF;}
-Boolean MyLClick(Point pt, short modifiers, ListRef lHandle) {Boolean val;SAVE_STUFF;SET_COLORS;val=LClick( pt,  modifiers,  lHandle)&&!(modifiers&cmdKey);REST_STUFF;return(val);}
-void MyLAddToCell(const void *dataPtr, short dataLen, Cell theCell, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LAddToCell( dataPtr,  dataLen,  theCell,  lHandle);REST_STUFF;}
-void MyLClrCell(Cell theCell, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LClrCell( theCell,  lHandle);REST_STUFF;}
-void MyLSetSelect(Boolean setIt, Cell theCell, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LSetSelect( setIt,  theCell,  lHandle);REST_STUFF;}
-void MyLDraw(Cell theCell, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LDraw( theCell,  lHandle);REST_STUFF;}
-void MyLSetCell(const void *dataPtr, short dataLen, Cell theCell, ListRef lHandle) {SAVE_STUFF;SET_COLORS;LSetCell(dataPtr,  dataLen,  theCell,  lHandle);REST_STUFF;}
+short MyLAddColumn(short count, short colNum, ListRef lHandle)
+{
+	short val;
+	SAVE_STUFF;
+	SET_COLORS;
+	val = LAddColumn(count, colNum, lHandle);
+	REST_STUFF;
+	return (val);
+}
+
+short MyLAddRow(short count, short rowNum, ListRef lHandle)
+{
+	short val;
+	SAVE_STUFF;
+	SET_COLORS;
+	val = LAddRow(count, rowNum, lHandle);
+	REST_STUFF;
+	return (val);
+}
+
+void MyLDelColumn(short count, short colNum, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LDelColumn(count, colNum, lHandle);
+	REST_STUFF;
+}
+
+void MyLDelRow(short count, short rowNum, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LDelRow(count, rowNum, lHandle);
+	REST_STUFF;
+}
+
+void MyLSize(short listWidth, short listHeight, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LSize(listWidth, listHeight, lHandle);
+	REST_STUFF;
+}
+
+void MyLSetDrawingMode(Boolean drawIt, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LSetDrawingMode(drawIt, lHandle);
+	REST_STUFF;
+}
+
+void MyLScroll(short dCols, short dRows, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LScroll(dCols, dRows, lHandle);
+	REST_STUFF;
+}
+
+void MyLAutoScroll(ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LAutoScroll(lHandle);
+	REST_STUFF;
+}
+
+void MyLActivate(Boolean act, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LActivate(act, lHandle);
+	REST_STUFF;
+}
+
+void MyLCellSize(Point cSize, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LCellSize(cSize, lHandle);
+	REST_STUFF;
+}
+
+Boolean MyLClick(Point pt, short modifiers, ListRef lHandle)
+{
+	Boolean val;
+	SAVE_STUFF;
+	SET_COLORS;
+	val = LClick(pt, modifiers, lHandle) && !(modifiers & cmdKey);
+	REST_STUFF;
+	return (val);
+}
+
+void MyLAddToCell(const void *dataPtr, short dataLen, Cell theCell,
+		  ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LAddToCell(dataPtr, dataLen, theCell, lHandle);
+	REST_STUFF;
+}
+
+void MyLClrCell(Cell theCell, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LClrCell(theCell, lHandle);
+	REST_STUFF;
+}
+
+void MyLSetSelect(Boolean setIt, Cell theCell, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LSetSelect(setIt, theCell, lHandle);
+	REST_STUFF;
+}
+
+void MyLDraw(Cell theCell, ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LDraw(theCell, lHandle);
+	REST_STUFF;
+}
+
+void MyLSetCell(const void *dataPtr, short dataLen, Cell theCell,
+		ListRef lHandle)
+{
+	SAVE_STUFF;
+	SET_COLORS;
+	LSetCell(dataPtr, dataLen, theCell, lHandle);
+	REST_STUFF;
+}
+
 void MyLUpdate(RgnHandle theRgn, ListRef lHandle)
 {
 	GrafPtr origPort;
-	Rect r=(*lHandle)->rView;
+	Rect r = (*lHandle)->rView;
 	RgnHandle sectRgn = NewRgn();
 	SAVE_STUFF;
 	SET_COLORS;
-	if (sectRgn)
-	{
-		if (theRgn)
-		{
-			RectRgn(sectRgn,&r);
-			SectRgn(sectRgn,theRgn,sectRgn);
+	if (sectRgn) {
+		if (theRgn) {
+			RectRgn(sectRgn, &r);
+			SectRgn(sectRgn, theRgn, sectRgn);
 			GetPort(&origPort);
 			SetPort((**lHandle).port);
 			EraseRgn(sectRgn);
@@ -348,6 +478,6 @@ void MyLUpdate(RgnHandle theRgn, ListRef lHandle)
 		}
 		DisposeRgn(sectRgn);
 	}
-	LUpdate( theRgn,  lHandle);
+	LUpdate(theRgn, lHandle);
 	REST_STUFF;
 }

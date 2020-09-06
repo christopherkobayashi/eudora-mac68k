@@ -35,11 +35,11 @@
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /* Copyright (c) 1992-1995 by QUALCOMM Incorporated */
 
-FSSpecPtr Box2TOCSpec(FSSpecPtr boxSpec,FSSpecPtr tocSpec);
+FSSpecPtr Box2TOCSpec(FSSpecPtr boxSpec, FSSpecPtr tocSpec);
 TOCHandle CheckTOC(FSSpecPtr spec);
-OSErr TOCDates(FSSpecPtr spec, uLong *box, uLong *res, uLong *file);
+OSErr TOCDates(FSSpecPtr spec, uLong * box, uLong * res, uLong * file);
 TOCHandle FindTOC(FSSpecPtr spec);
-int FlushTOCs(Boolean andClose,Boolean canSkip);
+int FlushTOCs(Boolean andClose, Boolean canSkip);
 
 #ifdef THREADING_ON
 #define GetTempInTOC()	GetSpecialTOC(IN_TEMP)
@@ -61,21 +61,21 @@ Boolean AmTempToc(TOCHandle tocH);
 
 short GetMailboxType(FSSpecPtr spec);
 TOCHandle GetSpecialTOC(short nameId);
-TOCHandle ReadTOC(FSSpecPtr spec,Boolean resource);
-OSErr ReadRForkTOC(FSSpecPtr spec,TOCHandle *tocH);
-OSErr ReadDForkTOC(FSSpecPtr spec,TOCHandle *tocH);
+TOCHandle ReadTOC(FSSpecPtr spec, Boolean resource);
+OSErr ReadRForkTOC(FSSpecPtr spec, TOCHandle * tocH);
+OSErr ReadDForkTOC(FSSpecPtr spec, TOCHandle * tocH);
 TOCHandle TOCBySpec(FSSpecPtr spec);
 int WriteTOC(TOCHandle tocH);
-short GetTOCK(TOCHandle tocH,uLong *usedK, uLong *totalK);
+short GetTOCK(TOCHandle tocH, uLong * usedK, uLong * totalK);
 void CleanseTOC(TOCHandle tocH);
-short GetTOCByFSS(FSSpecPtr specPtr,TOCHandle *tocH);
+short GetTOCByFSS(FSSpecPtr specPtr, TOCHandle * tocH);
 Boolean TOCUnread(TOCHandle tocH);
-short TOCUnreadCount(TOCHandle tocH,Boolean recentOnly);
+short TOCUnreadCount(TOCHandle tocH, Boolean recentOnly);
 void NoteFreeSpace(TOCHandle tocH);
 OSErr InsaneTOC(TOCHandle tocH);
-OSErr KillTOC(short refN,FSSpecPtr spec);
-TOCHandle FixErrantTOC(FSSpecPtr spec,TOCHandle tocH,short why);
-OSErr PeekTOC(FSSpecPtr spec,TOCType *tocPart);
+OSErr KillTOC(short refN, FSSpecPtr spec);
+TOCHandle FixErrantTOC(FSSpecPtr spec, TOCHandle tocH, short why);
+OSErr PeekTOC(FSSpecPtr spec, TOCType * tocPart);
 TOCHandle IsTOCValid(TOCHandle tocH);
 
 #endif

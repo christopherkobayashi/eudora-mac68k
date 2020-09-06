@@ -37,20 +37,21 @@
 /************************************************************************
  * declarations for dealing with ctb streams
  ************************************************************************/
-OSErr CTBConnectTrans(TransStream stream,UPtr serverName,long port,Boolean silently);
-OSErr CTBSendTrans(TransStream stream,UPtr text,long size, ...);
-OSErr CTBRecvTrans(TransStream stream,UPtr line,long *size);
+OSErr CTBConnectTrans(TransStream stream, UPtr serverName, long port,
+		      Boolean silently);
+OSErr CTBSendTrans(TransStream stream, UPtr text, long size, ...);
+OSErr CTBRecvTrans(TransStream stream, UPtr line, long *size);
 OSErr CTBDisTrans(TransStream stream);
 OSErr CTBDestroyTrans(TransStream stream);
 OSErr CTBTransError(TransStream stream);
-void CTBSilenceTrans(TransStream stream,Boolean silence);
+void CTBSilenceTrans(TransStream stream, Boolean silence);
 Boolean InitCTB(Boolean makeUser);
 short DialThePhone(TransStream stream);
 void HangUpThePhone();
 short CTBNavigateSTRN(short id);
-UPtr CTBWhoAmI(TransStream stream,Uptr who);
+UPtr CTBWhoAmI(TransStream stream, Uptr who);
 void MyCMIdle(void);
-void CheckNavPW(Boolean *primary,Boolean *secondary);
+void CheckNavPW(Boolean * primary, Boolean * secondary);
 short GetSecondPass(UPtr pass);
 #endif
 

@@ -42,67 +42,78 @@
 #define AddrWhite(c) (c<=' ')
 #define PState(cc,rc,ss)
 
-typedef enum
-{
+typedef enum {
 	Regular, Comma, lParen, rParen, lAngle, rAngle,
 	lBrak, rBrak, dQuote, Colon, Semicolon, aDone
 } AddressCharEnum;
-typedef enum
-{
-	sNoChange= -1,/* remain in current state */
-	sPlain, 			/* nothing special going on */
-	sParen, 			/* within parentheses */
-	sAngle, 			/* within angle brackets */
-	sBrak,				/* within square brackets */
-	sQuot,				/* with double quotes */
-	sTrail, 			/* trailer after an angle bracket */
-	sTDone, 			/* the token is done for this address */
+typedef enum {
+	sNoChange = -1,		/* remain in current state */
+	sPlain,			/* nothing special going on */
+	sParen,			/* within parentheses */
+	sAngle,			/* within angle brackets */
+	sBrak,			/* within square brackets */
+	sQuot,			/* with double quotes */
+	sTrail,			/* trailer after an angle bracket */
+	sTDone,			/* the token is done for this address */
 /* the following are states that decay immediately into other states */
-	sError, 			/* bad address; causes routine to punt */
-	sToken, 			/* process completed token (sPlain) */
-	sBrakE, 			/* close [] (pushed state (sPlain,sAngle,sTDone)) */
-	sQuotE, 			/* close "" (pushed state (sPlain,sAngle,sTDone)) */
-	incPar, 			/* increment () level (sParen) */
-	decPar, 			/* decrement () level (sParen or pushed state) */
-	sColon,				/* rescans as sTDone */
-	sSem,					/* just saw a sem.  Finish current address, rescan as sColon */
-	sTrailB 			/* beginning of trailer state */
+	sError,			/* bad address; causes routine to punt */
+	sToken,			/* process completed token (sPlain) */
+	sBrakE,			/* close [] (pushed state (sPlain,sAngle,sTDone)) */
+	sQuotE,			/* close "" (pushed state (sPlain,sAngle,sTDone)) */
+	incPar,			/* increment () level (sParen) */
+	decPar,			/* decrement () level (sParen or pushed state) */
+	sColon,			/* rescans as sTDone */
+	sSem,			/* just saw a sem.  Finish current address, rescan as sColon */
+	sTrailB			/* beginning of trailer state */
 } AddressStateEnum;
-char AddrStateTable[sTDone+1][aDone+1] = {
+char AddrStateTable[sTDone + 1][aDone + 1] = {
 /*							. 			, 			( 			) 			< 			> 			[ 			] 			"       :				;			aDone*/
-/* sPlain */		-1, 		sToken, incPar, sError, sAngle, sError, sBrak,	sError, sQuot,	sColon,	sSem,	sToken,
-/* sParen */		-1, 		-1, 		incPar, decPar, -1, 		-1, 		-1, 		-1, 		-1, 		-1,			-1,		sError,
-/* sAngle */		-1, 		-1, 		incPar, decPar, sError, sTrailB, sBrak, sError, sQuot,	-1,			-1,		sError,
-/* sBrak */ 		-1, 		-1, 		-1, 		-1, 		-1, 		-1, 		sError, sBrakE, -1, 		-1,			-1,		sError,
-/* sQuot */ 		-1, 		-1, 		-1, 		-1, 		-1, 		-1, 		-1, 		-1, 		sQuotE, -1,			-1,		sError,
-/* sTrail */		-1, 		sToken, incPar, decPar, sError, sError, -1, 		-1, 		sQuot,	-1,			sSem,	sToken,
-/* sTDone */		-1, 		sToken, incPar, sError, sAngle, sError, sBrak,	sError, sQuot,	sColon,	sSem,	sToken
+/* sPlain */ -1, sToken, incPar, sError, sAngle, sError, sBrak,
+	    sError, sQuot, sColon, sSem, sToken,
+/* sParen */ -1, -1, incPar, decPar, -1, -1, -1, -1, -1, -1, -1,
+	    sError,
+/* sAngle */ -1, -1, incPar, decPar, sError, sTrailB, sBrak,
+	    sError, sQuot, -1, -1, sError,
+/* sBrak */ -1, -1, -1, -1, -1, -1, sError, sBrakE, -1, -1, -1,
+	    sError,
+/* sQuot */ -1, -1, -1, -1, -1, -1, -1, -1, sQuotE, -1, -1, sError,
+/* sTrail */ -1, sToken, incPar, decPar, sError, sError, -1, -1,
+	    sQuot, -1, sSem, sToken,
+/* sTDone */ -1, sToken, incPar, sError, sAngle, sError, sBrak,
+	    sError, sQuot, sColon, sSem, sToken
 };
+
 /************************************************************************
  * SuckAddresses - parse the RFC 822 Address format
  * Returns a handle to some storage of the form:
  *			[<length byte>address<nil>]...<nil> 
  ************************************************************************/
-OSErr SuckAddresses(BinAddrHandle *addresses,TextAddrHandle	text,Boolean wantComments, Boolean wantErrors,Boolean wantAutoQual,long ***spots)
+OSErr SuckAddresses(BinAddrHandle * addresses, TextAddrHandle text,
+		    Boolean wantComments, Boolean wantErrors,
+		    Boolean wantAutoQual, long ***spots)
 {
-	OSErr err=noErr;
-	
+	OSErr err = noErr;
+
 	ASSERT(text && *text);
-	if (text && *text)
-	{
-		err = SuckPtrAddresses(addresses,LDRef(text),GetHandleSize(text),wantComments, wantErrors, wantAutoQual,spots);
+	if (text && *text) {
+		err =
+		    SuckPtrAddresses(addresses, LDRef(text),
+				     GetHandleSize(text), wantComments,
+				     wantErrors, wantAutoQual, spots);
 		UL(text);
 	}
-	
-	return(err);
+
+	return (err);
 }
 
-OSErr SuckPtrAddresses(BinAddrHandle *addresses,TextAddrPtr text,long size,Boolean wantComments, Boolean wantErrors, Boolean wantAutoQual,long ***addrSpots)
+OSErr SuckPtrAddresses(BinAddrHandle * addresses, TextAddrPtr text,
+		       long size, Boolean wantComments, Boolean wantErrors,
+		       Boolean wantAutoQual, long ***addrSpots)
 {
 	BinAddrHandle newAddresses;
 	UPtr spot;
-	short paren=0;
-	short count=0;
+	short paren = 0;
+	short count = 0;
 	AddressStateEnum oldState, state, nextState;
 	Byte c;
 	AddressCharEnum cClass;
@@ -114,7 +125,7 @@ OSErr SuckPtrAddresses(BinAddrHandle *addresses,TextAddrPtr text,long size,Boole
 	OSErr err = noErr;
 	long theSpot;
 	Byte lastC;
-	
+
 #define AddrFull				(ap-addressBuffer >= sizeof(addressBuffer)-2)
 #define AddrEmpty 			(ap==addressBuffer+1)
 #define AddrChar(c) 		do {if ((wantComments&&c!='\015'||!AddrWhite(c)) && oldState!=sTDone) {*ap++ = c;if (!AddrWhite(c)) addrEnd=ap;if (c=='@') sawAt = True;}} while (0)
@@ -123,189 +134,233 @@ OSErr SuckPtrAddresses(BinAddrHandle *addresses,TextAddrPtr text,long size,Boole
 #define RestartAddr() 	do {ap=addressBuffer+1;sawAt=False;addrEnd=nil;lastC=0;} while(0)
 
 	*addresses = nil;
-	if (addrSpots) *addrSpots = NuHandleClear(4);
-	
-	newAddresses = (UHandle)NuHTempBetter(0L);
-	if (newAddresses==nil) return(WarnUser(MEM_ERR,MemError()));
-	
+	if (addrSpots)
+		*addrSpots = NuHandleClear(4);
+
+	newAddresses = (UHandle) NuHTempBetter(0L);
+	if (newAddresses == nil)
+		return (WarnUser(MEM_ERR, MemError()));
+
 	oldState = state = sPlain;
-	for (spot=text;(spot<text+size) && (AddrWhite(*spot));spot++);
-	if (wantAutoQual)
-	{
-		GetPref(autoQual,PREF_AUTOQUAL);
+	for (spot = text; (spot < text + size) && (AddrWhite(*spot));
+	     spot++);
+	if (wantAutoQual) {
+		GetPref(autoQual, PREF_AUTOQUAL);
 		if (*autoQual && autoQual[1] != '@')
-			PInsert(autoQual,sizeof(autoQual),"\p@",autoQual+1);
+			PInsert(autoQual, sizeof(autoQual), "\p@",
+				autoQual + 1);
 	}
-	
+
 	RestartAddr();
-	do
-	{
+	do {
 		if (spot >= text + size)
 			cClass = aDone;
-		else
-		{
-			switch (c = *spot++)
-			{
-				case ',': 			cClass = Comma; break;
-				case '(': 			cClass = lParen; break;
-				case ')': 			cClass = rParen; break;
-				case '[': 			cClass = lBrak; break;
-				case ']': 			cClass = rBrak; break;
-				case '<': 			cClass = lAngle; break;
-				case '>': 			cClass = rAngle; break;
-				case '"':       cClass = dQuote; break;
-				case ':':
-					if (spot>text+1 && spot[-2]==':' || spot<text+size && spot[0]==':')
-						cClass = Regular;
-					else
-						cClass = Colon; break;
-				case ';':       cClass = Semicolon; break;
-				default:				cClass = Regular; break;
+		else {
+			switch (c = *spot++) {
+			case ',':
+				cClass = Comma;
+				break;
+			case '(':
+				cClass = lParen;
+				break;
+			case ')':
+				cClass = rParen;
+				break;
+			case '[':
+				cClass = lBrak;
+				break;
+			case ']':
+				cClass = rBrak;
+				break;
+			case '<':
+				cClass = lAngle;
+				break;
+			case '>':
+				cClass = rAngle;
+				break;
+			case '"':
+				cClass = dQuote;
+				break;
+			case ':':
+				if (spot > text + 1 && spot[-2] == ':'
+				    || spot < text + size
+				    && spot[0] == ':')
+					cClass = Regular;
+				else
+					cClass = Colon;
+				break;
+			case ';':
+				cClass = Semicolon;
+				break;
+			default:
+				cClass = Regular;
+				break;
 			}
 			// Hacky way of dealing with backslash
-			if (lastC=='\\') cClass = Regular;
+			if (lastC == '\\')
+				cClass = Regular;
 			lastC = c;
 		}
 		nextState = AddrStateTable[state][cClass];
-rescan:
-		PState(cClass,spot[-1],nextState);
-		if (nextState == sNoChange) nextState = state;
-		switch (nextState)
-		{
-			case sPlain:
+	      rescan:
+		PState(cClass, spot[-1], nextState);
+		if (nextState == sNoChange)
+			nextState = state;
+		switch (nextState) {
+		case sPlain:
+			AddrChar(c);
+			break;
+		case sAngle:
+			if (state == sAngle || wantComments)
 				AddrChar(c);
-				break;
-			case sAngle:
-				if (state==sAngle || wantComments)
-					AddrChar(c);
-				else
-					RestartAddr();
-				break;
-			case sColon:
-				AddrChar(c);
-				nextState = sToken;
-				goto rescan;
-			case sBrak:
-				if (state!=sBrak)
-					oldState = state;
-				AddrAny(c);
-				break;
-			case sQuot:
-				if (state!=sQuot) oldState = state;
-				if (oldState==sTrail) CmmntChar(c); else AddrAny(c);
-				break;
-			case sTDone:
-				break;
-			case sError:
-				count = 0;
-				goto parsePunt;
-				break;
-			case sSem:
-			case sToken:
-				while (!AddrEmpty && AddrWhite(ap[-1])) ap--; /* strip trailing space */
-				*ap++ = '\0';
-				if (addressBuffer[1])
-				{
-					*addressBuffer = ap-addressBuffer - 2;
-					if (wantAutoQual && *autoQual && !sawAt && addrEnd && addressBuffer[1]!=';')
-					if (!HasFeature (featureFcc) || (HasFeature (featureFcc) && !IsFCCAddr(addressBuffer) && !IsNewsgroupAddr(addressBuffer)))
-						{
-							PInsert(addressBuffer,sizeof(addressBuffer)-2,autoQual,addrEnd);
-							addressBuffer[*addressBuffer+1] = 0;	/* null terminate */
-						}
-					TrimWhite(addressBuffer);
-					TrimInitialWhite(addressBuffer);
-					if (PtrPlusHand_(addressBuffer,(Handle)newAddresses,*addressBuffer+2))
-					{
-						err = MemError();
-						SetHandleBig_((Handle)newAddresses,0L);
-						WarnUser(MEM_ERR,err);
-						count = 0;
-						goto parsePunt;
-					}
-					else
-					{
-						if (addrSpots && *addrSpots)
-						{
-							theSpot = spot-text;
-							if (PtrPlusHand(&theSpot,(void*)*addrSpots,4))
-								ZapHandle(*addrSpots);
-						}
-						count++;
-					}
-				}
+			else
 				RestartAddr();
-				oldState = sPlain;
-				if (nextState==sSem)
-				{
-					AddrChar(c);
-					nextState = sTDone;
-				}
-				nextState = sPlain;
-				PState(cClass,' ',nextState);
-				while ((spot<text+size) && (AddrWhite(*spot))) spot++;
-				break;
-			case sTrailB:
-				nextState = sTrail;
-				CmmntChar('>');
-				break;
-			case sBrakE:
-				nextState = oldState;
-				PState(cClass,' ',nextState);
-				AddrChar(c);
-				break;
-			case sQuotE:
-				nextState = oldState;
-				PState(cClass,' ',nextState);
-				if (oldState==sTrail) CmmntChar(c); else AddrAny(c);
-				break;
-			case incPar:
-				if (!paren++) oldState=state;
-				nextState = sParen;
-				PState(cClass,' ',nextState);
-				CmmntChar('(');
-				break;
-			case decPar:
-				if (!--paren)
-					nextState = oldState;
-				else
-					nextState = sParen;
-				PState(cClass,' ',nextState);
-				CmmntChar(')');
-				break;
-			default:
+			break;
+		case sColon:
+			AddrChar(c);
+			nextState = sToken;
+			goto rescan;
+		case sBrak:
+			if (state != sBrak)
+				oldState = state;
+			AddrAny(c);
+			break;
+		case sQuot:
+			if (state != sQuot)
+				oldState = state;
+			if (oldState == sTrail)
 				CmmntChar(c);
-				break;
+			else
+				AddrAny(c);
+			break;
+		case sTDone:
+			break;
+		case sError:
+			count = 0;
+			goto parsePunt;
+			break;
+		case sSem:
+		case sToken:
+			while (!AddrEmpty && AddrWhite(ap[-1]))
+				ap--;	/* strip trailing space */
+			*ap++ = '\0';
+			if (addressBuffer[1]) {
+				*addressBuffer = ap - addressBuffer - 2;
+				if (wantAutoQual && *autoQual && !sawAt
+				    && addrEnd && addressBuffer[1] != ';')
+					if (!HasFeature(featureFcc)
+					    || (HasFeature(featureFcc)
+						&&
+						!IsFCCAddr(addressBuffer)
+						&&
+						!IsNewsgroupAddr
+						(addressBuffer))) {
+						PInsert(addressBuffer,
+							sizeof
+							(addressBuffer) -
+							2, autoQual,
+							addrEnd);
+						addressBuffer[*addressBuffer + 1] = 0;	/* null terminate */
+					}
+				TrimWhite(addressBuffer);
+				TrimInitialWhite(addressBuffer);
+				if (PtrPlusHand_
+				    (addressBuffer, (Handle) newAddresses,
+				     *addressBuffer + 2)) {
+					err = MemError();
+					SetHandleBig_((Handle)
+						      newAddresses, 0L);
+					WarnUser(MEM_ERR, err);
+					count = 0;
+					goto parsePunt;
+				} else {
+					if (addrSpots && *addrSpots) {
+						theSpot = spot - text;
+						if (PtrPlusHand
+						    (&theSpot,
+						     (void *) *addrSpots,
+						     4))
+							ZapHandle
+							    (*addrSpots);
+					}
+					count++;
+				}
+			}
+			RestartAddr();
+			oldState = sPlain;
+			if (nextState == sSem) {
+				AddrChar(c);
+				nextState = sTDone;
+			}
+			nextState = sPlain;
+			PState(cClass, ' ', nextState);
+			while ((spot < text + size) && (AddrWhite(*spot)))
+				spot++;
+			break;
+		case sTrailB:
+			nextState = sTrail;
+			CmmntChar('>');
+			break;
+		case sBrakE:
+			nextState = oldState;
+			PState(cClass, ' ', nextState);
+			AddrChar(c);
+			break;
+		case sQuotE:
+			nextState = oldState;
+			PState(cClass, ' ', nextState);
+			if (oldState == sTrail)
+				CmmntChar(c);
+			else
+				AddrAny(c);
+			break;
+		case incPar:
+			if (!paren++)
+				oldState = state;
+			nextState = sParen;
+			PState(cClass, ' ', nextState);
+			CmmntChar('(');
+			break;
+		case decPar:
+			if (!--paren)
+				nextState = oldState;
+			else
+				nextState = sParen;
+			PState(cClass, ' ', nextState);
+			CmmntChar(')');
+			break;
+		default:
+			CmmntChar(c);
+			break;
 		}
 		state = nextState;
 	}
-	while (cClass!=aDone && !AddrFull);
-	if (PtrPlusHand_("",(UHandle)newAddresses,1))
-	{
+	while (cClass != aDone && !AddrFull);
+	if (PtrPlusHand_("", (UHandle) newAddresses, 1)) {
 		err = MemError();
-		SetHandleBig_(newAddresses,0L);
-		WarnUser(MEM_ERR,err);
+		SetHandleBig_(newAddresses, 0L);
+		WarnUser(MEM_ERR, err);
 	}
-parsePunt:	
-	if (err||(nextState==sError)||AddrFull)
-	{
+      parsePunt:
+	if (err || (nextState == sError) || AddrFull) {
 		ZapHandle(newAddresses);
-		if (addrSpots) ZapHandle(*addrSpots);
-		if (!err)
-		{
-			if (wantErrors)
-			{
+		if (addrSpots)
+			ZapHandle(*addrSpots);
+		if (!err) {
+			if (wantErrors) {
 #ifdef CLARENCE_LOOK_HERE
-	attach errors to mesg 
+				attach errors to mesg
 #endif
-				if (AddrFull) WarnUser(ADDR_TOO_LONG,0);
-				else if (nextState==sError) WarnUser(BAD_ADDRESS,0);
+				if (AddrFull)
+					 WarnUser(ADDR_TOO_LONG, 0);
+				else if (nextState == sError)
+					WarnUser(BAD_ADDRESS, 0);
 			}
 			err = paramErr;
 		}
 	}
 	*addresses = newAddresses;
-	return(err);
+	return (err);
 }
 
 /**********************************************************************
@@ -315,42 +370,47 @@ Boolean IsFCCAddr(PStr addr)
 {
 	Str15 prefix;
 	UPtr spot;
-	
-	if (!HasFeature (featureFcc))	//Folder Carbon Copy no FCC in Eudora Light!
+
+	if (!HasFeature(featureFcc))	//Folder Carbon Copy no FCC in Eudora Light!
 		return (false);
-		
-	spot = PPtrFindSub(GetRString(prefix,FCC_PREFIX),addr+1,*addr);
-	return (spot && (spot==addr+1 || spot==addr+2 && addr[1]=='"'));
+
+	spot =
+	    PPtrFindSub(GetRString(prefix, FCC_PREFIX), addr + 1, *addr);
+	return (spot
+		&& (spot == addr + 1 || spot == addr + 2
+		    && addr[1] == '"'));
 }
 
 /**********************************************************************
  * SameAddressStr - do two strings hold the same address?
  **********************************************************************/
-Boolean SameAddressStr(PStr addr1,PStr addr2)
+Boolean SameAddressStr(PStr addr1, PStr addr2)
 {
 	Str255 short1, short2;
-	
-	return(StringSame(ShortAddr(short1,addr1),ShortAddr(short2,addr2)));
+
+	return (StringSame
+		(ShortAddr(short1, addr1), ShortAddr(short2, addr2)));
 }
 
 /**********************************************************************
  * CanonAddr - put a mailbox and name into canonical form
  **********************************************************************/
-PStr CanonAddr(PStr into,PStr addr,PStr name)
+PStr CanonAddr(PStr into, PStr addr, PStr name)
 {
 	Str255 lAddr, lName, fmt;
-	
-	PCopy(lAddr,name);
-	if (PrefIsSet(PREF_UNCOMMA)) Uncomma(lAddr);
-	ComposeRString(lName,RNAME_QUOTE,lAddr);
 
-	ShortAddr(lAddr,addr);
+	PCopy(lAddr, name);
+	if (PrefIsSet(PREF_UNCOMMA))
+		Uncomma(lAddr);
+	ComposeRString(lName, RNAME_QUOTE, lAddr);
 
-	GetRString(fmt,ADD_REALNAME);
-	utl_PlugParams(fmt,into,lAddr,lName,nil,nil);
-	return(into);
+	ShortAddr(lAddr, addr);
+
+	GetRString(fmt, ADD_REALNAME);
+	utl_PlugParams(fmt, into, lAddr, lName, nil, nil);
+	return (into);
 }
-		
+
 /**********************************************************************
  * ShortAddr - return just the short form of an address; user@host
  **********************************************************************/
@@ -358,32 +418,34 @@ PStr ShortAddr(PStr shortAddr, PStr longAddr)
 {
 	OSErr err;
 	UHandle addresses;
-	
-	err = SuckPtrAddresses(&addresses,longAddr+1,*longAddr,False,False,True,nil);
-	
+
+	err =
+	    SuckPtrAddresses(&addresses, longAddr + 1, *longAddr, False,
+			     False, True, nil);
+
 	if (addresses && **addresses)
-		PCopy(shortAddr,*addresses);
+		PCopy(shortAddr, *addresses);
 	else
-		PCopy(shortAddr,longAddr);
+		PCopy(shortAddr, longAddr);
 	DisposeHandle(addresses);
-	return(shortAddr);
+	return (shortAddr);
 }
 
 
-short CountAddresses (Handle addresses, short justTellMeIfThereAreAtLeastThisMany)
-
+short CountAddresses(Handle addresses,
+		     short justTellMeIfThereAreAtLeastThisMany)
 {
-  UPtr	spot,
-  			end;
-  short	count;
-	
-	count	= 0;
-	spot	= *addresses;
-	end		= spot + GetHandleSize (addresses);
-	
+	UPtr spot, end;
+	short count;
+
+	count = 0;
+	spot = *addresses;
+	end = spot + GetHandleSize(addresses);
+
 	while (spot < end && *spot) {
 		++count;
-		if (justTellMeIfThereAreAtLeastThisMany && count == justTellMeIfThereAreAtLeastThisMany)	
+		if (justTellMeIfThereAreAtLeastThisMany
+		    && count == justTellMeIfThereAreAtLeastThisMany)
 			spot = end;
 		else
 			spot += (*spot + 2);
@@ -395,24 +457,22 @@ short CountAddresses (Handle addresses, short justTellMeIfThereAreAtLeastThisMan
  * AddAddressHashUniq - add the hash of an address to an accumulator, if
  *  it's not already there.  Returns true if the address is not already there
  ************************************************************************/
-Boolean AddAddressHashUniq(PStr address,AccuPtr a)
+Boolean AddAddressHashUniq(PStr address, AccuPtr a)
 {
 	uLong addressHash;
 	Str255 shortAddr;
-	
+
 	// form a very canonical hash
-	ShortAddr(shortAddr,address);
+	ShortAddr(shortAddr, address);
 	MyLowerStr(shortAddr);
 	addressHash = Hash(shortAddr);
-	
+
 	// look for it
-	if (0>AccuFindLong(a,addressHash))
-	{
+	if (0 > AccuFindLong(a, addressHash)) {
 		// add it
-		AccuAddPtr(a,&addressHash,sizeof(addressHash));
+		AccuAddPtr(a, &addressHash, sizeof(addressHash));
 		return true;
-	}
-	else
+	} else
 		// already there!
 		return false;
 }

@@ -32,15 +32,14 @@
 #ifndef STATMNG_H
 #define STATMNG_H
 
-typedef enum
-{
+typedef enum {
 	// Keep stats organized by type
-	
+
 	// Standard numeric stats
 	kStatReceivedMail,
 	kStatSentMail,
 	kStatFaceTime,
-	
+
 	// Junk mail stats
 	kStatScoredJunk,
 	kStatScoredNotJunk,
@@ -48,28 +47,27 @@ typedef enum
 	kStatFalsePositives,
 	kStatFalseNegatives,
 	kStatFalseWhiteList,
-	kStatJunkTotal,	// Calculated!
-	kStatTotal,	// Calculated!
+	kStatJunkTotal,		// Calculated!
+	kStatTotal,		// Calculated!
 	kStatJunkPercent,	// Calculated!
-	
+
 	// Beginning of short stats
-	kBeginShortStats,	
+	kBeginShortStats,
 	kStatReceivedAttach,
 	kStatSentAttach,
 	kStatReadMsg,
-	kStatUnused,	// feel free to reuse this one
+	kStatUnused,		// feel free to reuse this one
 	kStatForwardMsg,
 	kStatReplyMsg,
 	kStatRedirectMsg,
 	kStatFaceTimeRead,
 	kStatFaceTimeCompose,
 	kStatFaceTimeOther,
-	
+
 	kEndStats
 } StatType;
 
-typedef enum
-{
+typedef enum {
 	kStatDay,
 	kStatWeek,
 	kStatMonth,
@@ -81,8 +79,8 @@ void ShutdownStats(void);
 void StatsIdle(void);
 void UpdateNumStat(StatType which, long value);
 void UpdateNumStatWithTime(StatType which, long value, uLong seconds);
-Handle GetStatsAsText(StatTimePeriod period,Boolean extended);
+Handle GetStatsAsText(StatTimePeriod period, Boolean extended);
 char GetIntlNumberPart(short charToken);
 void ResetStatistics(void);
 
-#endif //STATMNG_H
+#endif				//STATMNG_H

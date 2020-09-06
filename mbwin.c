@@ -42,23 +42,24 @@
  * handling the mailbox window
  **********************************************************************/
 
-//	First few items in list
-enum	{ kItemEudoraFolder=1,kItemInBox,kItemOutBox,kItemJunkBox,kItemTrash,kItemMailBoxes };
+//      First few items in list
+enum { kItemEudoraFolder =
+	    1, kItemInBox, kItemOutBox, kItemJunkBox, kItemTrash,
+	    kItemMailBoxes };
 
 // ViewListIcon - Icon constants for list view
-enum 
-{
-	kFolderIcon=kGenericFolderIconResource,
-	kTrashBoxIcon=kTrashIconResource,
-	kMailBoxIcon=MAILBOX_ONLY_ICON,
-	kIMAPMailboxIcon=IMAP_MAILBOX_FILE_ICON,
-	kIMAPPolledMailboxIcon=RESYNC_ICON,
-	kIMAPPolledFolderIcon=IMAP_POLLED_MAILBOX_FILE_ICON
+enum {
+	kFolderIcon = kGenericFolderIconResource,
+	kTrashBoxIcon = kTrashIconResource,
+	kMailBoxIcon = MAILBOX_ONLY_ICON,
+	kIMAPMailboxIcon = IMAP_MAILBOX_FILE_ICON,
+	kIMAPPolledMailboxIcon = RESYNC_ICON,
+	kIMAPPolledFolderIcon = IMAP_POLLED_MAILBOX_FILE_ICON
 };
 
 #define dashChar ((unsigned char)'-')
 
-Boolean	gfMessageDrag,gfBoxDrag;
+Boolean gfMessageDrag, gfBoxDrag;
 
 // define this to include the Resync button.  Remove this all eventually if it's not missed.
 //#define SHOW_RESYNC_BUTTON
@@ -68,8 +69,7 @@ Boolean	gfMessageDrag,gfBoxDrag;
 /************************************************************************
  * the structure for the mailbox window
  ************************************************************************/
-typedef enum 
-{ 
+typedef enum {
 	NewMBIndex,
 	NewFolderIndex,
 	RemoveIndex,
@@ -77,16 +77,15 @@ typedef enum
 	ResyncIndex,
 #endif
 	OptionsMenuIndex,
-	ControlCount 
+	ControlCount
 } ControlEnum;
-typedef struct
-{
+typedef struct {
 	ViewList list;
 	MyWindowPtr win;
 	ControlHandle controls[ControlCount];
 	Boolean dontTickle;
-	Boolean	inited;
-	Boolean	IMAPButtonsVisible;
+	Boolean inited;
+	Boolean IMAPButtonsVisible;
 #ifdef SHOW_RESYNC_BUTTON
 	Boolean resyncEnabled;
 	Boolean imapMailboxSelected;
@@ -114,72 +113,78 @@ MBType MB;
  *	Structure for remembering which folders are expanded.
  *  Saved as a resource in the settings file
  ************************************************************************/
-struct ExpandListRec
-{
-	short	count;
-	long	dirID[];
+struct ExpandListRec {
+	short count;
+	long dirID[];
 };
 typedef struct ExpandListRec ExpandListRec;
 
-ExpandInfo	gExpandList;
+ExpandInfo gExpandList;
 
-typedef struct
-{
-	short	cmd;
-	short	mark;
-	Style	style;
+typedef struct {
+	short cmd;
+	short mark;
+	Style style;
 } MenuProperties;
 
 /************************************************************************
  * prototypes
  ************************************************************************/
 Boolean MBMenu(MyWindowPtr win, int menu, int item, short modifiers);
-void MBDidResize(MyWindowPtr win, Rect *oldContR);
-void MBZoomSize(MyWindowPtr win,Rect *zoom);
+void MBDidResize(MyWindowPtr win, Rect * oldContR);
+void MBZoomSize(MyWindowPtr win, Rect * zoom);
 void MBUpdate(MyWindowPtr win);
 Boolean MBClose(MyWindowPtr win);
 short MBFill(void);
 short MBFillSide(MenuHandle mh);
-void MBClick(MyWindowPtr win,EventRecord *event);
+void MBClick(MyWindowPtr win, EventRecord * event);
 void MBCursor(Point mouse);
 void MBActivate(MyWindowPtr win);
 void MBSetControls(void);
 void MBHit(short which, Boolean optionPressed);
 static void MBIdle(MyWindowPtr win);
-static short WhichTree(VLNodeInfo *pInfo);
+static short WhichTree(VLNodeInfo * pInfo);
 static void EnableIMAPButtons(MyWindowPtr win);
-static Boolean MBKey(MyWindowPtr win, EventRecord *event);
+static Boolean MBKey(MyWindowPtr win, EventRecord * event);
 void MBListOpen(ViewListPtr pView);
 void MBListClose(short whichSide);
 static void MBMenuToFile(short menuID, short *pVRef, long *pDirID);
-static void MBMove(VLNodeInfo *pTargetInfo);
+static void MBMove(VLNodeInfo * pTargetInfo);
 static void MBRemove(void);
-static OSErr MBDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag);
+static OSErr MBDragHandler(MyWindowPtr win, DragTrackingMessage which,
+			   DragReference drag);
 short FindItemBySubmenu(MenuHandle mh, short subID);
 short MBRefill(UPtr andSelect);
 static void DoNewMailbox(Boolean fFolder);
-Boolean DoRemoveBox(MenuHandle mh,UPtr name,Boolean multiple,Boolean *andShutUp,Boolean *needRefill);
-static short DeleteMailFolder(MenuHandle mh,short item);
-void DoMoveMailbox(UPtr selectName,short si);
+Boolean DoRemoveBox(MenuHandle mh, UPtr name, Boolean multiple,
+		    Boolean * andShutUp, Boolean * needRefill);
+static short DeleteMailFolder(MenuHandle mh, short item);
+void DoMoveMailbox(UPtr selectName, short si);
 Boolean SameSelected(void);
-Boolean MBGetData(VLNodeInfo *data,short item);
-void MBHelp(MyWindowPtr win,Point mouse);
-//	void MBFixIndices(void);
+Boolean MBGetData(VLNodeInfo * data, short item);
+void MBHelp(MyWindowPtr win, Point mouse);
+//      void MBFixIndices(void);
 static void SetExpandListSize(ExpandInfoPtr pExpList);
-static void GetMenuItemProperties(MenuHandle hMenu,short item,MenuProperties *pFormat);
-static void AddMBMenuItem(MenuHandle hMenu,StringPtr sName,MenuProperties *pFormat);
-static void MBGrow(MyWindowPtr win,Point *newSize);
-static Boolean MBFind(MyWindowPtr win,PStr what);
-static Boolean IsSpecialBox(ViewListPtr pView, VLNodeInfo *pInfo);
-Boolean IsIMAPTrashBox(VLNodeInfo *data);
-OSErr MBTellOthersRename(FSSpecPtr spec,FSSpecPtr newSpec,Boolean folder,Boolean will,Boolean dontWarn);
-OSErr GetSelectedMailboxSpecs(Handle *mailboxes, Boolean optionPressed);
-OSErr GetSelectedChildMailboxSpecs(Accumulator *b, MailboxNodeHandle toAdd, Boolean childrenToo);
+static void GetMenuItemProperties(MenuHandle hMenu, short item,
+				  MenuProperties * pFormat);
+static void AddMBMenuItem(MenuHandle hMenu, StringPtr sName,
+			  MenuProperties * pFormat);
+static void MBGrow(MyWindowPtr win, Point * newSize);
+static Boolean MBFind(MyWindowPtr win, PStr what);
+static Boolean IsSpecialBox(ViewListPtr pView, VLNodeInfo * pInfo);
+Boolean IsIMAPTrashBox(VLNodeInfo * data);
+OSErr MBTellOthersRename(FSSpecPtr spec, FSSpecPtr newSpec, Boolean folder,
+			 Boolean will, Boolean dontWarn);
+OSErr GetSelectedMailboxSpecs(Handle * mailboxes, Boolean optionPressed);
+OSErr GetSelectedChildMailboxSpecs(Accumulator * b,
+				   MailboxNodeHandle toAdd,
+				   Boolean childrenToo);
 void EnableOptionsMenu(MyWindowPtr win, Boolean optionPressed);
 char IMAPOptionsCheckMarkChar(MailboxNeedsEnum needs);
-long IMAPMailboxIcon(VLNodeInfo	*info, short menuID);
+long IMAPMailboxIcon(VLNodeInfo * info, short menuID);
 void MBRefreshIMAPMailboxes(Boolean optionPressed);
-OSErr MBResyncOrExpungeIMAPMailboxes(Boolean optionPressed, TaskKindEnum task);
+OSErr MBResyncOrExpungeIMAPMailboxes(Boolean optionPressed,
+				     TaskKindEnum task);
 void MBMarkIMAPMailboxes(Boolean on, MailboxNeedsEnum needs);
 void MBCompactMailboxes(void);
 
@@ -188,52 +193,66 @@ void MBCompactMailboxes(void);
  ************************************************************************/
 void OpenMBWin(void)
 {
-	WindowPtr	WinWP = nil;
-	
-	if (SelectOpenWazoo(MB_WIN)) return;	//	Already opened in a wazoo
+	WindowPtr WinWP = nil;
 
-	if (!MB.inited)
-	{
-		short err=0;
+	if (SelectOpenWazoo(MB_WIN))
+		return;		//      Already opened in a wazoo
+
+	if (!MB.inited) {
+		short err = 0;
 		Rect r;
-		
-		if (!(Win=GetNewMyWindow(MBWIN_WIND,nil,nil,BehindModal,False,False,MB_WIN)))
-			{err=MemError(); goto fail;}
-			
-		WinWP = GetMyWindowWindowPtr (Win);
-		
-		SetWinMinSize(Win,-1,-1);
+
+		if (!
+		    (Win =
+		     GetNewMyWindow(MBWIN_WIND, nil, nil, BehindModal,
+				    False, False, MB_WIN))) {
+			err = MemError();
+			goto fail;
+		}
+
+		WinWP = GetMyWindowWindowPtr(Win);
+
+		SetWinMinSize(Win, -1, -1);
 		SetPort_(GetMyWindowCGrafPtr(Win));
-		ConfigFontSetup(Win);	
-		MySetThemeWindowBackground(Win,kThemeListViewBackgroundBrush,False);
+		ConfigFontSetup(Win);
+		MySetThemeWindowBackground(Win,
+					   kThemeListViewBackgroundBrush,
+					   False);
 
 		/*
 		 * controls
 		 */
-		if (!(CtlNewMB = NewIconButton(MB_NEWMB_CNTL,WinWP)) ||
-			!(CtlNewFolder = NewIconButton(MB_NEWFOLDER_CNTL,WinWP)) ||
-			!(CtlRemove = NewIconButton(MB_REMOVE_CNTL,WinWP)) ||
+		if (!(CtlNewMB = NewIconButton(MB_NEWMB_CNTL, WinWP)) ||
+		    !(CtlNewFolder =
+		      NewIconButton(MB_NEWFOLDER_CNTL, WinWP))
+		    || !(CtlRemove = NewIconButton(MB_REMOVE_CNTL, WinWP))
+		    ||
 #ifdef SHOW_RESYNC_BUTTON
-			!(CtlResync = NewIconButton(MB_RESYNC_CNTL,WinWP)) ||
+		    !(CtlResync = NewIconButton(MB_RESYNC_CNTL, WinWP)) ||
 #endif
-			!(CtlOptionsMenu = NewIconButtonMenu(MAILBOX_OPTIONS_MENU,REFRESH_ICON,WinWP)))
-				goto fail;
+		    !(CtlOptionsMenu =
+		      NewIconButtonMenu(MAILBOX_OPTIONS_MENU, REFRESH_ICON,
+					WinWP)))
+			goto fail;
 
-#ifdef SHOW_RESYNC_BUTTON		
-		MB.resyncEnabled  = true;
+#ifdef SHOW_RESYNC_BUTTON
+		MB.resyncEnabled = true;
 #endif
 		MB.IMAPButtonsVisible = true;
 		MBIdle(Win);
-		
+
 		/*
 		 * list
 		 */
 		gExpandList.resID = kMBExpandID;
-		SetRect(&r,0,0,20,20);
-		if (LVNew(&MB.list,Win,&r,0,MailboxesLVCallBack,kMBDragType))
-			{err=MemError(); goto fail;}
-		
-//		if (MBFill()) goto fail;
+		SetRect(&r, 0, 0, 20, 20);
+		if (LVNew
+		    (&MB.list, Win, &r, 0, MailboxesLVCallBack,
+		     kMBDragType)) {
+			err = MemError();
+			goto fail;
+		}
+//              if (MBFill()) goto fail;
 		Win->didResize = MBDidResize;
 		Win->close = MBClose;
 		Win->update = MBUpdate;
@@ -254,39 +273,46 @@ void OpenMBWin(void)
 		Win->idle = MBIdle;
 		Win->showsSponsorAd = true;
 		ShowMyWindow(WinWP);
-		MyWindowDidResize(Win,&Win->contR);
+		MyWindowDidResize(Win, &Win->contR);
 		MB.inited = true;
 		return;
-		
-		fail:
-			if (WinWP) CloseMyWindow(WinWP);
-			if (err) WarnUser(COULDNT_MBOX,err);
-			return;
-	}
-	else
-		WinWP = GetMyWindowWindowPtr (Win);
+
+	      fail:
+		if (WinWP)
+			CloseMyWindow(WinWP);
+		if (err)
+			WarnUser(COULDNT_MBOX, err);
+		return;
+	} else
+		WinWP = GetMyWindowWindowPtr(Win);
 	UserSelectWindow(WinWP);
 }
+
 #pragma segment MboxWin
 /************************************************************************
  * MBDidResize - resize the MB window
  ************************************************************************/
-void MBDidResize(MyWindowPtr win, Rect *oldContR)
+void MBDidResize(MyWindowPtr win, Rect * oldContR)
 {
-#define kListInset 10 
+#define kListInset 10
 #pragma unused(oldContR)
 	Rect r;
-	short	htAdjustment;
+	short htAdjustment;
 
-	//	buttons
-	PositionBevelButtons(win,cntMBControls,MB.controls,kListInset,Win->contR.bottom - INSET - kHtCtl,kHtCtl,RectWi(win->contR));
-	
+	//      buttons
+	PositionBevelButtons(win, cntMBControls, MB.controls, kListInset,
+			     Win->contR.bottom - INSET - kHtCtl, kHtCtl,
+			     RectWi(win->contR));
+
 	// list
-	SetRect(&r,kListInset,win->topMargin+kListInset,Win->contR.right-kListInset,Win->contR.bottom - 2*INSET - kHtCtl);
-	if (win->sponsorAdExists && r.bottom >= win->sponsorAdRect.top - kSponsorBorderMargin)
+	SetRect(&r, kListInset, win->topMargin + kListInset,
+		Win->contR.right - kListInset,
+		Win->contR.bottom - 2 * INSET - kHtCtl);
+	if (win->sponsorAdExists
+	    && r.bottom >= win->sponsorAdRect.top - kSponsorBorderMargin)
 		r.bottom = win->sponsorAdRect.top - kSponsorBorderMargin;
-	LVSize(&MB.list,&r,&htAdjustment);
-	
+	LVSize(&MB.list, &r, &htAdjustment);
+
 	/*
 	 * redraw
 	 */
@@ -297,69 +323,80 @@ void MBDidResize(MyWindowPtr win, Rect *oldContR)
 /************************************************************************
  * MBOpenFolder - open and selected the folder indicated by the menu ID
  ************************************************************************/
-void MBOpenFolder(Handle hStringList,Boolean IsIMAP)
+void MBOpenFolder(Handle hStringList, Boolean IsIMAP)
 {
-	StringPtr	pString,sSelect;
-	VLNodeID	id;
-	short			selectID = 0;	
-	
-	OpenMBWin();	//	Make sure the MB window is open and in front
+	StringPtr pString, sSelect;
+	VLNodeID id;
+	short selectID = 0;
 
-	//	Expand each folder
-	id = IsIMAP ? kIMAPFolder: kEudoraFolder;
-	for(pString = LDRef(hStringList);*pString;pString += *pString+1)
-	{
-		LVExpand(&MB.list,id,pString,true);
+	OpenMBWin();		//      Make sure the MB window is open and in front
+
+	//      Expand each folder
+	id = IsIMAP ? kIMAPFolder : kEudoraFolder;
+	for (pString = LDRef(hStringList); *pString;
+	     pString += *pString + 1) {
+		LVExpand(&MB.list, id, pString, true);
 		sSelect = pString;
 		selectID = id;
-		id = id==kEudoraFolder ? MAILBOX_MENU : MBGetFolderMenuID(id==kIMAPFolder?MAILBOX_MENU:id,pString);
+		id = id ==
+		    kEudoraFolder ? MAILBOX_MENU : MBGetFolderMenuID(id ==
+								     kIMAPFolder
+								     ?
+								     MAILBOX_MENU
+								     : id,
+								     pString);
 	}
-	
+
 	if (selectID)
-		LVSelect(&MB.list,selectID,sSelect,false);
+		LVSelect(&MB.list, selectID, sSelect, false);
 }
 
 /************************************************************************
  * MBZoomSize - zoom to only the maximum size of list
  ************************************************************************/
-void MBZoomSize(MyWindowPtr win,Rect *zoom)
+void MBZoomSize(MyWindowPtr win, Rect * zoom)
 {
-	short zoomHi = zoom->bottom-zoom->top;
-	short zoomWi = zoom->right-zoom->left;
+	short zoomHi = zoom->bottom - zoom->top;
+	short zoomWi = zoom->right - zoom->left;
 	short hi, wi;
-	
-	LVMaxSize(&MB.list, &wi, &hi);
-	wi += 2*kListInset;
-	hi += 2*kListInset + INSET + ControlHi(CtlNewMB);
 
-	wi = MIN(wi,zoomWi); wi = MAX(wi,win->minSize.h);
-	hi = MIN(hi,zoomHi); hi = MAX(hi,win->minSize.v);
-	zoom->right = zoom->left+wi;
-	zoom->bottom = zoom->top+hi;
+	LVMaxSize(&MB.list, &wi, &hi);
+	wi += 2 * kListInset;
+	hi += 2 * kListInset + INSET + ControlHi(CtlNewMB);
+
+	wi = MIN(wi, zoomWi);
+	wi = MAX(wi, win->minSize.h);
+	hi = MIN(hi, zoomHi);
+	hi = MAX(hi, win->minSize.v);
+	zoom->right = zoom->left + wi;
+	zoom->bottom = zoom->top + hi;
 }
 
 /************************************************************************
  * MBGrow - adjust grow size
  ************************************************************************/
-static void MBGrow(MyWindowPtr win,Point *newSize)
+static void MBGrow(MyWindowPtr win, Point * newSize)
 {
-	WindowPtr	winWP = GetMyWindowWindowPtr (win);
-	Rect	r,rWin;
-	short	htControl = ControlHi(CtlNewMB);
-	short	bottomMargin,sponsorMargin;
-	
-	//	Get list position
-	bottomMargin = INSET*2 + htControl;
-	if (win->sponsorAdExists)
-	{
-		GetWindowPortBounds(winWP,&rWin);
-		sponsorMargin = rWin.bottom - win->sponsorAdRect.top + kSponsorBorderMargin;
-		if (sponsorMargin > bottomMargin) bottomMargin  = sponsorMargin;
+	WindowPtr winWP = GetMyWindowWindowPtr(win);
+	Rect r, rWin;
+	short htControl = ControlHi(CtlNewMB);
+	short bottomMargin, sponsorMargin;
+
+	//      Get list position
+	bottomMargin = INSET * 2 + htControl;
+	if (win->sponsorAdExists) {
+		GetWindowPortBounds(winWP, &rWin);
+		sponsorMargin =
+		    rWin.bottom - win->sponsorAdRect.top +
+		    kSponsorBorderMargin;
+		if (sponsorMargin > bottomMargin)
+			bottomMargin = sponsorMargin;
 	}
-	SetRect(&r,kListInset,win->topMargin+kListInset,newSize->h-kListInset,newSize->v - bottomMargin);
-	LVCalcSize(&MB.list,&r);
-	
-	//	Calculate new window height
+	SetRect(&r, kListInset, win->topMargin + kListInset,
+		newSize->h - kListInset, newSize->v - bottomMargin);
+	LVCalcSize(&MB.list, &r);
+
+	//      Calculate new window height
 	newSize->v = r.bottom + bottomMargin;
 }
 
@@ -370,18 +407,18 @@ static void MBGrow(MyWindowPtr win,Point *newSize)
 Boolean MBClose(MyWindowPtr win)
 {
 #pragma unused(win)
-	
-	if (MB.inited)
-	{
-		//	Save expanded folder list
+
+	if (MB.inited) {
+		//      Save expanded folder list
 		SaveExpandedFolderList(&gExpandList);
 
-		//	Dispose of list
+		//      Dispose of list
 		LVDispose(&MB.list);
 		MB.inited = false;
 	}
-	return(True);
+	return (True);
 }
+
 #pragma segment MboxWin
 
 /************************************************************************
@@ -389,11 +426,11 @@ Boolean MBClose(MyWindowPtr win)
  ************************************************************************/
 void MBUpdate(MyWindowPtr win)
 {
-	CGrafPtr	winPort = GetMyWindowCGrafPtr (win);
-	Rect	r;
-	
+	CGrafPtr winPort = GetMyWindowCGrafPtr(win);
+	Rect r;
+
 	r = MB.list.bounds;
-	DrawThemeListBoxFrame(&r,kThemeStateActive);
+	DrawThemeListBoxFrame(&r, kThemeStateActive);
 	LVDraw(&MB.list, MyGetPortVisibleRegion(winPort), true, false);
 }
 
@@ -409,9 +446,9 @@ void MBActivate(MyWindowPtr win)
 /**********************************************************************
  * MBFind - find in the Mailboxes window
  **********************************************************************/
-static Boolean MBFind(MyWindowPtr win,PStr what)
+static Boolean MBFind(MyWindowPtr win, PStr what)
 {
-	return FindListView(win,&MB.list,what);
+	return FindListView(win, &MB.list, what);
 }
 
 /************************************************************************
@@ -422,12 +459,12 @@ short MBRefill(UPtr andSelect)
 	short err;
 
 	/*
-			If andSelect specified, find and select it.
-			Else If there was a selection before, select it
-	*/
+	   If andSelect specified, find and select it.
+	   Else If there was a selection before, select it
+	 */
 
 	err = MBFillSide(GetMHandle(MAILBOX_MENU));
-	return(err);
+	return (err);
 }
 
 /************************************************************************
@@ -436,9 +473,10 @@ short MBRefill(UPtr andSelect)
 short MBFill(void)
 {
 	short err;
-	MenuHandle mh=GetMHandle(MAILBOX_MENU);
-	if (err=MBFillSide(mh)) return(err);
-	return(noErr);
+	MenuHandle mh = GetMHandle(MAILBOX_MENU);
+	if (err = MBFillSide(mh))
+		return (err);
+	return (noErr);
 }
 
 /************************************************************************
@@ -453,13 +491,12 @@ short MBFillSide(MenuHandle mh)
 /************************************************************************
  * MBKey - key stroke
  ************************************************************************/
-static Boolean MBKey(MyWindowPtr win, EventRecord *event)
+static Boolean MBKey(MyWindowPtr win, EventRecord * event)
 {
 #pragma unused(win)
 	short key = (event->message & 0xff);
 
-	if (LVKey(&MB.list,event))
-	{
+	if (LVKey(&MB.list, event)) {
 		MBSetControls();
 		return true;
 	}
@@ -470,41 +507,55 @@ static Boolean MBKey(MyWindowPtr win, EventRecord *event)
 /************************************************************************
  * MBClick - click in mailboxes window
  ************************************************************************/
-void MBClick(MyWindowPtr win,EventRecord *event)
+void MBClick(MyWindowPtr win, EventRecord * event)
 {
 //#pragma unused(win)
-	WindowPtr	winWP = GetMyWindowWindowPtr (win);
+	WindowPtr winWP = GetMyWindowWindowPtr(win);
 	Rect r;
 	short i;
 	Point pt;
-	
+
 	SetPort(GetMyWindowCGrafPtr(win));
 
-	if (!LVClick(&MB.list,event))
-	{
+	if (!LVClick(&MB.list, event)) {
 		pt = event->where;
 		GlobalToLocal(&pt);
-		if (!win->isActive)
-		{
+		if (!win->isActive) {
 			SelectWindow_(winWP);
-			UpdateMyWindow(winWP);	//	Have to update manually since no events are processed
+			UpdateMyWindow(winWP);	//      Have to update manually since no events are processed
 		}
-		for (i=0;i<ControlCount;i++)
-		{
-			GetControlBounds(Controls[i],&r);
-			if (PtInRect(pt,&r))
-			{
+		for (i = 0; i < ControlCount; i++) {
+			GetControlBounds(Controls[i], &r);
+			if (PtInRect(pt, &r)) {
 				// properly enable and disable the menu when it's selected
 				if (Controls[i] == CtlOptionsMenu)
-					EnableOptionsMenu(Win, ((event->modifiers&optionKey)!=0));
-				
+					EnableOptionsMenu(Win,
+							  ((event->
+							    modifiers &
+							    optionKey) !=
+							   0));
+
 				if (!ControlIsGrey(Controls[i]) &&
-						TrackControl(Controls[i],pt,(void *)(-1)))
-					MBHit(i,(event->modifiers&optionKey) != 0);				
-	
-					AuditHit((event->modifiers&shiftKey)!=0, (event->modifiers&controlKey)!=0, (event->modifiers&optionKey)!=0, (event->modifiers&cmdKey)!=0, false, GetWindowKind(winWP), AUDITCONTROLID(GetWindowKind(winWP),i), event->what);	
-	
-					break;
+				    TrackControl(Controls[i], pt,
+						 (void *) (-1)))
+					MBHit(i,
+					      (event->
+					       modifiers & optionKey) !=
+					      0);
+
+				AuditHit((event->modifiers & shiftKey) !=
+					 0,
+					 (event->modifiers & controlKey) !=
+					 0,
+					 (event->modifiers & optionKey) !=
+					 0,
+					 (event->modifiers & cmdKey) != 0,
+					 false, GetWindowKind(winWP),
+					 AUDITCONTROLID(GetWindowKind
+							(winWP), i),
+					 event->what);
+
+				break;
 			}
 		}
 	}
@@ -518,7 +569,7 @@ void MBClick(MyWindowPtr win,EventRecord *event)
  ************************************************************************/
 void MBCursor(Point mouse)
 {
-	if (!PeteCursorList(Win->pteList,mouse))
+	if (!PeteCursorList(Win->pteList, mouse))
 		SetMyCursor(arrowCursor);
 }
 
@@ -527,69 +578,63 @@ void MBCursor(Point mouse)
  ************************************************************************/
 void MBSetControls(void)
 {
-	Boolean fSelect,fRemove;
+	Boolean fSelect, fRemove;
 	Boolean fAdd = true;
 	Boolean isIMAPBox;
-	short	i;
+	short i;
 	VLNodeInfo data;
-		
-	fSelect = LVCountSelection(&MB.list)!=0;
+
+	fSelect = LVCountSelection(&MB.list) != 0;
 	Win->hasSelection = fSelect;
 
-	//	Determine if "Remove" button needs to be greyed
-	if (fRemove = fSelect)
-	{
-		//	Make sure that selection doesn't include any non-removeable items
-		short	i;
+	//      Determine if "Remove" button needs to be greyed
+	if (fRemove = fSelect) {
+		//      Make sure that selection doesn't include any non-removeable items
+		short i;
 		VLNodeInfo data;
-		
-		for (i=1;i<=LVCountSelection(&MB.list);i++)
-		{
-			MBGetData(&data,i);
-			if ((IsSpecialBox(&MB.list,&data)) 
-				|| data.nodeID == kIMAPFolder							// Can't delete IMAP personalities
-				|| (IsIMAPBox(&data) && !CanModifyMailboxTrees()))		// Can't delete IMAP boxes while the tree is in use
+
+		for (i = 1; i <= LVCountSelection(&MB.list); i++) {
+			MBGetData(&data, i);
+			if ((IsSpecialBox(&MB.list, &data))
+			    || data.nodeID == kIMAPFolder	// Can't delete IMAP personalities
+			    || (IsIMAPBox(&data) && !CanModifyMailboxTrees()))	// Can't delete IMAP boxes while the tree is in use
 			{
-				//	Here's an item that can't be removed
+				//      Here's an item that can't be removed
 				fRemove = false;
 				break;
-			}		
+			}
 		}
 	}
-	SetGreyControl(CtlRemove,!fRemove);	
-	
+	SetGreyControl(CtlRemove, !fRemove);
+
 	// Determine if the "Add" buttons need to be greyed.
-	
+
 	// see what's selected
 #ifdef SHOW_RESYNC_BUTTON
 	MB.imapMailboxSelected = false;
-#endif 
-	for (i=1;i<=LVCountSelection(&MB.list);i++)
-	{
-		MBGetData(&data,i);
+#endif
+	for (i = 1; i <= LVCountSelection(&MB.list); i++) {
+		MBGetData(&data, i);
 		isIMAPBox = IsIMAPBox(&data);
-		
-		if (isIMAPBox)
-		{	
+
+		if (isIMAPBox) {
 			// Can't add mailboxes when the tree is in use
-			if (!CanModifyMailboxTrees())		
-			{
-				//	Here's an item that can't be removed
+			if (!CanModifyMailboxTrees()) {
+				//      Here's an item that can't be removed
 				fAdd = false;
 				break;
 			}
-
 #ifdef SHOW_RESYNC_BUTTON
 			// but we can enable the resync control
 			MB.imapMailboxSelected = true;
 #endif
-		}		
+		}
 	}
 	// properly activate Refresh and Resync buttons
 	EnableIMAPButtons(Win);
-	
-	SetGreyControl(CtlNewMB,!fAdd);	
-	SetGreyControl(CtlNewFolder,!fAdd);
+
+	SetGreyControl(CtlNewMB, !fAdd);
+	SetGreyControl(CtlNewFolder, !fAdd);
 }
 
 /************************************************************************
@@ -598,78 +643,84 @@ void MBSetControls(void)
 void MBHit(short which, Boolean optionPressed)
 {
 	Boolean resyncPlease = false;
-	SInt16 value=0;
+	SInt16 value = 0;
 	MenuHandle menu = nil;
-	short markChar=0;
-						
-	switch (which)
-	{
-		case RemoveIndex:
-			MBRemove();
-			break;
+	short markChar = 0;
 
-		case NewMBIndex:
-			DoNewMailbox(false);
-			break;
+	switch (which) {
+	case RemoveIndex:
+		MBRemove();
+		break;
 
-		case NewFolderIndex:
-			DoNewMailbox(true);
-			break;
+	case NewMBIndex:
+		DoNewMailbox(false);
+		break;
 
-		case OptionsMenuIndex:
-			if (!GetControlData(CtlOptionsMenu,1,kControlBevelButtonMenuValueTag,sizeof(SInt16),(Ptr)&value,nil) && !GetControlData(CtlOptionsMenu,1,kControlBevelButtonMenuHandleTag,sizeof(menu),(Ptr)&menu,nil) && menu)
-			{
-				switch(value)
-				{
-					case OPTIONS_RESYNCSUB_ITEM:
-						optionPressed = true;
-					case OPTIONS_RESYNC_ITEM:
-						resyncPlease = true;
-						break;
-						
-					case OPTIONS_AUTOSYNC_ITEM:
-						GetItemMark(menu,value,&markChar);
-						MBMarkIMAPMailboxes((markChar==0), kNeedsPoll);
-						break;
-						
-					case OPTIONS_REFRESH_ITEM:
-						MBRefreshIMAPMailboxes(optionPressed);
-						break;
-						
-					case OPTIONS_SHOWDELETED_ITEM:
-						GetItemMark(menu,value,&markChar);
-						MBMarkIMAPMailboxes((markChar==0), kShowDeleted);
-						break;
-						
-					case OPTIONS_EXPUNGE_ITEM:
-						MBResyncOrExpungeIMAPMailboxes(false, IMAPMultExpungeTask);
-						break;
-						
-					case OPTIONS_COMPACT_ITEM:
-						MBCompactMailboxes();
-						break;
-					
-					default:
-						break;	
-				}
-			}
-			
-			// fall through if resync was requested through the menu
-			if (!resyncPlease)	
+	case NewFolderIndex:
+		DoNewMailbox(true);
+		break;
+
+	case OptionsMenuIndex:
+		if (!GetControlData
+		    (CtlOptionsMenu, 1, kControlBevelButtonMenuValueTag,
+		     sizeof(SInt16), (Ptr) & value, nil)
+		    && !GetControlData(CtlOptionsMenu, 1,
+				       kControlBevelButtonMenuHandleTag,
+				       sizeof(menu), (Ptr) & menu, nil)
+		    && menu) {
+			switch (value) {
+			case OPTIONS_RESYNCSUB_ITEM:
+				optionPressed = true;
+			case OPTIONS_RESYNC_ITEM:
+				resyncPlease = true;
 				break;
-				
-#ifdef	SHOW_RESYNC_BUTTON
-		case ResyncIndex:
-#endif
-			MBResyncOrExpungeIMAPMailboxes(optionPressed, IMAPMultResyncTask);
+
+			case OPTIONS_AUTOSYNC_ITEM:
+				GetItemMark(menu, value, &markChar);
+				MBMarkIMAPMailboxes((markChar == 0),
+						    kNeedsPoll);
+				break;
+
+			case OPTIONS_REFRESH_ITEM:
+				MBRefreshIMAPMailboxes(optionPressed);
+				break;
+
+			case OPTIONS_SHOWDELETED_ITEM:
+				GetItemMark(menu, value, &markChar);
+				MBMarkIMAPMailboxes((markChar == 0),
+						    kShowDeleted);
+				break;
+
+			case OPTIONS_EXPUNGE_ITEM:
+				MBResyncOrExpungeIMAPMailboxes(false,
+							       IMAPMultExpungeTask);
+				break;
+
+			case OPTIONS_COMPACT_ITEM:
+				MBCompactMailboxes();
+				break;
+
+			default:
+				break;
+			}
+		}
+		// fall through if resync was requested through the menu
+		if (!resyncPlease)
 			break;
+
+#ifdef	SHOW_RESYNC_BUTTON
+	case ResyncIndex:
+#endif
+		MBResyncOrExpungeIMAPMailboxes(optionPressed,
+					       IMAPMultResyncTask);
+		break;
 	}
 }
 
 /************************************************************************
  * GetSelectedMailboxSpecs - build a list of selected mailboxes to process.
  ************************************************************************/
-OSErr GetSelectedMailboxSpecs(Handle *mailboxes, Boolean optionPressed)
+OSErr GetSelectedMailboxSpecs(Handle * mailboxes, Boolean optionPressed)
 {
 	OSErr err = noErr;
 	Accumulator boxes;
@@ -678,52 +729,52 @@ OSErr GetSelectedMailboxSpecs(Handle *mailboxes, Boolean optionPressed)
 	FSSpec spec;
 	MailboxNodeHandle mbox;
 	PersHandle selectedPers = nil, pers;
-			
+
 	*mailboxes = NULL;
-	
-	if (count = LVCountSelection(&MB.list))
-	{
+
+	if (count = LVCountSelection(&MB.list)) {
 		err = AccuInit(&boxes);
-		if (err == noErr)
-		{
+		if (err == noErr) {
 			// collect all selected mailboxes
-			for (i=1;i<=count;i++)
-			{			
-				//	get mailbox spec
-				MBGetData(&data,i);
-				MakeMBSpec(&data,&spec);
-									
+			for (i = 1; i <= count; i++) {
+				//      get mailbox spec
+				MBGetData(&data, i);
+				MakeMBSpec(&data, &spec);
+
 				// option-refresh on an IMAP account refreshes all mailboxes.
-				if (optionPressed && (data.nodeID == kIMAPFolder))
-				{
-					selectedPers = FindPersByName(spec.name);
-					GetSelectedChildMailboxSpecs(&boxes, (*selectedPers)->mailboxTree, true);
+				if (optionPressed
+				    && (data.nodeID == kIMAPFolder)) {
+					selectedPers =
+					    FindPersByName(spec.name);
+					GetSelectedChildMailboxSpecs
+					    (&boxes,
+					     (*selectedPers)->mailboxTree,
+					     true);
 				}
-					
 				// is this an IMAP mailbox?
-				if (IsIMAPBox(&data))
-				{
+				if (IsIMAPBox(&data)) {
 					spec.parID = SpecDirId(&spec);
-					LocateNodeBySpecInAllPersTrees(&spec, &mbox, &pers);
-					
+					LocateNodeBySpecInAllPersTrees
+					    (&spec, &mbox, &pers);
+
 					// skip this mailbox if t belongs to the last IMAP account we added to the list.
-					if (pers != selectedPers)
-					{
-						if (mbox)
-						{
-							GetSelectedChildMailboxSpecs(&boxes, mbox, optionPressed);
+					if (pers != selectedPers) {
+						if (mbox) {
+							GetSelectedChildMailboxSpecs
+							    (&boxes, mbox,
+							     optionPressed);
 						}
 					}
 				}
-			}	
-					
+			}
+
 			AccuTrim(&boxes);
 			*mailboxes = boxes.data;
 		}
 	}
 	// else
-		// nothing was selected.  Return nothing.
-		
+	// nothing was selected.  Return nothing.
+
 	return (err);
 }
 
@@ -731,65 +782,62 @@ OSErr GetSelectedMailboxSpecs(Handle *mailboxes, Boolean optionPressed)
  * GetSelectedChildMailboxSpecs - add the mailbox and the children, if
  *	appropriate, to the list.
  ************************************************************************/
-OSErr GetSelectedChildMailboxSpecs(Accumulator *b, MailboxNodeHandle toAdd, Boolean childrenToo)
+OSErr GetSelectedChildMailboxSpecs(Accumulator * b,
+				   MailboxNodeHandle toAdd,
+				   Boolean childrenToo)
 {
 	OSErr err = noErr;
 	FSSpec spec;
 	MailboxNodeHandle scan;
-	
+
 	// check parameters
-	if (toAdd && b)
-	{
+	if (toAdd && b) {
 		// add this mailbox if it's really a mailbox
-		if ((*toAdd)->mailboxName)
-		{
-			spec = ((*toAdd)->mailboxSpec);	
+		if ((*toAdd)->mailboxName) {
+			spec = ((*toAdd)->mailboxSpec);
 			err = AccuAddPtr(b, &spec, sizeof(FSSpec));
-		
+
 			// add the children if we ought
-			if ((err == noErr) && childrenToo)
-			{
-				if (scan = (*toAdd)->childList)
-				{
-					while (scan && (err == noErr))
-					{
-						err = GetSelectedChildMailboxSpecs(b, scan, true);
+			if ((err == noErr) && childrenToo) {
+				if (scan = (*toAdd)->childList) {
+					while (scan && (err == noErr)) {
+						err =
+						    GetSelectedChildMailboxSpecs
+						    (b, scan, true);
 						scan = (*scan)->next;
 					}
 				}
 			}
-		}
-		else if (childrenToo)
-		{
+		} else if (childrenToo) {
 			// This is an IMAP account.  Add all of the mailboxes.
 			scan = (*toAdd)->next;
-			while (scan && (err == noErr))
-			{
-				err = GetSelectedChildMailboxSpecs(b, scan, true);
+			while (scan && (err == noErr)) {
+				err =
+				    GetSelectedChildMailboxSpecs(b, scan,
+								 true);
 				scan = (*scan)->next;
 			}
 		}
 	}
-		
+
 	return (err);
 }
-								
+
 /************************************************************************
  * MBListOpen - open some stuff from a list handle
  ************************************************************************/
 void MBListOpen(ViewListPtr pView)
 {
-	short	i;
+	short i;
 	VLNodeInfo data;
 	FSSpec spec;
-	
-	for (i=1;i<=LVCountSelection(pView);i++)
-	{
-		LVGetItem(pView,i,&data,true);
-		if (!data.isParent || data.iconID == kIMAPMailboxIcon || IsIMAPTrashBox(&data))
-		{
-			MakeMBSpec(&data,&spec);
-			(void) GetMailbox(&spec,True);
+
+	for (i = 1; i <= LVCountSelection(pView); i++) {
+		LVGetItem(pView, i, &data, true);
+		if (!data.isParent || data.iconID == kIMAPMailboxIcon
+		    || IsIMAPTrashBox(&data)) {
+			MakeMBSpec(&data, &spec);
+			(void) GetMailbox(&spec, True);
 		}
 	}
 }
@@ -797,46 +845,46 @@ void MBListOpen(ViewListPtr pView)
 /************************************************************************
  * MBFixUnread - Update and "unread" status of a mailbox
  ************************************************************************/
-void MBFixUnread(MenuHandle mh,short item,Boolean unread)
+void MBFixUnread(MenuHandle mh, short item, Boolean unread)
 {
 	if (MB.inited)
-		MBFixUnreadLo(&MB.list,mh,item,unread,GetWindowKind(GetMyWindowWindowPtr(MB.win)) == MB_WIN);
-	SearchFixUnread(mh,item,unread);
-	MBDrawerFixUnread(mh,item,unread);
+		MBFixUnreadLo(&MB.list, mh, item, unread,
+			      GetWindowKind(GetMyWindowWindowPtr(MB.win))
+			      == MB_WIN);
+	SearchFixUnread(mh, item, unread);
+	MBDrawerFixUnread(mh, item, unread);
 }
 
 /************************************************************************
  * MBFixUnread - Update and "unread" status of a mailbox
  ************************************************************************/
-void MBFixUnreadLo(ViewListPtr pView,MenuHandle mh,short item,Boolean unread,Boolean draw)
+void MBFixUnreadLo(ViewListPtr pView, MenuHandle mh, short item,
+		   Boolean unread, Boolean draw)
 {
-	Str63	name;
-	Style	theStyle = unread ? UnreadStyle : 0;
-	short	menuID;
-	Boolean	mailboxMenu = GetMenuID(mh) == MAILBOX_MENU;
-	
-	if (mailboxMenu && !item)
-	{
-		//	Update "Eudora Folder"
-		GetMBDirName(Root.vRef,Root.dirId,name);	//	Name of Mail Folder				
-		LVUpdateStyle(pView,kEudoraFolder,name,theStyle,draw);		
-	}
-	else
-	{
-		MyGetItem(mh,item,name);
-		if (mailboxMenu && IMAPExists() && (menuID = SubmenuId(mh,item)))
-		{
-			short	vRef;
-			long	dirID;
+	Str63 name;
+	Style theStyle = unread ? UnreadStyle : 0;
+	short menuID;
+	Boolean mailboxMenu = GetMenuID(mh) == MAILBOX_MENU;
 
-			MBMenuToFile(menuID,&vRef,&dirID);
-			if (IsIMAPVD(vRef,dirID))
-			{
-				LVUpdateStyle(pView,kIMAPFolder,name,theStyle,draw);
+	if (mailboxMenu && !item) {
+		//      Update "Eudora Folder"
+		GetMBDirName(Root.vRef, Root.dirId, name);	//      Name of Mail Folder                             
+		LVUpdateStyle(pView, kEudoraFolder, name, theStyle, draw);
+	} else {
+		MyGetItem(mh, item, name);
+		if (mailboxMenu && IMAPExists()
+		    && (menuID = SubmenuId(mh, item))) {
+			short vRef;
+			long dirID;
+
+			MBMenuToFile(menuID, &vRef, &dirID);
+			if (IsIMAPVD(vRef, dirID)) {
+				LVUpdateStyle(pView, kIMAPFolder, name,
+					      theStyle, draw);
 				return;
 			}
 		}
-		LVUpdateStyle(pView,GetMenuID(mh),name,theStyle,draw);
+		LVUpdateStyle(pView, GetMenuID(mh), name, theStyle, draw);
 	}
 }
 
@@ -846,113 +894,109 @@ void MBFixUnreadLo(ViewListPtr pView,MenuHandle mh,short item,Boolean unread,Boo
 static void DoNewMailbox(Boolean folder)
 {
 	FSSpec spec;
-	short	vRefNum;
-	long	dirID;
+	short vRefNum;
+	long dirID;
 	VLNodeInfo data;
-	short	menuID;
+	short menuID;
 	Boolean imapSuccess = false;
-	MenuHandle	mh;
-	short	level,subMenuID;
+	MenuHandle mh;
+	short level, subMenuID;
 	Str63 name;
-	
 
-	//	Determine which folder to put it in
-	vRefNum = MailRoot.vRef;	//	Assume main mailboxes folder
+
+	//      Determine which folder to put it in
+	vRefNum = MailRoot.vRef;	//      Assume main mailboxes folder
 	dirID = MailRoot.dirId;
 	menuID = MAILBOX_MENU;
-	
-	if (MBGetData(&data,1))
-	{
+
+	if (MBGetData(&data, 1)) {
 		// if the currently select node is an IMAP personality, make sure we have a mailbox tree
-		if (data.nodeID == kIMAPFolder)
-		{
+		if (data.nodeID == kIMAPFolder) {
 			PersHandle oldPers = CurPers;
-			
+
 			// the personality is collapsed.  Do nothing.
-			if (data.isCollapsed) return;
-			
-			if (CurPers = FindPersByName(data.name))
-			{
+			if (data.isCollapsed)
+				return;
+
+			if (CurPers = FindPersByName(data.name)) {
 				if (PrefIsSet(PREF_IS_IMAP))
-					if (!MailboxTreeGood(CurPers)) 
-						if (CreateLocalCache() != noErr) 
-						{
+					if (!MailboxTreeGood(CurPers))
+						if (CreateLocalCache() !=
+						    noErr) {
 							CurPers = oldPers;
 							return;
 						}
-			}		
+			}
 			CurPers = oldPers;
 		}
-		//	Put it in parent of first selected item or self if a folder
+		//      Put it in parent of first selected item or self if a folder
 		MBMenuToFile(data.nodeID, &vRefNum, &dirID);
 		menuID = data.nodeID;
 
-		if ((!data.isParent || !data.isCollapsed) && IsIMAPBox(&data))
-		{
+		if ((!data.isParent || !data.isCollapsed)
+		    && IsIMAPBox(&data)) {
 			PersHandle pers = nil;
 			MailboxNodeHandle node = nil;
-			
-			FSMakeFSSpec(vRefNum,dirID,data.name,&spec);
+
+			FSMakeFSSpec(vRefNum, dirID, data.name, &spec);
 			spec.parID = SpecDirId(&spec);
-			
-			LocateNodeBySpecInAllPersTrees(&spec, &node, &pers);
-			if (node && pers && CanHaveChildren(node))
-			{
+
+			LocateNodeBySpecInAllPersTrees(&spec, &node,
+						       &pers);
+			if (node && pers && CanHaveChildren(node)) {
 				dirID = spec.parID;
-				menuID = MBGetFolderMenuID(data.nodeID,data.name);
+				menuID =
+				    MBGetFolderMenuID(data.nodeID,
+						      data.name);
 			}
-		}
-		else
-		{
-			if (data.isParent && !data.isCollapsed)
-			{
-				FSMakeFSSpec(vRefNum,dirID,data.name,&spec);
+		} else {
+			if (data.isParent && !data.isCollapsed) {
+				FSMakeFSSpec(vRefNum, dirID, data.name,
+					     &spec);
 				dirID = SpecDirId(&spec);
-				if (!dirID) dirID = spec.parID;
-				menuID = MBGetFolderMenuID(data.nodeID,data.name);
+				if (!dirID)
+					dirID = spec.parID;
+				menuID =
+				    MBGetFolderMenuID(data.nodeID,
+						      data.name);
 			}
-		}
-	}	
-
-	//	Warn user if we will be more than 5 levels deep
-	subMenuID = menuID;
-	mh=GetMenuHandle(subMenuID);
-	for(level=0;mh;level++)
-		mh=ParentMailboxMenu(mh,&subMenuID);
-	
-	if (level>5 && !PrefIsSet(PREF_NO_MAILBOX_LEVEL_WARNING) &&
-		!Mom(CREATE,0,PREF_NO_MAILBOX_LEVEL_WARNING,R_FMT,MAILBOX_LEVEL_WARNING))
-			return;	//	too deep
-
-	//	Make a unique "untitled" name
-	MakeUniqueUntitledSpec (vRefNum, dirID, folder ? UNTITLED_FOLDER : UNTITLED_MAILBOX, &spec);
-
-	// try to add this mailbox as an IMAP mailbox first.
-	if (IMAPAddMailbox(&spec, folder, &imapSuccess, false))
-	{
-		if (imapSuccess)
-		{
-			MBTickle(nil,nil);
-			menuID = MBGetFolderMenuID(data.nodeID,data.name);
-			LVRename(&MB.list,menuID,spec.name,false,false);	//	Allow user to rename the untitled mailbox/folder
 		}
 	}
-	else
-	{
-		PSCopy(name,spec.name);	// BadMailboxName steps on the name if it's a folder
-		if (!BadMailboxName(&spec,folder))	//	Creates the mailbox/folder
+	//      Warn user if we will be more than 5 levels deep
+	subMenuID = menuID;
+	mh = GetMenuHandle(subMenuID);
+	for (level = 0; mh; level++)
+		mh = ParentMailboxMenu(mh, &subMenuID);
+
+	if (level > 5 && !PrefIsSet(PREF_NO_MAILBOX_LEVEL_WARNING) &&
+	    !Mom(CREATE, 0, PREF_NO_MAILBOX_LEVEL_WARNING, R_FMT,
+		 MAILBOX_LEVEL_WARNING))
+		return;		//      too deep
+
+	//      Make a unique "untitled" name
+	MakeUniqueUntitledSpec(vRefNum, dirID,
+			       folder ? UNTITLED_FOLDER : UNTITLED_MAILBOX,
+			       &spec);
+
+	// try to add this mailbox as an IMAP mailbox first.
+	if (IMAPAddMailbox(&spec, folder, &imapSuccess, false)) {
+		if (imapSuccess) {
+			MBTickle(nil, nil);
+			menuID = MBGetFolderMenuID(data.nodeID, data.name);
+			LVRename(&MB.list, menuID, spec.name, false, false);	//      Allow user to rename the untitled mailbox/folder
+		}
+	} else {
+		PSCopy(name, spec.name);	// BadMailboxName steps on the name if it's a folder
+		if (!BadMailboxName(&spec, folder))	//      Creates the mailbox/folder
 		{
-			if (!folder)
-			{
+			if (!folder) {
 				AddBoxHigh(&spec);
-			}
-			else
-			{
+			} else {
 				BuildBoxMenus();
-				MBTickle(nil,nil);
+				MBTickle(nil, nil);
 			}
-			
-			LVRename(&MB.list,menuID,name,false,false);	//	Allow user to rename the untitled mailbox/folder
+
+			LVRename(&MB.list, menuID, name, false, false);	//      Allow user to rename the untitled mailbox/folder
 		}
 	}
 }
@@ -962,20 +1006,22 @@ static void DoNewMailbox(Boolean folder)
  ************************************************************************/
 static void MBRemove(void)
 {
-	short	i;
-	Boolean needRefill=false;
-	Boolean andShutUp=false;
-	Boolean	fFolder=false;
+	short i;
+	Boolean needRefill = false;
+	Boolean andShutUp = false;
+	Boolean fFolder = false;
 	short n;
 
-	for (i=1;i<=(n=LVCountSelection(&MB.list));i++)
-	{
+	for (i = 1; i <= (n = LVCountSelection(&MB.list)); i++) {
 		VLNodeInfo data;
-		
-		MBGetData(&data,i);
-		if ((data.nodeID != kIMAPFolder) && (!IsSpecialBox(&MB.list,&data)))
-		{
-			if (!DoRemoveBox(GetMHandle(data.nodeID),data.name,i<n,&andShutUp,&needRefill)) break;
+
+		MBGetData(&data, i);
+		if ((data.nodeID != kIMAPFolder)
+		    && (!IsSpecialBox(&MB.list, &data))) {
+			if (!DoRemoveBox
+			    (GetMHandle(data.nodeID), data.name, i < n,
+			     &andShutUp, &needRefill))
+				break;
 			if (data.isParent)
 				fFolder = true;
 		}
@@ -983,9 +1029,9 @@ static void MBRemove(void)
 
 	if (fFolder)
 		BuildBoxMenus();
-	
+
 	if (needRefill)
-		MBTickle(nil,nil);
+		MBTickle(nil, nil);
 }
 
 /************************************************************************
@@ -994,103 +1040,106 @@ static void MBRemove(void)
 static void MBRename(StringPtr newName)
 {
 	VLNodeInfo data;
-	short	vRef;
-	long	dirID;
-	FSSpec	spec,origSpec,newSpec;
+	short vRef;
+	long dirID;
+	FSSpec spec, origSpec, newSpec;
 	TOCHandle tocH;
 	Boolean isFolder;
-	OSErr	err=0;
+	OSErr err = 0;
 	Str255 suffix;
-	
+
 	// complain if the mailbox name is too long
-	if (*newName>31-*GetRString(suffix,TOC_SUFFIX))
-	{
+	if (*newName > 31 - *GetRString(suffix, TOC_SUFFIX)) {
 		TooLong(newName);
 		goto Done;
 	}
-	
-	if (MBGetData(&data,1) && *newName && !EqualString(newName,data.name,true,true))
-	{
+
+	if (MBGetData(&data, 1) && *newName
+	    && !EqualString(newName, data.name, true, true)) {
 		MBMenuToFile(data.nodeID, &vRef, &dirID);
-		FSMakeFSSpec(vRef,dirID,data.name,&spec);
-		SimpleMakeFSSpec(vRef,dirID,newName,&newSpec);
-		IsAlias(&spec,&origSpec);
-		isFolder=FSpIsItAFolder(&origSpec);
-		
-		if (!isFolder && (!(tocH=TOCBySpec(&spec)) || (*tocH)->which))
-		{
-			err = WarnUser(MAYNT_RENAME_BOX,0);
+		FSMakeFSSpec(vRef, dirID, data.name, &spec);
+		SimpleMakeFSSpec(vRef, dirID, newName, &newSpec);
+		IsAlias(&spec, &origSpec);
+		isFolder = FSpIsItAFolder(&origSpec);
+
+		if (!isFolder
+		    && (!(tocH = TOCBySpec(&spec)) || (*tocH)->which)) {
+			err = WarnUser(MAYNT_RENAME_BOX, 0);
 			goto Done;
 		}
-		
 		// complain if the mailbox name has some inappropriate characters
 		if (BadMailboxNameChars(&newSpec))
 			goto Done;
-		
+
 		// rename the IMAP mailbox
-		if (IsIMAPCacheFolder(&spec)) 
-		{
-			MBTellOthersRename(&spec,&newSpec,True,True,false);
+		if (IsIMAPCacheFolder(&spec)) {
+			MBTellOthersRename(&spec, &newSpec, True, True,
+					   false);
 			IMAPRenameMailbox(&spec, newSpec.name);
-			MBTellOthersRename(&spec,&newSpec,True,False,false);
+			MBTellOthersRename(&spec, &newSpec, True, False,
+					   false);
 			goto Done;
 		}
-		
-		
-//		if (!StringSame(spec.name,newName))
-//			HDelete(spec.vRefNum,spec.parID,newName);
 
-		if (isFolder)
-		{			
-			MBTellOthersRename(&spec,&newSpec,True,True,false);
-			if (err = HRename(spec.vRefNum,spec.parID,spec.name,newName))
-			{
-				(FileSystemError(RENAMING_BOX,spec.name,err));
+//              if (!StringSame(spec.name,newName))
+//                      HDelete(spec.vRefNum,spec.parID,newName);
+
+		if (isFolder) {
+			MBTellOthersRename(&spec, &newSpec, True, True,
+					   false);
+			if (err =
+			    HRename(spec.vRefNum, spec.parID, spec.name,
+				    newName)) {
+				(FileSystemError
+				 (RENAMING_BOX, spec.name, err));
 				goto Done;
 			}
 			BuildBoxMenus();
-			MBTickle(nil,nil);
-			MBTellOthersRename(&spec,&newSpec,True,False,false);
-		}
-		else
-		{
-			MBTellOthersRename(&spec,&newSpec,False,True,false);
-			if (err = RenameMailbox(&spec,newName,isFolder)) goto Done;
-			if (tocH)
-			{
-				TOCSetDirty(tocH,true);
-				PCopy((*tocH)->mailbox.spec.name,newName);
-				SetWTitle_(GetMyWindowWindowPtr((*tocH)->win),newName);
+			MBTickle(nil, nil);
+			MBTellOthersRename(&spec, &newSpec, True, False,
+					   false);
+		} else {
+			MBTellOthersRename(&spec, &newSpec, False, True,
+					   false);
+			if (err = RenameMailbox(&spec, newName, isFolder))
+				goto Done;
+			if (tocH) {
+				TOCSetDirty(tocH, true);
+				PCopy((*tocH)->mailbox.spec.name, newName);
+				SetWTitle_(GetMyWindowWindowPtr
+					   ((*tocH)->win), newName);
 			}
 			DontTickle = True;
 			RemoveBoxHigh(&spec);
 			DontTickle = False;
 			AddBoxHigh(&newSpec);
-			MBTellOthersRename(&spec,&newSpec,False,False,false);
-			TellSearchMBRename(&spec,&newSpec);
+			MBTellOthersRename(&spec, &newSpec, False, False,
+					   false);
+			TellSearchMBRename(&spec, &newSpec);
 		}
 	}
- Done:
+      Done:
 	if (err)
-		InvalContent(Win);	//	Clean up window
+		InvalContent(Win);	//      Clean up window
 }
 
 /************************************************************************
  * ParentMailboxMenu - find the menu enclosing this one
  ************************************************************************/
-MenuHandle ParentMailboxMenu(MenuHandle mh,short *itemPtr)
+MenuHandle ParentMailboxMenu(MenuHandle mh, short *itemPtr)
 {
 	short myID, curID;
-	
+
 	curID = myID = GetMenuID(mh);
-	while (--curID && (mh = GetMHandle(curID)))
-	{
-		if (*itemPtr = FindItemBySubmenu(mh,myID)) return(mh);
+	while (--curID && (mh = GetMHandle(curID))) {
+		if (*itemPtr = FindItemBySubmenu(mh, myID))
+			return (mh);
 	}
-	
+
 	mh = GetMHandle(MAILBOX_MENU);
-	if (*itemPtr = FindItemBySubmenu(mh,myID)) return(mh);
-	return(nil);
+	if (*itemPtr = FindItemBySubmenu(mh, myID))
+		return (mh);
+	return (nil);
 }
 
 /************************************************************************
@@ -1099,97 +1148,110 @@ MenuHandle ParentMailboxMenu(MenuHandle mh,short *itemPtr)
 short FindItemBySubmenu(MenuHandle mh, short subID)
 {
 	short item, newID;
-	for (item=CountMenuItems(mh);item;item--)
-	{
-		if (HasSubmenu(mh,item))
-		{
-			newID = SubmenuId(mh,item);
-			if (newID==subID) return(item);
+	for (item = CountMenuItems(mh); item; item--) {
+		if (HasSubmenu(mh, item)) {
+			newID = SubmenuId(mh, item);
+			if (newID == subID)
+				return (item);
 		}
 	}
-	return(0);
+	return (0);
 }
 
 
 /************************************************************************
  * DoRemoveBox - interact with the user before removing a mailbox
  ************************************************************************/
-Boolean DoRemoveBox(MenuHandle mh,UPtr name,Boolean multiple,Boolean *andShutUp,Boolean *needRefill)
+Boolean DoRemoveBox(MenuHandle mh, UPtr name, Boolean multiple,
+		    Boolean * andShutUp, Boolean * needRefill)
 {
-	Boolean isFolder=False;
+	Boolean isFolder = False;
 	Boolean isEmpty;
 	short clicked;
 	FSSpec spec, newSpec;
 	CInfoPBRec hfi;
 	FInfo info;
 	short res;
-	Boolean trashChain=False;
-	Boolean justTrash=False;
+	Boolean trashChain = False;
+	Boolean justTrash = False;
 	Boolean isIMAPBox = false;
 
-	GetTransferParams(GetMenuID(mh),FindItemByName(mh,name),&spec,nil);
-	FSpGetFInfo(&spec,&info);
-	isFolder = FSpIsItAFolder(&spec);	
+	GetTransferParams(GetMenuID(mh), FindItemByName(mh, name), &spec,
+			  nil);
+	FSpGetFInfo(&spec, &info);
+	isFolder = FSpIsItAFolder(&spec);
 	isIMAPBox = IsIMAPMailboxFile(&spec);
 
 	/*
 	 * is it an alias?
 	 */
-	if (!isFolder && info.fdFlags & kIsAlias)
-	{
-		if (!IsAlias(&spec,&newSpec))
-		{
+	if (!isFolder && info.fdFlags & kIsAlias) {
+		if (!IsAlias(&spec, &newSpec)) {
 			/*
 			 * ok, here we have an alias that points nowhere.  just trash it.
 			 */
 			isEmpty = True;
 			trashChain = False;
 			justTrash = True;
+		} else {
+			res =
+			    AlertStr(ALIAS_OR_REAL_ALRT, Note, spec.name);
+			if (res == aorCancel)
+				return (False);
+			trashChain = (res == aorBoth);
+			if (trashChain)
+				isFolder =
+				    info.fdType ==
+				    kContainerFolderAliasType;
+			else
+				justTrash = isEmpty = True;
 		}
-		else
-		{
-			res = AlertStr(ALIAS_OR_REAL_ALRT,Note,spec.name);
-			if (res==aorCancel) return(False);
-			trashChain = (res==aorBoth);
-			if (trashChain) isFolder = info.fdType==kContainerFolderAliasType;
-			else justTrash = isEmpty = True;
-		}
-	}			
+	}
 
-	if (!justTrash)
-	{
-		if (!isFolder)
-		{
+	if (!justTrash) {
+		if (!isFolder) {
 			/*
 			 * is the box empty?
 			 */
-			if (AFSpGetHFileInfo(&spec,&hfi)) isEmpty = True;
-			else isEmpty = hfi.hFileInfo.ioFlLgLen==0;
-		}
-		else isEmpty = FolderFileCount(&spec)<=0;
+			if (AFSpGetHFileInfo(&spec, &hfi))
+				isEmpty = True;
+			else
+				isEmpty = hfi.hFileInfo.ioFlLgLen == 0;
+		} else
+			isEmpty = FolderFileCount(&spec) <= 0;
 
 		// if this is an IMAP mailbox, make sure this mailbox really is empty
-		if (isEmpty && isIMAPBox) isEmpty = IsIMAPMailboxEmpty(&spec);		
-	}
-	
-	if (!justTrash && !*andShutUp)
-	{
-		clicked = AlertStr(isEmpty?
-													(multiple ? DELETE_EMPTY_ALRT : ALRTStringsOnlyStrn+DELETE_EMPTY_SINGLE_ASTR)
-												: (multiple ? (isIMAPBox?DELETE_NON_EMPTY_IMAP_ASTR+ALRTStringsOnlyStrn:DELETE_NON_EMPTY_ALRT) : ALRTStringsOnlyStrn+(isIMAPBox?DELETE_NON_EMPTY_SINGLE_IMAP_ASTR:DELETE_NON_EMPTY_SINGLE_ASTR)),
-											 Caution,name);
-		if (clicked==DELETE_REMOVE_ALL) *andShutUp = True;
-		else if (clicked!=DELETE_REMOVE_IT) return(False);
+		if (isEmpty && isIMAPBox)
+			isEmpty = IsIMAPMailboxEmpty(&spec);
 	}
 
+	if (!justTrash && !*andShutUp) {
+		clicked = AlertStr(isEmpty ?
+				   (multiple ? DELETE_EMPTY_ALRT :
+				    ALRTStringsOnlyStrn +
+				    DELETE_EMPTY_SINGLE_ASTR)
+				   : (multiple
+				      ? (isIMAPBox ?
+					 DELETE_NON_EMPTY_IMAP_ASTR +
+					 ALRTStringsOnlyStrn :
+					 DELETE_NON_EMPTY_ALRT) :
+				      ALRTStringsOnlyStrn +
+				      (isIMAPBox ?
+				       DELETE_NON_EMPTY_SINGLE_IMAP_ASTR :
+				       DELETE_NON_EMPTY_SINGLE_ASTR)),
+				   Caution, name);
+		if (clicked == DELETE_REMOVE_ALL)
+			*andShutUp = True;
+		else if (clicked != DELETE_REMOVE_IT)
+			return (False);
+	}
 	// if this is an IMAP folder, then do the IMAP thing
-	if (isIMAPBox) 
-	{
+	if (isIMAPBox) {
 		Boolean result = false;
-		
+
 		// close any child mailboxes ...
 		IMAPCloseChildMailboxes(&spec);
-		
+
 		DontTickle = True;
 		result = IMAPDeleteMailbox(&spec);
 		DontTickle = False;
@@ -1197,221 +1259,223 @@ Boolean DoRemoveBox(MenuHandle mh,UPtr name,Boolean multiple,Boolean *andShutUp,
 		return (result);
 	}
 
-	if (isFolder)
-	{
-		short item = FindItemByName(mh,name); 
-		if (DeleteMailFolder(mh,item)) return(False);
+	if (isFolder) {
+		short item = FindItemByName(mh, name);
+		if (DeleteMailFolder(mh, item))
+			return (False);
 		*needRefill = True;
-	}
-	else
-	{
-		RemoveMailbox(&spec,trashChain);
+	} else {
+		RemoveMailbox(&spec, trashChain);
 		DontTickle = True;
 		RemoveBoxHigh(&spec);
 		DontTickle = False;
 		*needRefill = True;
 	}
-	return(True);
+	return (True);
 }
 
 
 /************************************************************************
  * DeleteMailFolder - move a mail folder to the trash
  ************************************************************************/
-static short DeleteMailFolder(MenuHandle mh,short item)
+static short DeleteMailFolder(MenuHandle mh, short item)
 {
-	short err=0;
+	short err = 0;
 	FSSpec spec, realSpec;
-	
-	GetTransferParams(GetMenuID(mh),item,&spec,nil);
 
-	if (IsAlias(&spec,&realSpec))
-			FSpTrash(&realSpec);	//	Was an alias, move real folder to trash, then alias
+	GetTransferParams(GetMenuID(mh), item, &spec, nil);
+
+	if (IsAlias(&spec, &realSpec))
+		FSpTrash(&realSpec);	//      Was an alias, move real folder to trash, then alias
 	err = FSpTrash(&spec);
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * MBMove - move selected mailbox(es) to target
  ************************************************************************/
-static void MBMove(VLNodeInfo *pToInfo)
+static void MBMove(VLNodeInfo * pToInfo)
 {
-	short	i,n;
-	short	toVRef;
-	long	toDirID;
-	Boolean	fChanged = false;
-	Boolean	fFolder = false;
-	Boolean	fMovedFolder;
-	FSSpec	spec, newSpec;
-	OSErr	moveErr=nil;
-	short	fromVRef,flushVRef=0;
-	long	fromDirID;
-	VLNodeInfo	data,folderData;
-	Boolean	ignoreFilters = false;
-	Boolean	dontWarn = false;
+	short i, n;
+	short toVRef;
+	long toDirID;
+	Boolean fChanged = false;
+	Boolean fFolder = false;
+	Boolean fMovedFolder;
+	FSSpec spec, newSpec;
+	OSErr moveErr = nil;
+	short fromVRef, flushVRef = 0;
+	long fromDirID;
+	VLNodeInfo data, folderData;
+	Boolean ignoreFilters = false;
+	Boolean dontWarn = false;
 
-	if (pToInfo->nodeID==kEudoraFolder)
-	{
-		//	Eudora Folder
+	if (pToInfo->nodeID == kEudoraFolder) {
+		//      Eudora Folder
 		toVRef = MailRoot.vRef;
 		toDirID = MailRoot.dirId;
-	}
-	else
-	{
+	} else {
 		MBMenuToFile(pToInfo->nodeID, &toVRef, &toDirID);
-		FSMakeFSSpec(toVRef,toDirID,pToInfo->name,&spec);
-		IsAlias(&spec,&spec);
+		FSMakeFSSpec(toVRef, toDirID, pToInfo->name, &spec);
+		IsAlias(&spec, &spec);
 		toDirID = SpecDirId(&spec);
-		toVRef = spec.vRefNum;	//	In case it was alias to another volume
+		toVRef = spec.vRefNum;	//      In case it was alias to another volume
 	}
-	
-	n = LVCountSelection(&MB.list);		
+
+	n = LVCountSelection(&MB.list);
 	fMovedFolder = false;
-	for (i=1;i<=n && !moveErr;i++)
-	{
-		MBGetData(&data,i);
-		if (IsSpecialBox(&MB.list,&data))
-			//	Can't move this one
+	for (i = 1; i <= n && !moveErr; i++) {
+		MBGetData(&data, i);
+		if (IsSpecialBox(&MB.list, &data))
+			//      Can't move this one
 			continue;
-		
+
 		MBMenuToFile(data.nodeID, &fromVRef, &fromDirID);
 
 		// If the mailbox to be moved is an IMAP box, allow it to be moved on the same server only
-		if (IsIMAPBox(&data))
-		{
+		if (IsIMAPBox(&data)) {
 			FSSpec fromSpec, toSpec;
-			
-			SimpleMakeFSSpec(fromVRef, fromDirID, data.name, &fromSpec);			
-			SimpleMakeFSSpec(toVRef, toDirID, pToInfo->name, &toSpec);
-			
-			MBTellOthersRename(&spec,&newSpec,true,true,false);		
-			if (!IMAPMoveMailbox(&fromSpec, &toSpec, i==n, i>n, &dontWarn)) return;
-			MBTellOthersRename(&spec,&newSpec,true,false,dontWarn);
-					
+
+			SimpleMakeFSSpec(fromVRef, fromDirID, data.name,
+					 &fromSpec);
+			SimpleMakeFSSpec(toVRef, toDirID, pToInfo->name,
+					 &toSpec);
+
+			MBTellOthersRename(&spec, &newSpec, true, true,
+					   false);
+			if (!IMAPMoveMailbox
+			    (&fromSpec, &toSpec, i == n, i > n, &dontWarn))
+				return;
+			MBTellOthersRename(&spec, &newSpec, true, false,
+					   dontWarn);
+
 			continue;
 		}
-		
 		// we don't allow moves of local mailboxes *to* an IMAP server
-		if (pToInfo->nodeID == kIMAPFolder)
-		{
-			WarnUser(MOVE_MAILBOX,0);
-			return;		
+		if (pToInfo->nodeID == kIMAPFolder) {
+			WarnUser(MOVE_MAILBOX, 0);
+			return;
 		}
-		
 		// and we don't allow moves of local mailboxes to an IMAP folder
-		if (IsIMAPBox(pToInfo))
-		{
-			WarnUser(MOVE_MAILBOX,0);
-			return;			
-		}
-		
-		if (toVRef != fromVRef)
-		{
-			WarnUser(CANT_VOL_MOVE,0);
+		if (IsIMAPBox(pToInfo)) {
+			WarnUser(MOVE_MAILBOX, 0);
 			return;
 		}
 
-		if (fMovedFolder && LVDescendant(&MB.list,&data,&folderData))
-			//	We have already moved an ancestor of this file. Don't
-			//	try to move it again
+		if (toVRef != fromVRef) {
+			WarnUser(CANT_VOL_MOVE, 0);
+			return;
+		}
+
+		if (fMovedFolder
+		    && LVDescendant(&MB.list, &data, &folderData))
+			//      We have already moved an ancestor of this file. Don't
+			//      try to move it again
 			continue;
 
-		if (fMovedFolder = data.isParent)
-		{
-			//	Moved a folder
+		if (fMovedFolder = data.isParent) {
+			//      Moved a folder
 			folderData = data;
 		}
 
-		if (LVDescendant(&MB.list,&data,pToInfo)==1)
-			//	Don't try to move a child into its parent--it's already there
+		if (LVDescendant(&MB.list, &data, pToInfo) == 1)
+			//      Don't try to move a child into its parent--it's already there
 			continue;
-		
-		//	Move file or directory
+
+		//      Move file or directory
 		if (data.isParent)
 			fFolder = true;
-		
-		MBTellOthersRename(&spec,&newSpec,fFolder,true,false);
 
-		if (!fFolder)
-		{
+		MBTellOthersRename(&spec, &newSpec, fFolder, true, false);
+
+		if (!fFolder) {
 			DontTickle = true;
-			FSMakeFSSpec(fromVRef,fromDirID,data.name,&spec);
+			FSMakeFSSpec(fromVRef, fromDirID, data.name,
+				     &spec);
 			RemoveBoxHigh(&spec);
 			DontTickle = false;
 		}
-		
-		moveErr=HMove(fromVRef,fromDirID,data.name,toDirID,nil);
+
+		moveErr =
+		    HMove(fromVRef, fromDirID, data.name, toDirID, nil);
 		flushVRef = fromVRef;
-		
-		if (!fFolder)
-		{
-			//	If there was an error, we need to add the mailbox back in to its original location
-			DontTickle = true;			
+
+		if (!fFolder) {
+			//      If there was an error, we need to add the mailbox back in to its original location
+			DontTickle = true;
 			if (!moveErr)
-				FSMakeFSSpec(fromVRef,toDirID,data.name,&spec);
+				FSMakeFSSpec(fromVRef, toDirID, data.name,
+					     &spec);
 			AddBoxHigh(&spec);
 			DontTickle = false;
 		}
 
-		if (moveErr)
-		{
-			FileSystemError(MOVE_MAILBOX,data.name,moveErr);
-		}
-		else
-		{
-				//	If file, move TOC also
-			if (!data.isParent)
-			{
+		if (moveErr) {
+			FileSystemError(MOVE_MAILBOX, data.name, moveErr);
+		} else {
+			//      If file, move TOC also
+			if (!data.isParent) {
 				Str15 suffix;
 				short err;
 				TOCHandle tocH;
 				FSSpec spec;
-				
-				PCat(data.name,GetRString(suffix,TOC_SUFFIX));
-				if ((err=HMove(fromVRef,fromDirID,data.name,toDirID,nil)) &&
-						err!=fnfErr && err!=paramErr && err!=bdNamErr)
-					{FileSystemError(MOVE_MAILBOX,data.name,err); return;}
+
+				PCat(data.name,
+				     GetRString(suffix, TOC_SUFFIX));
+				if ((err =
+				     HMove(fromVRef, fromDirID, data.name,
+					   toDirID, nil)) && err != fnfErr
+				    && err != paramErr
+				    && err != bdNamErr) {
+					FileSystemError(MOVE_MAILBOX,
+							data.name, err);
+					return;
+				}
 				*data.name -= *suffix;
-				
-				FSMakeFSSpec(fromVRef,fromDirID,data.name,&spec);
-				if (tocH=FindTOC(&spec))
-					(*tocH)->mailbox.spec.parID = toDirID;
+
+				FSMakeFSSpec(fromVRef, fromDirID,
+					     data.name, &spec);
+				if (tocH = FindTOC(&spec))
+					(*tocH)->mailbox.spec.parID =
+					    toDirID;
 			}
 			fChanged = true;
-			
-			SimpleMakeFSSpec(fromVRef,fromDirID,data.name,&spec);
-			SimpleMakeFSSpec(toVRef,toDirID,data.name,&newSpec);
-			if (!ignoreFilters)
-			{
-				if (MBTellOthersRename(&spec,&newSpec,fFolder,false,dontWarn)==userCanceledErr)
+
+			SimpleMakeFSSpec(fromVRef, fromDirID, data.name,
+					 &spec);
+			SimpleMakeFSSpec(toVRef, toDirID, data.name,
+					 &newSpec);
+			if (!ignoreFilters) {
+				if (MBTellOthersRename
+				    (&spec, &newSpec, fFolder, false,
+				     dontWarn) == userCanceledErr)
 					ignoreFilters = true;
-				dontWarn = true;	//	one warning is enough
+				dontWarn = true;	//      one warning is enough
 			}
-			TellSearchMBRename(&spec,&newSpec);
+			TellSearchMBRename(&spec, &newSpec);
 		}
 	}
 	if (flushVRef)
 		// Flush the volume so the directory is correct for
 		// rebuilding the mailbox tree
-		FlushVol(nil,flushVRef);
+		FlushVol(nil, flushVRef);
 	if (fFolder)
 		BuildBoxMenus();
 	if (fChanged)
-		MBTickle(nil,nil);
+		MBTickle(nil, nil);
 }
 
-Boolean MBGetData(VLNodeInfo *data,short selectedItem)
+Boolean MBGetData(VLNodeInfo * data, short selectedItem)
 {
-	short junk=64;
-	
-	return LVGetItem(&MB.list,selectedItem,data,true);
+	short junk = 64;
+
+	return LVGetItem(&MB.list, selectedItem, data, true);
 }
 
-void MBTickle(UPtr fromSelect,UPtr select)
+void MBTickle(UPtr fromSelect, UPtr select)
 {
-	if (MB.inited  && !DontTickle)
-	{
-//		MBFixIndices();
+	if (MB.inited && !DontTickle) {
+//              MBFixIndices();
 		(void) MBRefill(select);
 	}
 	SearchMBUpdate();
@@ -1421,42 +1485,46 @@ void MBTickle(UPtr fromSelect,UPtr select)
 /************************************************************************
  * MBTellOthersRename - let the rest of the app know what we're up to
  ************************************************************************/
-OSErr MBTellOthersRename(FSSpecPtr spec,FSSpecPtr newSpec,Boolean folder,Boolean will,Boolean dontWarn)
+OSErr MBTellOthersRename(FSSpecPtr spec, FSSpecPtr newSpec, Boolean folder,
+			 Boolean will, Boolean dontWarn)
 {
-	
-	if (MBRenameStack)
-	{
+
+	if (MBRenameStack) {
 		short n = (*MBRenameStack)->elCount;
-		
-		while (n--)
-		{
+
+		while (n--) {
 			MBRenameProcPtr proc;
 			OSErr err;
-			
-			StackItem(&proc,n,MBRenameStack);
-			err = (*proc)(spec,newSpec,folder,will,dontWarn);
-			if (err) return err;
+
+			StackItem(&proc, n, MBRenameStack);
+			err =
+			    (*proc) (spec, newSpec, folder, will,
+				     dontWarn);
+			if (err)
+				return err;
 		}
 	}
 	return noErr;
 }
-		
+
 
 #pragma segment Balloon
 /************************************************************************
  * MBHelp - provide help for the mailbox window
  ************************************************************************/
-void MBHelp(MyWindowPtr win,Point mouse)
+void MBHelp(MyWindowPtr win, Point mouse)
 {
 #pragma unused(win)
-	if (PtInRect(mouse,&MB.list.bounds))
-		MyBalloon(&MB.list.bounds,100,0,MBWIN_HELP_STRN+1,0,nil);
+	if (PtInRect(mouse, &MB.list.bounds))
+		MyBalloon(&MB.list.bounds, 100, 0, MBWIN_HELP_STRN + 1, 0,
+			  nil);
 	else
-		ShowControlHelp(mouse,MBWIN_HELP_STRN+2,CtlNewMB,CtlNewFolder,CtlRemove,CtlOptionsMenu,
-#ifdef SHOW_RESYNC_BUTTON																		
-																								CtlResync,
+		ShowControlHelp(mouse, MBWIN_HELP_STRN + 2, CtlNewMB,
+				CtlNewFolder, CtlRemove, CtlOptionsMenu,
+#ifdef SHOW_RESYNC_BUTTON
+				CtlResync,
 #endif
-																										  nil);
+				nil);
 }
 
 #pragma segment MboxWin
@@ -1466,36 +1534,32 @@ void MBHelp(MyWindowPtr win,Point mouse)
 Boolean MBMenu(MyWindowPtr win, int menu, int item, short modifiers)
 {
 #pragma unused(win,modifiers)
-	
-	switch (menu)
-	{
-		case FILE_MENU:
-			switch(item)
-			{
-				case FILE_OPENSEL_ITEM:
-					MBListOpen(&MB.list);
-					return(True);
-					break;
-			}
-			break;
 
-		case EDIT_MENU:
-			switch(item)
-			{
-				case EDIT_SELECT_ITEM:
-					if (LVSelectAll(&MB.list))
-					{
-						MBSetControls();
-						return(true);
-					}
-					break;
-				case EDIT_COPY_ITEM:
-					LVCopy(&MB.list);
-					return true;
+	switch (menu) {
+	case FILE_MENU:
+		switch (item) {
+		case FILE_OPENSEL_ITEM:
+			MBListOpen(&MB.list);
+			return (True);
+			break;
+		}
+		break;
+
+	case EDIT_MENU:
+		switch (item) {
+		case EDIT_SELECT_ITEM:
+			if (LVSelectAll(&MB.list)) {
+				MBSetControls();
+				return (true);
 			}
 			break;
+		case EDIT_COPY_ITEM:
+			LVCopy(&MB.list);
+			return true;
+		}
+		break;
 	}
-	return(False);
+	return (False);
 }
 
 /************************************************************************
@@ -1503,13 +1567,12 @@ Boolean MBMenu(MyWindowPtr win, int menu, int item, short modifiers)
  ************************************************************************/
 void MBMenuToFile(short menuID, short *pVRef, long *pDirID)
 {
-	if (menuID==kIMAPFolder)
-	{
+	if (menuID == kIMAPFolder) {
 		*pVRef = IMAPMailRoot.vRef;
 		*pDirID = IMAPMailRoot.dirId;
-	}
-	else
-		MenuID2VD(menuID==kEudoraFolder?MAILBOX_MENU:menuID,pVRef,pDirID);
+	} else
+		MenuID2VD(menuID == kEudoraFolder ? MAILBOX_MENU : menuID,
+			  pVRef, pDirID);
 }
 
 /**********************************************************************
@@ -1518,41 +1581,40 @@ void MBMenuToFile(short menuID, short *pVRef, long *pDirID)
  *  Can do internal dragging of mailboxes or external dragging and dropping
  *  of messages
  **********************************************************************/
-static OSErr MBDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag)
-{	
+static OSErr MBDragHandler(MyWindowPtr win, DragTrackingMessage which,
+			   DragReference drag)
+{
 #pragma unused(win)
 	OSErr err = noErr;
-	
-	gfMessageDrag = DragIsInteresting(drag,MESS_FLAVOR,TOC_FLAVOR,nil);	//	Dragging messages
-	gfBoxDrag = LVDragFlavor() == kMBDragType;	//	Dragging mailboxes
-	
+
+	gfMessageDrag = DragIsInteresting(drag, MESS_FLAVOR, TOC_FLAVOR, nil);	//      Dragging messages
+	gfBoxDrag = LVDragFlavor() == kMBDragType;	//      Dragging mailboxes
+
 	if (!gfMessageDrag && !gfBoxDrag)
-		return(dragNotAcceptedErr);	//	Nothing here we want
-	
-	switch (which)
-	{
-		case kDragTrackingEnterWindow:
-		case kDragTrackingLeaveWindow:
-		case kDragTrackingInWindow:
-				err = LVDrag(&MB.list,which,drag);
-			break;
-		case 0xfff:
-			//	Drop
-			if (gfBoxDrag)
-				//	Mailbox drag
-				err = LVDrag(&MB.list,which,drag);
+		return (dragNotAcceptedErr);	//      Nothing here we want
+
+	switch (which) {
+	case kDragTrackingEnterWindow:
+	case kDragTrackingLeaveWindow:
+	case kDragTrackingInWindow:
+		err = LVDrag(&MB.list, which, drag);
+		break;
+	case 0xfff:
+		//      Drop
+		if (gfBoxDrag)
+			//      Mailbox drag
+			err = LVDrag(&MB.list, which, drag);
+		else {
+			//      Message drag
+			VLNodeInfo targetInfo;
+
+			if (LVDrop(&MB.list, &targetInfo))
+				err = MBDragMessages(drag, &targetInfo);
 			else
-			{
-				//	Message drag
-				VLNodeInfo targetInfo;
-				
-				if (LVDrop(&MB.list,&targetInfo))
-					err = MBDragMessages(drag, &targetInfo);
-				else
-					return dragNotAcceptedErr;
-				
-			}
-			break;
+				return dragNotAcceptedErr;
+
+		}
+		break;
 	}
 	return err;
 }
@@ -1560,53 +1622,59 @@ static OSErr MBDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReferen
 /**********************************************************************
  * MBDragMessages - handle message drags
   **********************************************************************/
-OSErr MBDragMessages(DragReference drag, VLNodeInfo *targetInfo)
+OSErr MBDragMessages(DragReference drag, VLNodeInfo * targetInfo)
 {
-	FSSpec spec,toSpec;
+	FSSpec spec, toSpec;
 	TOCHandle tocH;
 	short sumNum;
 	OSErr err;
-	UHandle data=nil;
-	
-	//	Get spec of mailbox dropped on
-	MakeMBSpec(targetInfo,&spec);
-	
-	if (!(err=MyGetDragItemData(drag,1,MESS_FLAVOR,(void*)&data)))
-	{
-		tocH = (***(MessHandle**)data)->tocH;
-		sumNum = (***(MessHandle**)data)->sumNum;
-	}
-	else if (!(err=MyGetDragItemData(drag,1,TOC_FLAVOR,(void*)&data)))
-	{
-		tocH = **(TOCHandle**)data;
+	UHandle data = nil;
+
+	//      Get spec of mailbox dropped on
+	MakeMBSpec(targetInfo, &spec);
+
+	if (!
+	    (err =
+	     MyGetDragItemData(drag, 1, MESS_FLAVOR, (void *) &data))) {
+		tocH = (***(MessHandle **) data)->tocH;
+		sumNum = (***(MessHandle **) data)->sumNum;
+	} else
+	    if (!
+		(err =
+		 MyGetDragItemData(drag, 1, TOC_FLAVOR, (void *) &data))) {
+		tocH = **(TOCHandle **) data;
 		sumNum = -1;
 	}
 	ZapHandle(data);
-	
-	//	Can't move to own mailbox
-	toSpec = GetMailboxSpec(tocH,-1);
-	if (toSpec.vRefNum==spec.vRefNum && toSpec.parID==spec.parID && StringSame(toSpec.name,spec.name))
-		//	Dragging to own mailbox
+
+	//      Can't move to own mailbox
+	toSpec = GetMailboxSpec(tocH, -1);
+	if (toSpec.vRefNum == spec.vRefNum && toSpec.parID == spec.parID
+	    && StringSame(toSpec.name, spec.name))
+		//      Dragging to own mailbox
 		return dragNotAcceptedErr;
-	
-	if (!err)
-	{
-		if (sumNum==-1) MoveSelectedMessages(tocH,&spec,(DragOrMods(drag)&optionKey)!=0);
-		else
-		{
-//								if (!(DragOrMods(drag)&optionKey)) EzOpen(tocH,sumNum,0,DragOrMods(drag),True,True);
-			if (!(DragOrMods(drag)&optionKey)) {
+
+	if (!err) {
+		if (sumNum == -1)
+			MoveSelectedMessages(tocH, &spec,
+					     (DragOrMods(drag) & optionKey)
+					     != 0);
+		else {
+//                                                              if (!(DragOrMods(drag)&optionKey)) EzOpen(tocH,sumNum,0,DragOrMods(drag),True,True);
+			if (!(DragOrMods(drag) & optionKey)) {
 #ifndef clarenceBug821
 #ifdef TWO
-				AddXfUndo(tocH,TOCBySpec(&spec),sumNum);
+				AddXfUndo(tocH, TOCBySpec(&spec), sumNum);
 #endif
 #endif
-				EzOpen(tocH,sumNum,0,DragOrMods(drag),True,True);
+				EzOpen(tocH, sumNum, 0, DragOrMods(drag),
+				       True, True);
 			}
-			MoveMessage(tocH,sumNum,&spec,(DragOrMods(drag)&optionKey)!=0);
+			MoveMessage(tocH, sumNum, &spec,
+				    (DragOrMods(drag) & optionKey) != 0);
 		}
 	}
-	return(err);
+	return (err);
 }
 
 
@@ -1631,24 +1699,24 @@ ViewListPtr MBGetList(void)
  ************************************************************************/
 long *FindExpandDirID(long dirID, ExpandInfoPtr pExpList)
 {
-	short	i;
-	long	*pDirID;
+	short i;
+	long *pDirID;
 
-	if (!pExpList->hExpandList)
-	{
-		//	Get expanded folder list
-		if (pExpList->resID && (pExpList->hExpandList = Get1Resource(kExpandListType,pExpList->resID)))
+	if (!pExpList->hExpandList) {
+		//      Get expanded folder list
+		if (pExpList->resID
+		    && (pExpList->hExpandList =
+			Get1Resource(kExpandListType, pExpList->resID)))
 			DetachResource(pExpList->hExpandList);
 		else
-			//	Need to create a new one
+			//      Need to create a new one
 			pExpList->hExpandList = NewHandleClear(2);
 
 		pExpList->fExpandListChanged = false;
 	}
-
-	//	Find the dirID in the list
-	for (i=0,pDirID=(*pExpList->hExpandList)->dirID;i<(*pExpList->hExpandList)->count;i++,pDirID++)
-	{
+	//      Find the dirID in the list
+	for (i = 0, pDirID = (*pExpList->hExpandList)->dirID;
+	     i < (*pExpList->hExpandList)->count; i++, pDirID++) {
 		if (*pDirID == dirID)
 			return pDirID;
 	}
@@ -1658,31 +1726,30 @@ long *FindExpandDirID(long dirID, ExpandInfoPtr pExpList)
 /************************************************************************
  * SaveExpandStatus - save status of expanded folders
  ************************************************************************/
-void SaveExpandStatus(VLNodeInfo *data,ExpandInfoPtr pExpList)
-{		
-	long	*pDirID;
+void SaveExpandStatus(VLNodeInfo * data, ExpandInfoPtr pExpList)
+{
+	long *pDirID;
 
 
-	pDirID = FindExpandDirID(data->refCon,pExpList);
-	
-	if (data->isCollapsed)
-	{
-		//	Remove from list
-		if (pDirID)
-		{
+	pDirID = FindExpandDirID(data->refCon, pExpList);
+
+	if (data->isCollapsed) {
+		//      Remove from list
+		if (pDirID) {
 			(*pExpList->hExpandList)->count--;
-			BMD(pDirID+1,pDirID,sizeof(long)*((*pExpList->hExpandList)->count-(pDirID-(*pExpList->hExpandList)->dirID)));
+			BMD(pDirID + 1, pDirID,
+			    sizeof(long) *
+			    ((*pExpList->hExpandList)->count -
+			     (pDirID - (*pExpList->hExpandList)->dirID)));
 			SetExpandListSize(pExpList);
 			pExpList->fExpandListChanged = true;
 		}
-	}
-	else
-	{
-		//	Add to list
-		if (!pDirID)
-		{
-			if (!PtrPlusHand_(&data->refCon,(Handle)pExpList->hExpandList,sizeof(long)))
-			{
+	} else {
+		//      Add to list
+		if (!pDirID) {
+			if (!PtrPlusHand_
+			    (&data->refCon, (Handle) pExpList->hExpandList,
+			     sizeof(long))) {
 				(*pExpList->hExpandList)->count++;
 				pExpList->fExpandListChanged = true;
 			}
@@ -1695,26 +1762,27 @@ void SaveExpandStatus(VLNodeInfo *data,ExpandInfoPtr pExpList)
  ************************************************************************/
 static void SetExpandListSize(ExpandInfoPtr pExpList)
 {
-	SetHandleSize((Handle)pExpList->hExpandList,sizeof(short)+sizeof(long)*(*pExpList->hExpandList)->count);
+	SetHandleSize((Handle) pExpList->hExpandList,
+		      sizeof(short) +
+		      sizeof(long) * (*pExpList->hExpandList)->count);
 }
 
 /************************************************************************
  * MBGetFolderMenuID - get the menu ID for this folder
  ************************************************************************/
-short MBGetFolderMenuID(short theID,StringPtr name)
-{	
-	short item,id;
-	MenuHandle	mh;
+short MBGetFolderMenuID(short theID, StringPtr name)
+{
+	short item, id;
+	MenuHandle mh;
 
 	id = 0;
-	if (theID==kEudoraFolder || theID==kIMAPFolder)
+	if (theID == kEudoraFolder || theID == kIMAPFolder)
 		theID = MAILBOX_MENU;
-	if (mh = GetMenuHandle(theID))
-	{
-		item = FindItemByName(mh,name);
-		id = SubmenuId(mh,item);
+	if (mh = GetMenuHandle(theID)) {
+		item = FindItemByName(mh, name);
+		id = SubmenuId(mh, item);
 	}
-	return(id);
+	return (id);
 }
 
 /************************************************************************
@@ -1723,40 +1791,41 @@ short MBGetFolderMenuID(short theID,StringPtr name)
  ************************************************************************/
 void SaveExpandedFolderList(ExpandInfoPtr pExpList)
 {
-	if (pExpList->fExpandListChanged && pExpList->resID)
-	{	
-		short from,to;
-		OSErr	err;
+	if (pExpList->fExpandListChanged && pExpList->resID) {
+		short from, to;
+		OSErr err;
 
-		//	Remove any directories from the list that no longer exist
-		for(from=0,to=0;from<(*pExpList->hExpandList)->count;from++)
-		{
+		//      Remove any directories from the list that no longer exist
+		for (from = 0, to = 0;
+		     from < (*pExpList->hExpandList)->count; from++) {
 			CInfoPBRec hfi;
-			long	dirID;
+			long dirID;
 
 			hfi.dirInfo.ioCompletion = nil;
 			hfi.dirInfo.ioNamePtr = nil;
-			hfi.dirInfo.ioVRefNum=MailRoot.vRef;
-			hfi.dirInfo.ioDrDirID = dirID = (*pExpList->hExpandList)->dirID[from];
-			hfi.dirInfo.ioFDirIndex=-1;
-			if (!PBGetCatInfo((CInfoPBPtr)&hfi,false))
-			{
-				//	This one still exists. Use it
-				(*pExpList->hExpandList)->dirID[to++] = dirID;
+			hfi.dirInfo.ioVRefNum = MailRoot.vRef;
+			hfi.dirInfo.ioDrDirID = dirID =
+			    (*pExpList->hExpandList)->dirID[from];
+			hfi.dirInfo.ioFDirIndex = -1;
+			if (!PBGetCatInfo((CInfoPBPtr) & hfi, false)) {
+				//      This one still exists. Use it
+				(*pExpList->hExpandList)->dirID[to++] =
+				    dirID;
 			}
 		}
 
-		if (from != to)
-		{
-			//	Looks like we deleted one or more directory ID's
+		if (from != to) {
+			//      Looks like we deleted one or more directory ID's
 			(*pExpList->hExpandList)->count = to;
 			SetExpandListSize(pExpList);
 		}
 
-		ZapSettingsResource(kExpandListType,pExpList->resID);
-		AddMyResource_((Handle)pExpList->hExpandList,kExpandListType,pExpList->resID,"");					
-		if (!(err=ResError())) MyUpdateResFile(SettingsRefN);
-		DetachResource((Handle)pExpList->hExpandList);
+		ZapSettingsResource(kExpandListType, pExpList->resID);
+		AddMyResource_((Handle) pExpList->hExpandList,
+			       kExpandListType, pExpList->resID, "");
+		if (!(err = ResError()))
+			MyUpdateResFile(SettingsRefN);
+		DetachResource((Handle) pExpList->hExpandList);
 	}
 	// ZapHandle((Handle)pExpList->hExpandList); CK
 }
@@ -1765,58 +1834,56 @@ void SaveExpandedFolderList(ExpandInfoPtr pExpList)
 /************************************************************************
  * AddMailboxListItems - add mailboxes to list
  ************************************************************************/
-void AddMailboxListItems(ViewListPtr pView, short nodeId,ExpandInfoPtr pExpList)
+void AddMailboxListItems(ViewListPtr pView, short nodeId,
+			 ExpandInfoPtr pExpList)
 {
-	short i,n;
+	short i, n;
 	Point c;
-	short	menuID;
-	VLNodeInfo	info;
-	Str255	sTemp;
-	MenuHandle	mh;
-	Boolean	haveIMAP;
-	Boolean	doingTopLvlIMAP=false;
+	short menuID;
+	VLNodeInfo info;
+	Str255 sTemp;
+	MenuHandle mh;
+	Boolean haveIMAP;
+	Boolean doingTopLvlIMAP = false;
 
 	haveIMAP = IMAPExists();
-	mh = GetMenuHandle(nodeId==0 || nodeId == kEudoraFolder ? MAILBOX_MENU : nodeId);
+	mh = GetMenuHandle(nodeId == 0
+			   || nodeId ==
+			   kEudoraFolder ? MAILBOX_MENU : nodeId);
 	n = CountMenuItems(mh);
 	c.h = 0;
 	SetPort_(GetMyWindowCGrafPtr(pView->wPtr));
-	menuID = GetMenuID(mh);	
-	i = (menuID==MAILBOX_MENU) ? 1: MAILBOX_FIRST_USER_ITEM-MAILBOX_BAR1_ITEM;
+	menuID = GetMenuID(mh);
+	i = (menuID ==
+	     MAILBOX_MENU) ? 1 : MAILBOX_FIRST_USER_ITEM -
+	    MAILBOX_BAR1_ITEM;
 
-	if (nodeId==0)
-	{
-		//	First level. Add Eudora folder
-		if (haveIMAP)
-		{
+	if (nodeId == 0) {
+		//      First level. Add Eudora folder
+		if (haveIMAP) {
 			info.useLevelZero = false;
 			info.isParent = true;
-		}
-		else
-		{
+		} else {
 			info.useLevelZero = true;
 			info.isParent = false;
 		}
 		info.iconID = APP_ICON;
 		info.nodeID = kEudoraFolder;
-		info.isCollapsed = !FindExpandDirID(MailRoot.dirId,pExpList);
+		info.isCollapsed =
+		    !FindExpandDirID(MailRoot.dirId, pExpList);
 		info.style = 0;
-		if (haveIMAP)
-		{
-			//	Any unread in the local mailboxes?
-			short	count = CountMenuItems(mh);
-			short	item;
-			
-			for(item=1;item<=count;item++)
-			{
-				Style	style;
-				
+		if (haveIMAP) {
+			//      Any unread in the local mailboxes?
+			short count = CountMenuItems(mh);
+			short item;
+
+			for (item = 1; item <= count; item++) {
+				Style style;
+
 				GetMenuItemText(mh, item, sTemp);
-				if (!IsIMAPCacheName(sTemp))
-				{
-					GetItemStyle(mh,item,&style);
-					if (style & UnreadStyle)
-					{
+				if (!IsIMAPCacheName(sTemp)) {
+					GetItemStyle(mh, item, &style);
+					if (style & UnreadStyle) {
 						info.style = UnreadStyle;
 						break;
 					}
@@ -1824,106 +1891,102 @@ void AddMailboxListItems(ViewListPtr pView, short nodeId,ExpandInfoPtr pExpList)
 			}
 		}
 		info.refCon = MailRoot.dirId;
-					
-		GetMBDirName(Root.vRef,Root.dirId,info.name);	//	Name of Mail Folder				
+
+		GetMBDirName(Root.vRef, Root.dirId, info.name);	//      Name of Mail Folder                             
 
 		LVAdd(pView, &info);
 
-		//	If we have IMAP folders, add them at this level.
-		//	Otherwise add all the POP stuff at this level
-		if (haveIMAP)
-		{
-			for (i=MAILBOX_FIRST_USER_ITEM;i<=n;i++)
-			{
-					MyGetItem(mh,i,info.name);
-					if (StringSame(info.name,"\p-")) break;	// stop at menu divider
+		//      If we have IMAP folders, add them at this level.
+		//      Otherwise add all the POP stuff at this level
+		if (haveIMAP) {
+			for (i = MAILBOX_FIRST_USER_ITEM; i <= n; i++) {
+				MyGetItem(mh, i, info.name);
+				if (StringSame(info.name, "\p-"))
+					break;	// stop at menu divider
 			}
 			i++;
 			doingTopLvlIMAP = true;
 		}
-	}		
+	}
 
 	info.useLevelZero = false;
-	for (;i<=n;i++)
-	{
-		short	mailBoxIcon;
-		Style	style;
-		
+	for (; i <= n; i++) {
+		short mailBoxIcon;
+		Style style;
+
 		mailBoxIcon = kMailBoxIcon;
-		if (menuID==MAILBOX_MENU)
-		{
-			switch (i)
-			{
-				case MAILBOX_IN_ITEM:	//	In box
-					mailBoxIcon = IN_MB_ICON;
-					break;
-				case MAILBOX_OUT_ITEM:	//	Out box
-					mailBoxIcon = OUT_MB_ICON;
-					break;
-				case MAILBOX_JUNK_ITEM:	//	Junk box
-					//mailBoxIcon = JUNK_MB_ICON;
-					break;
-				case MAILBOX_TRASH_ITEM:	//	Trash
-					mailBoxIcon = kTrashBoxIcon;
-					break;
-				case MAILBOX_BAR1_ITEM:
-					i = MAILBOX_FIRST_USER_ITEM;
-					break;
+		if (menuID == MAILBOX_MENU) {
+			switch (i) {
+			case MAILBOX_IN_ITEM:	//      In box
+				mailBoxIcon = IN_MB_ICON;
+				break;
+			case MAILBOX_OUT_ITEM:	//      Out box
+				mailBoxIcon = OUT_MB_ICON;
+				break;
+			case MAILBOX_JUNK_ITEM:	//      Junk box
+				//mailBoxIcon = JUNK_MB_ICON;
+				break;
+			case MAILBOX_TRASH_ITEM:	//      Trash
+				mailBoxIcon = kTrashBoxIcon;
+				break;
+			case MAILBOX_BAR1_ITEM:
+				i = MAILBOX_FIRST_USER_ITEM;
+				break;
 			}
 		}
-		
-		if (i <= n)
-		{
-			short	vRef;
-			long	dirID;
 
-			MyGetItem(mh,i,info.name);
-			if (menuID==MAILBOX_MENU && haveIMAP && StringSame(info.name,"\p-")) break;	// stop at menu divider
+		if (i <= n) {
+			short vRef;
+			long dirID;
+
+			MyGetItem(mh, i, info.name);
+			if (menuID == MAILBOX_MENU && haveIMAP
+			    && StringSame(info.name, "\p-"))
+				break;	// stop at menu divider
 			info.nodeID = menuID;
-			if (info.isParent = HasSubmenu(mh,i))
-			{
-				short	thisMenuID;
+			if (info.isParent = HasSubmenu(mh, i)) {
+				short thisMenuID;
 
-				thisMenuID = SubmenuId(mh,i);
+				thisMenuID = SubmenuId(mh, i);
 				MBMenuToFile(thisMenuID, &vRef, &dirID);
 				info.iconID = kFolderIcon;
-				info.isCollapsed = info.isParent && !FindExpandDirID(dirID,pExpList);
+				info.isCollapsed = info.isParent
+				    && !FindExpandDirID(dirID, pExpList);
 				info.refCon = dirID;
-			}
-			else
-			{
+			} else {
 				info.iconID = mailBoxIcon;
 				info.isCollapsed = false;
 			}
-			if (doingTopLvlIMAP)
-			{
+			if (doingTopLvlIMAP) {
 				info.nodeID = kIMAPFolder;
 				info.iconID = APP_ICON;
-			}
-			else if (IsIMAPBox(&info))
-				info.iconID = IMAPMailboxIcon(&info, menuID);
-			
-			if (info.iconID == kMailBoxIcon && !PrefIsSet(PREF_NO_CUSTOM_MB_ICONS))
-			{
-				Handle	resH;
+			} else if (IsIMAPBox(&info))
+				info.iconID =
+				    IMAPMailboxIcon(&info, menuID);
+
+			if (info.iconID == kMailBoxIcon
+			    && !PrefIsSet(PREF_NO_CUSTOM_MB_ICONS)) {
+				Handle resH;
 				OSType junk;
 
-				//	See if we have a custom icon
+				//      See if we have a custom icon
 				SetResLoad(false);
-				resH = GetNamedResource('ICN#',info.name);
+				resH = GetNamedResource('ICN#', info.name);
 				SetResLoad(true);
-				if (resH)
-				{
-					short	resFile = HomeResFile(resH);
-					
-					//	Don't use icons from Eudora application or help file				
-					if (resFile != AppResFile && resFile != HelpResFile)
-						GetResInfo(resH,&info.iconID,&junk,sTemp);					
+				if (resH) {
+					short resFile = HomeResFile(resH);
+
+					//      Don't use icons from Eudora application or help file                            
+					if (resFile != AppResFile
+					    && resFile != HelpResFile)
+						GetResInfo(resH,
+							   &info.iconID,
+							   &junk, sTemp);
 				}
 			}
 
-			GetItemStyle(mh,i,&style);
-			info.style = style&UnreadStyle ? UnreadStyle : 0;
+			GetItemStyle(mh, i, &style);
+			info.style = style & UnreadStyle ? UnreadStyle : 0;
 			LVAdd(pView, &info);
 		}
 	}
@@ -1932,7 +1995,7 @@ void AddMailboxListItems(ViewListPtr pView, short nodeId,ExpandInfoPtr pExpList)
 /************************************************************************
  * IMAPMailboxIcon - which icon should be used for this IMAP mailbox?
  ************************************************************************/
-long IMAPMailboxIcon(VLNodeInfo	*info, short menuID)
+long IMAPMailboxIcon(VLNodeInfo * info, short menuID)
 {
 	long id = kMailBoxIcon;
 	short vRef;
@@ -1941,201 +2004,210 @@ long IMAPMailboxIcon(VLNodeInfo	*info, short menuID)
 	MailboxNodeHandle node = nil;
 	PersHandle pers = nil;
 	Str255 sTemp;
-		
-	MBMenuToFile(menuID,&vRef,&dirID);
-	if (IsIMAPVD(vRef,dirID))
-	{	
+
+	MBMenuToFile(menuID, &vRef, &dirID);
+	if (IsIMAPVD(vRef, dirID)) {
 		SimpleMakeFSSpec(vRef, dirID, info->name, &mailboxSpec);
-		mailboxSpec.parID = SpecDirId(&mailboxSpec);	
+		mailboxSpec.parID = SpecDirId(&mailboxSpec);
 		LocateNodeBySpecInAllPersTrees(&mailboxSpec, &node, &pers);
-		if (node)
-		{					
-			if (StringSame(info->name,GetRString(sTemp,IMAP_INBOX_NAME)) && !((*node)->childList))	// if this is the IMAP Inbox, and it can't have any children, use "In" icon
+		if (node) {
+			if (StringSame(info->name, GetRString(sTemp, IMAP_INBOX_NAME)) && !((*node)->childList))	// if this is the IMAP Inbox, and it can't have any children, use "In" icon
 				id = IN_MB_ICON;
-			else if (((*node)->attributes&LATT_TRASH) != 0) 										// if this is the trash mailbox, use the trash icon
+			else if (((*node)->attributes & LATT_TRASH) != 0)	// if this is the trash mailbox, use the trash icon
 				id = kTrashBoxIcon;
-			else if (DoesIMAPMailboxNeed(node,kNeedsPoll))											// a polled mailbox
+			else if (DoesIMAPMailboxNeed(node, kNeedsPoll))	// a polled mailbox
 			{
-				if ((*node)->childList)																
-					id = kIMAPPolledFolderIcon;														// with children
+				if ((*node)->childList)
+					id = kIMAPPolledFolderIcon;	// with children
 				else
-					id = kIMAPPolledMailboxIcon;													// without
-			}
-			else if (((*node)->attributes & LATT_NOSELECT))											// a strict folder
+					id = kIMAPPolledMailboxIcon;	// without
+			} else if (((*node)->attributes & LATT_NOSELECT))	// a strict folder
 				id = kFolderIcon;
-			else if ((*node)->childList)															// a regular IMAP mailbox folder
+			else if ((*node)->childList)	// a regular IMAP mailbox folder
 				id = kIMAPMailboxIcon;
 		}
-	}			
+	}
 	return (id);
 }
 
 /************************************************************************
  * WhichTree - which tree (POP, IMAP account) does this file/folder belong to
  ************************************************************************/
-static short WhichTree(VLNodeInfo *pInfo)
+static short WhichTree(VLNodeInfo * pInfo)
 {
-	MailboxNodeHandle	node;
-	PersHandle	pers;
-	FSSpec		spec;
-	
-	if (IMAPExists())
-	{
-		MakeMBSpec(pInfo,&spec);
-		if (IsIMAPBox(pInfo))
-		{
+	MailboxNodeHandle node;
+	PersHandle pers;
+	FSSpec spec;
+
+	if (IMAPExists()) {
+		MakeMBSpec(pInfo, &spec);
+		if (IsIMAPBox(pInfo)) {
 			spec.parID = SpecDirId(&spec);
-			LocateNodeBySpecInAllPersTrees(&spec, &node, &pers);
-			return (long)pers;
+			LocateNodeBySpecInAllPersTrees(&spec, &node,
+						       &pers);
+			return (long) pers;
 		}
 	}
-
-	//	POP mailbox
+	//      POP mailbox
 	return -1;
 }
 
 /************************************************************************
  * MailboxesLVCallBack - callback function for List View
  ************************************************************************/
-long MailboxesLVCallBack(ViewListPtr pView, VLCallbackMessage message, long data)
+long MailboxesLVCallBack(ViewListPtr pView, VLCallbackMessage message,
+			 long data)
 {
-	OSErr	err = noErr;
-	SendDragDataInfo	*pSendData;
-	MBDragData	dragData;
-	VLNodeInfo	*pInfo;
-	MenuHandle	mh;
-	short				nodeID;
+	OSErr err = noErr;
+	SendDragDataInfo *pSendData;
+	MBDragData dragData;
+	VLNodeInfo *pInfo;
+	MenuHandle mh;
+	short nodeID;
 
-	switch (message)
-	{
-		case kLVAddNodeItems:
-			AddMailboxListItems(pView,data,&gExpandList);
-			break;
-		
-		case kLVGetParentID:
-			if (((VLNodeInfo *)data)->rowNum==1)
-				return kEudoraFolder;
-			nodeID = ((VLNodeInfo *)data)->nodeID;
-			if (nodeID == kEudoraFolder || nodeID == kIMAPFolder) nodeID = MAILBOX_MENU;
-			return MBGetFolderMenuID(nodeID,((VLNodeInfo *)data)->name);
-			//break;
-		
-		case kLVOpenItem:
-			MBListOpen(&MB.list);
-			break;
-			
-		case kLVMoveItem:
-			MBMove((VLNodeInfo*)data);
-			break;
+	switch (message) {
+	case kLVAddNodeItems:
+		AddMailboxListItems(pView, data, &gExpandList);
+		break;
 
-		case kLVDeleteItem:
-			MBRemove();
-			break;
-		
-		case kLVRenameItem:
-			MBRename((StringPtr)data);
-			break;
-		
-		case kLVQueryItem:
-			pInfo = (	VLNodeInfo *)data;
-			switch (pInfo->query)
+	case kLVGetParentID:
+		if (((VLNodeInfo *) data)->rowNum == 1)
+			return kEudoraFolder;
+		nodeID = ((VLNodeInfo *) data)->nodeID;
+		if (nodeID == kEudoraFolder || nodeID == kIMAPFolder)
+			nodeID = MAILBOX_MENU;
+		return MBGetFolderMenuID(nodeID,
+					 ((VLNodeInfo *) data)->name);
+		//break;
+
+	case kLVOpenItem:
+		MBListOpen(&MB.list);
+		break;
+
+	case kLVMoveItem:
+		MBMove((VLNodeInfo *) data);
+		break;
+
+	case kLVDeleteItem:
+		MBRemove();
+		break;
+
+	case kLVRenameItem:
+		MBRename((StringPtr) data);
+		break;
+
+	case kLVQueryItem:
+		pInfo = (VLNodeInfo *) data;
+		switch (pInfo->query) {
+		case kQuerySelect:
+			return true;;
+		case kQueryDrag:
 			{
-				case kQuerySelect:
-					return true;;
-				case kQueryDrag:
-				{
-					//	make sure we're not dragging items from different trees
-					//	must be all POP or same IMAP tree
-					long	thisTree = WhichTree(pInfo);
-					
-					if (!pView->dragGroup)
-						pView->dragGroup = thisTree;	// this is the first item we've seen
-					else if (pView->dragGroup != thisTree)
-						return false;	// drag to different tree
-				}
-					//	fall through to common rename code
-				case kQueryRename:
-					if ((((VLNodeInfo*)data)->nodeID == kIMAPFolder)
-						|| (IsIMAPBox(pInfo) && !CanModifyMailboxTrees())) return (false);
-					return (!IsSpecialBox(pView,pInfo));
-				case kQueryDrop:
-				case kQueryDropParent:
-					//	make sure we're not dragging items from different trees
-					//	must be all POP or same IMAP tree
-					if (gfBoxDrag && pView->dragGroup != WhichTree(pInfo))
-						return false;	// drag to different tree
+				//      make sure we're not dragging items from different trees
+				//      must be all POP or same IMAP tree
+				long thisTree = WhichTree(pInfo);
 
-					// IMAP drop cases
-					if (IsIMAPBox(pInfo))
-					{
-						IMAPMailboxAttributes att;
-						FSSpec toSpec;
-						
-						// can't drop if we can't currently modify mailbox trees
-						if (gfBoxDrag && !CanModifyMailboxTrees()) return (false);
-						
-						MBMenuToFile(pInfo->nodeID, &(toSpec.vRefNum), &(toSpec.parID));
-						PCopy(toSpec.name, pInfo->name);
-						toSpec.parID = SpecDirId(&toSpec);
-							
-						// can't drop if the destination can't have messages
-						if (MailboxAttributes(&toSpec, &att))
-						{
-							if ((gfMessageDrag && att.noSelect) ||	//	Will MB accept messages?
-								gfBoxDrag && att.noInferiors)	//	Will MB accept children?
-									return false;
-							else
-								return true;
-						}
-					}
-					if (pInfo->query==kQueryDrop)
-					{
-						if (pInfo->isParent || pInfo->rowNum == kItemEudoraFolder)
-							//	Can accept mail box drags
-							return gfBoxDrag;
-						else
-							//	Can accept message drags
-							return gfMessageDrag;
-					}
+				if (!pView->dragGroup)
+					pView->dragGroup = thisTree;	// this is the first item we've seen
+				else if (pView->dragGroup != thisTree)
+					return false;	// drag to different tree
+			}
+			//      fall through to common rename code
+		case kQueryRename:
+			if ((((VLNodeInfo *) data)->nodeID == kIMAPFolder)
+			    || (IsIMAPBox(pInfo)
+				&& !CanModifyMailboxTrees()))
+				return (false);
+			return (!IsSpecialBox(pView, pInfo));
+		case kQueryDrop:
+		case kQueryDropParent:
+			//      make sure we're not dragging items from different trees
+			//      must be all POP or same IMAP tree
+			if (gfBoxDrag
+			    && pView->dragGroup != WhichTree(pInfo))
+				return false;	// drag to different tree
+
+			// IMAP drop cases
+			if (IsIMAPBox(pInfo)) {
+				IMAPMailboxAttributes att;
+				FSSpec toSpec;
+
+				// can't drop if we can't currently modify mailbox trees
+				if (gfBoxDrag && !CanModifyMailboxTrees())
+					return (false);
+
+				MBMenuToFile(pInfo->nodeID,
+					     &(toSpec.vRefNum),
+					     &(toSpec.parID));
+				PCopy(toSpec.name, pInfo->name);
+				toSpec.parID = SpecDirId(&toSpec);
+
+				// can't drop if the destination can't have messages
+				if (MailboxAttributes(&toSpec, &att)) {
+					if ((gfMessageDrag && att.noSelect) ||	//      Will MB accept messages?
+					    gfBoxDrag && att.noInferiors)	//      Will MB accept children?
+						return false;
 					else
-						//	message==kQueryDropParent
-						return gfBoxDrag;					
-					break;
-				case kQueryDragExpand:
-						//	if we're dragging to a different tree, don't auto-expand
-						//	folders
-						if (gfBoxDrag && pView->dragGroup != WhichTree(pInfo))
-							return false;	// drag to different tree
-					return true;
-				case kQueryDCOpens:
-					//	If IMAP mailbox hybrid, double-click opens the mailbox
-					//	instead of expanding/collapsing the folder
-					return pInfo->iconID == kIMAPMailboxIcon || IsIMAPTrashBox(pInfo) || (!pInfo->isParent && pInfo->nodeID != kEudoraFolder);
+						return true;
+				}
 			}
+			if (pInfo->query == kQueryDrop) {
+				if (pInfo->isParent
+				    || pInfo->rowNum == kItemEudoraFolder)
+					//      Can accept mail box drags
+					return gfBoxDrag;
+				else
+					//      Can accept message drags
+					return gfMessageDrag;
+			} else
+				//      message==kQueryDropParent
+				return gfBoxDrag;
 			break;
-						
-		case kLVCopyItem:
-			break;
+		case kQueryDragExpand:
+			//      if we're dragging to a different tree, don't auto-expand
+			//      folders
+			if (gfBoxDrag
+			    && pView->dragGroup != WhichTree(pInfo))
+				return false;	// drag to different tree
+			return true;
+		case kQueryDCOpens:
+			//      If IMAP mailbox hybrid, double-click opens the mailbox
+			//      instead of expanding/collapsing the folder
+			return pInfo->iconID == kIMAPMailboxIcon
+			    || IsIMAPTrashBox(pInfo) || (!pInfo->isParent
+							 && pInfo->
+							 nodeID !=
+							 kEudoraFolder);
+		}
+		break;
 
-		case kLVExpandCollapseItem:
-			if (((VLNodeInfo *)data)->rowNum==1 && (MainEvent.modifiers & optionKey))
-			{
-				FinderOpen(&SettingsSpec,true,false);
-			}
-			else
-				SaveExpandStatus((VLNodeInfo *)data,&gExpandList);
-			break;
-		
-		case kLVSendDragData:
-			pSendData = (SendDragDataInfo *)data;
-			PCopy(dragData.name,pSendData->info->name);
-			dragData.menuID = pSendData->info->nodeID;
-			if (mh = GetMenuHandle(dragData.menuID))
-				dragData.menuItem = FindItemByName(mh,dragData.name);
-				
-			MakeMBSpec(pSendData->info,&dragData.spec);
-			err = SetDragItemFlavorData(pSendData->drag, pSendData->itemRef, pSendData->flavor,&dragData, sizeof(dragData), 0L);
-			break;
+	case kLVCopyItem:
+		break;
+
+	case kLVExpandCollapseItem:
+		if (((VLNodeInfo *) data)->rowNum == 1
+		    && (MainEvent.modifiers & optionKey)) {
+			FinderOpen(&SettingsSpec, true, false);
+		} else
+			SaveExpandStatus((VLNodeInfo *) data,
+					 &gExpandList);
+		break;
+
+	case kLVSendDragData:
+		pSendData = (SendDragDataInfo *) data;
+		PCopy(dragData.name, pSendData->info->name);
+		dragData.menuID = pSendData->info->nodeID;
+		if (mh = GetMenuHandle(dragData.menuID))
+			dragData.menuItem =
+			    FindItemByName(mh, dragData.name);
+
+		MakeMBSpec(pSendData->info, &dragData.spec);
+		err =
+		    SetDragItemFlavorData(pSendData->drag,
+					  pSendData->itemRef,
+					  pSendData->flavor, &dragData,
+					  sizeof(dragData), 0L);
+		break;
 
 	}
 	return err;
@@ -2144,85 +2216,87 @@ long MailboxesLVCallBack(ViewListPtr pView, VLCallbackMessage message, long data
 /************************************************************************
  * MakeMBSpec - make a file spec for a mailbox file
  ************************************************************************/
-void MakeMBSpec(VLNodeInfo *pData,FSSpec *pSpec)
+void MakeMBSpec(VLNodeInfo * pData, FSSpec * pSpec)
 {
-	short	vRef;
-	long	dirID;
-	Str32	name;
+	short vRef;
+	long dirID;
+	Str32 name;
 
 	MBMenuToFile(pData->nodeID, &vRef, &dirID);
-	PCopy(name,pData->name);
+	PCopy(name, pData->name);
 	if (pData->nodeID == MAILBOX_MENU)
-		switch(pData->rowNum)
-		{
-			//	Filename may be different than name in list if localized
-			case kItemInBox: GetRString(name,IN); break;
-			case kItemOutBox: GetRString(name,OUT); break;
-			case kItemJunkBox: GetRString(name,JUNK); break;
-			case kItemTrash: GetRString(name,TRASH); break;
-		}	
-	FSMakeFSSpec(vRef,dirID,name,pSpec);
+		switch (pData->rowNum) {
+			//      Filename may be different than name in list if localized
+		case kItemInBox:
+			GetRString(name, IN);
+			break;
+		case kItemOutBox:
+			GetRString(name, OUT);
+			break;
+		case kItemJunkBox:
+			GetRString(name, JUNK);
+			break;
+		case kItemTrash:
+			GetRString(name, TRASH);
+			break;
+		}
+	FSMakeFSSpec(vRef, dirID, name, pSpec);
 }
 
 /************************************************************************
  * IsIMAPBox - does this entry refer to an IMAP mailbox?
  ************************************************************************/
-Boolean IsIMAPBox(VLNodeInfo *pData)
+Boolean IsIMAPBox(VLNodeInfo * pData)
 {
-	short	vRef;
-	long	dirID;
+	short vRef;
+	long dirID;
 
 	if (pData->nodeID == kIMAPFolder)
 		return true;
-		
+
 	MBMenuToFile(pData->nodeID, &vRef, &dirID);
-	return IsIMAPVD(vRef,dirID);
+	return IsIMAPVD(vRef, dirID);
 }
 
 /**********************************************************************
  * OpenMBFolder - open folders above this one in the mailbox list
  **********************************************************************/
-void OpenMBFolder(ViewListPtr pView,short menuID,StringPtr s)
+void OpenMBFolder(ViewListPtr pView, short menuID, StringPtr s)
 {
-	MenuHandle	mh;
-	
-	if (menuID>0 && (mh = GetMenuHandle(menuID)))
-	{
-		short	item;
-		
-		if (menuID == MAILBOX_MENU)
-		{
-			if (IMAPExists())
-			{
-				//	Open Eudora Folder
-				Str32		s;
+	MenuHandle mh;
 
-				GetDirName(nil,Root.vRef,Root.dirId,s);			
-				LVExpand(pView,kEudoraFolder,s,true);
+	if (menuID > 0 && (mh = GetMenuHandle(menuID))) {
+		short item;
+
+		if (menuID == MAILBOX_MENU) {
+			if (IMAPExists()) {
+				//      Open Eudora Folder
+				Str32 s;
+
+				GetDirName(nil, Root.vRef, Root.dirId, s);
+				LVExpand(pView, kEudoraFolder, s, true);
 			}
-		}
-		else
-		{
-			MenuHandle mhPar = ParentMailboxMenu(mh,&item);
-			
-			if (IMAPExists() && GetMenuID(mhPar) == MAILBOX_MENU)
-			{
-				short	vRef;
-				long	dirID;
+		} else {
+			MenuHandle mhPar = ParentMailboxMenu(mh, &item);
+
+			if (IMAPExists()
+			    && GetMenuID(mhPar) == MAILBOX_MENU) {
+				short vRef;
+				long dirID;
 
 				MBMenuToFile(GetMenuID(mh), &vRef, &dirID);
-				if (IsIMAPVD(vRef,dirID))
-				{
-					//	This is an IMAP account folder
-					GetMenuTitle(mh,s);
-					LVExpand(pView,kIMAPFolder,s,true);
+				if (IsIMAPVD(vRef, dirID)) {
+					//      This is an IMAP account folder
+					GetMenuTitle(mh, s);
+					LVExpand(pView, kIMAPFolder, s,
+						 true);
 					return;
-				}			
-			}			
-			
-			OpenMBFolder(pView,GetMenuID(mhPar),s);
-			MyGetItem(mhPar,item,s);
-			LVExpand(pView,GetMenuID(mhPar),s,true);
+				}
+			}
+
+			OpenMBFolder(pView, GetMenuID(mhPar), s);
+			MyGetItem(mhPar, item, s);
+			LVExpand(pView, GetMenuID(mhPar), s, true);
 		}
 	}
 }
@@ -2233,30 +2307,27 @@ void OpenMBFolder(ViewListPtr pView,short menuID,StringPtr s)
 static void MBIdle(MyWindowPtr win)
 {
 	EnableIMAPButtons(win);
-}		
+}
 
 /**********************************************************************
  * MBIdle - see if we need to hide/show the IMAP refresh button
  **********************************************************************/
 static void EnableIMAPButtons(MyWindowPtr win)
 {
-	Boolean	haveIMAP = IMAPExists();
+	Boolean haveIMAP = IMAPExists();
 	MenuHandle mh = nil;
-	
-	if (MB.IMAPButtonsVisible != haveIMAP)
-	{
-		SetControlVisibility(CtlOptionsMenu,haveIMAP,true);
+
+	if (MB.IMAPButtonsVisible != haveIMAP) {
+		SetControlVisibility(CtlOptionsMenu, haveIMAP, true);
 #ifdef SHOW_RESYNC_BUTTON
-		SetControlVisibility(CtlResync,haveIMAP,true);
+		SetControlVisibility(CtlResync, haveIMAP, true);
 #endif
 		MB.IMAPButtonsVisible = haveIMAP;
 	}
 #ifdef SHOW_RESYNC_BUTTON
-	if (MB.IMAPButtonsVisible)
-	{
+	if (MB.IMAPButtonsVisible) {
 		// also grey out the Resync control if there's nothing selected
-		if ( MB.imapMailboxSelected != MB.resyncEnabled)
-		{
+		if (MB.imapMailboxSelected != MB.resyncEnabled) {
 			MB.resyncEnabled = MB.imapMailboxSelected;
 			SetGreyControl(CtlResync, !MB.imapMailboxSelected);
 		}
@@ -2272,42 +2343,40 @@ void EnableOptionsMenu(MyWindowPtr win, Boolean optionPressed)
 {
 	Boolean enabled;
 	MenuHandle mh = nil;
-	short count,i;
+	short count, i;
 	VLNodeInfo data;
 	Boolean imapMailboxSelected = false;
 	Boolean imapPersSelected = false;
 	Boolean popMailboxSelected = false;
-	
-	if (MB.IMAPButtonsVisible)
-	{	
+
+	if (MB.IMAPButtonsVisible) {
 		// what is visible?
-		if (count = LVCountSelection(&MB.list))
-		{
-			for (i=1;i<=count;i++)
-			{			
-				//	get mailbox spec
-				MBGetData(&data,i);
+		if (count = LVCountSelection(&MB.list)) {
+			for (i = 1; i <= count; i++) {
+				//      get mailbox spec
+				MBGetData(&data, i);
 
 				if (data.nodeID == kIMAPFolder)
 					imapPersSelected = true;
 				else if (IsIMAPBox(&data))
 					imapMailboxSelected = true;
-				else if (data.nodeID == kEudoraFolder)
-					;
-				else if (data.iconID == kFolderIcon)
-					;
+				else if (data.nodeID == kEudoraFolder);
+				else if (data.iconID == kFolderIcon);
 				else
-					popMailboxSelected = true;	
+					popMailboxSelected = true;
 			}
 		}
-		
 		// properly enable the menu items
-		if (!GetControlData(CtlOptionsMenu,kControlMenuPart,kControlBevelButtonMenuHandleTag,sizeof(mh),(Ptr)&mh,nil) && mh)
-		{
+		if (!GetControlData
+		    (CtlOptionsMenu, kControlMenuPart,
+		     kControlBevelButtonMenuHandleTag, sizeof(mh),
+		     (Ptr) & mh, nil) && mh) {
 			// prevent the user from doing a refresh if there's currently a background thread running.
-			enabled = CanModifyMailboxTrees() && (imapMailboxSelected || imapPersSelected  || (CurrentModifiers()&optionKey));
+			enabled = CanModifyMailboxTrees()
+			    && (imapMailboxSelected || imapPersSelected
+				|| (CurrentModifiers() & optionKey));
 			EnableIf(mh, OPTIONS_REFRESH_ITEM, enabled);
-				
+
 			// properly enable all IMAP-mailbox-specifc items while we're at it
 			enabled = imapMailboxSelected;
 			EnableIf(mh, OPTIONS_RESYNC_ITEM, enabled);
@@ -2315,13 +2384,18 @@ void EnableOptionsMenu(MyWindowPtr win, Boolean optionPressed)
 			EnableIf(mh, OPTIONS_AUTOSYNC_ITEM, enabled);
 			EnableIf(mh, OPTIONS_SHOWDELETED_ITEM, enabled);
 			EnableIf(mh, OPTIONS_EXPUNGE_ITEM, enabled);
-			
+
 			// set the check marks appropriately
-			SetItemMark (mh, OPTIONS_AUTOSYNC_ITEM, IMAPOptionsCheckMarkChar(kNeedsPoll));
-			SetItemMark (mh, OPTIONS_SHOWDELETED_ITEM, IMAPOptionsCheckMarkChar(kShowDeleted));
-						
+			SetItemMark(mh, OPTIONS_AUTOSYNC_ITEM,
+				    IMAPOptionsCheckMarkChar(kNeedsPoll));
+			SetItemMark(mh, OPTIONS_SHOWDELETED_ITEM,
+				    IMAPOptionsCheckMarkChar
+				    (kShowDeleted));
+
 			// Compact menu item applies to POP mailboxes, too
-			EnableIf(mh, OPTIONS_COMPACT_ITEM, (popMailboxSelected || imapMailboxSelected));
+			EnableIf(mh, OPTIONS_COMPACT_ITEM,
+				 (popMailboxSelected
+				  || imapMailboxSelected));
 		}
 	}
 }
@@ -2329,13 +2403,14 @@ void EnableOptionsMenu(MyWindowPtr win, Boolean optionPressed)
 /**********************************************************************
  * IsSpecialBox - see if this is a special POP box (in, out, trash, Eudora folder)
  **********************************************************************/
-static Boolean IsSpecialBox(ViewListPtr pView, VLNodeInfo *pInfo)
+static Boolean IsSpecialBox(ViewListPtr pView, VLNodeInfo * pInfo)
 {
-	VLNodeInfo	efInfo;
-	if (pInfo->rowNum >= kItemMailBoxes) return false;
-	
-	//	Need to get status of Eudora folder
-	LVGetItem(pView,1,&efInfo,false);
+	VLNodeInfo efInfo;
+	if (pInfo->rowNum >= kItemMailBoxes)
+		return false;
+
+	//      Need to get status of Eudora folder
+	LVGetItem(pView, 1, &efInfo, false);
 	if (efInfo.isParent && efInfo.isCollapsed)
 		return pInfo->rowNum <= 1;
 	else
@@ -2346,33 +2421,33 @@ static Boolean IsSpecialBox(ViewListPtr pView, VLNodeInfo *pInfo)
 /**********************************************************************
  * MBFindInCollapsed - search a collapsed folder
  **********************************************************************/
-Boolean MBFindInCollapsed(MyWindowPtr win,ViewListPtr pView,PStr what,short menuID)
+Boolean MBFindInCollapsed(MyWindowPtr win, ViewListPtr pView, PStr what,
+			  short menuID)
 {
-	CGrafPtr	winPort;
-	MenuHandle	mh;
-	short	item,count,id;
-	Str255	s,name;
+	CGrafPtr winPort;
+	MenuHandle mh;
+	short item, count, id;
+	Str255 s, name;
 
-	if (mh = GetMenuHandle(menuID))
-	{
+	if (mh = GetMenuHandle(menuID)) {
 		count = CountMenuItems(mh);
-		for (item=1;item<=count;item++)
-		{
-			if (id = SubmenuId(mh,item))
-			{
-				//	has submenu. recurse
-				if (MBFindInCollapsed(win,pView,what,id))
+		for (item = 1; item <= count; item++) {
+			if (id = SubmenuId(mh, item)) {
+				//      has submenu. recurse
+				if (MBFindInCollapsed
+				    (win, pView, what, id))
 					return true;
 			}
-			MyGetItem(mh,item,name);
-			if (FindStrStr(what,name)>=0)
-			{
+			MyGetItem(mh, item, name);
+			if (FindStrStr(what, name) >= 0) {
 				// found
 				// open collapsed folder(s) and select item
-				OpenMBFolder(pView,menuID,s);
-				LVSelect(pView,menuID,name,false);
-				winPort = GetMyWindowCGrafPtr (win);
-				LVDraw(pView,MyGetPortVisibleRegion(winPort),true,false);				
+				OpenMBFolder(pView, menuID, s);
+				LVSelect(pView, menuID, name, false);
+				winPort = GetMyWindowCGrafPtr(win);
+				LVDraw(pView,
+				       MyGetPortVisibleRegion(winPort),
+				       true, false);
 				return true;
 			}
 		}
@@ -2383,7 +2458,7 @@ Boolean MBFindInCollapsed(MyWindowPtr win,ViewListPtr pView,PStr what,short menu
 /**********************************************************************
  * IsIMAPTrashBox - is this an IMAP trash mailbox?
  **********************************************************************/
-Boolean IsIMAPTrashBox(VLNodeInfo *data)
+Boolean IsIMAPTrashBox(VLNodeInfo * data)
 {
 	return (data->iconID == kTrashBoxIcon && IsIMAPBox(data));
 }
@@ -2400,32 +2475,35 @@ char IMAPOptionsCheckMarkChar(MailboxNeedsEnum needs)
 	FSSpec spec;
 	MailboxNodeHandle mbox;
 	PersHandle pers;
-			
-	
-	if (count = LVCountSelection(&MB.list))
-	{
+
+
+	if (count = LVCountSelection(&MB.list)) {
 		// count the number of mailboxes that need to be marked
 		needsMark = 0;
-		for (i=1;i<=count;i++)
-		{			
-			//	get mailbox spec
-			MBGetData(&data,i);
-			MakeMBSpec(&data,&spec);
-				
+		for (i = 1; i <= count; i++) {
+			//      get mailbox spec
+			MBGetData(&data, i);
+			MakeMBSpec(&data, &spec);
+
 			// is this an IMAP mailbox?
-			if (IsIMAPBox(&data))
-			{
+			if (IsIMAPBox(&data)) {
 				spec.parID = SpecDirId(&spec);
-				LocateNodeBySpecInAllPersTrees(&spec, &mbox, &pers);
-				
-				if (pers && mbox && (DoesIMAPMailboxNeed(mbox,needs) || ((needs == kNeedsPoll) && (mbox == LocateInboxForPers(pers)))))
-					needsMark++;	
+				LocateNodeBySpecInAllPersTrees(&spec,
+							       &mbox,
+							       &pers);
+
+				if (pers && mbox
+				    && (DoesIMAPMailboxNeed(mbox, needs)
+					|| ((needs == kNeedsPoll)
+					    && (mbox ==
+						LocateInboxForPers
+						(pers)))))
+					needsMark++;
 			}
-		}	
-		
+		}
+
 		// return the proper char
-		if (needsMark)
-		{
+		if (needsMark) {
 			if (count == needsMark)
 				c = checkMark;
 			else
@@ -2447,68 +2525,62 @@ void MBRefreshIMAPMailboxes(Boolean optionPressed)
 	FSSpec spec;
 	PersHandle pers = nil;
 	MailboxNodeHandle node = nil;
-					
+
 	// is there anything selected that can be refreshed?
-	if (!optionPressed && (count = LVCountSelection(&MB.list)))
-	{
-		for (i=1;i<=count;i++)
-		{
-			//	get mailbox spec
-			MBGetData(&data,i);
-			MakeMBSpec(&data,&spec);
-			
+	if (!optionPressed && (count = LVCountSelection(&MB.list))) {
+		for (i = 1; i <= count; i++) {
+			//      get mailbox spec
+			MBGetData(&data, i);
+			MakeMBSpec(&data, &spec);
+
 			// who does this mailbox belong to?
-			if (data.nodeID == kIMAPFolder)
-			{
+			if (data.nodeID == kIMAPFolder) {
 				// an IMAP personality heading is selected.  Which personality does it refer to?
 				pers = FindPersByName(spec.name);
-			}
-			else
-			{
+			} else {
 				// a mailbox is selected.  Who does it belong to?
 				spec.parID = SpecDirId(&spec);
-				LocateNodeBySpecInAllPersTrees(&spec, &node, &pers);
+				LocateNodeBySpecInAllPersTrees(&spec,
+							       &node,
+							       &pers);
 			}
-			
+
 			// if it belongs to an IMAP personality, we'll want to refresh this personality
-			if (pers) 
-			{
+			if (pers) {
 				(*pers)->imapRefresh = 1;
 				refresh = true;
 			}
-		}		
-		
+		}
+
 		// now go refresh
-		if (refresh) IMAPRefreshPersCaches();
-	}
-	else if (optionPressed)
-	{
+		if (refresh)
+			IMAPRefreshPersCaches();
+	} else if (optionPressed) {
 		// Shift was pressed.  Refresh ALL the IMAP personalities
 		IMAPRefreshAllCaches();
-	}				
+	}
 }
 
 /************************************************************************
  * MBResyncOrExpungeIMAPMailboxes - process the selected IMAP mailboxes.
  ************************************************************************/
-OSErr MBResyncOrExpungeIMAPMailboxes(Boolean optionPressed, TaskKindEnum task)
+OSErr MBResyncOrExpungeIMAPMailboxes(Boolean optionPressed,
+				     TaskKindEnum task)
 {
 	OSErr err;
 	Handle mailboxes;
 
 	// Build a handle of all of the selected mailboxes
 	err = GetSelectedMailboxSpecs(&mailboxes, optionPressed);
-	if ((err == noErr) && mailboxes)
-	{
+	if ((err == noErr) && mailboxes) {
 		// process the mailboxs
 		err = IMAPProcessMailboxes(mailboxes, task);
 	}
-	if (err != noErr)
-	{
+	if (err != noErr) {
 		WarnUser(MEM_ERR, err);
 		ZapHandle(mailboxes);
 	}
-	
+
 	return (err);
 }
 
@@ -2522,42 +2594,47 @@ void MBMarkIMAPMailboxes(Boolean on, MailboxNeedsEnum needs)
 	FSSpec spec;
 	PersHandle pers = nil;
 	MailboxNodeHandle node = nil;
-	
-	if (count = LVCountSelection(&MB.list))
-	{	
-		for (i=1;i<=count;i++)
-		{	
-			//	get mailbox spec
-			MBGetData(&data,i);
-			MakeMBSpec(&data,&spec);
-			
-			if (data.nodeID != kIMAPFolder)
-			{
+
+	if (count = LVCountSelection(&MB.list)) {
+		for (i = 1; i <= count; i++) {
+			//      get mailbox spec
+			MBGetData(&data, i);
+			MakeMBSpec(&data, &spec);
+
+			if (data.nodeID != kIMAPFolder) {
 				// a mailbox is selected.  Who does it belong to?
 				spec.parID = SpecDirId(&spec);
-				LocateNodeBySpecInAllPersTrees(&spec, &node, &pers);
-				
-				if (node)
-				{
+				LocateNodeBySpecInAllPersTrees(&spec,
+							       &node,
+							       &pers);
+
+				if (node) {
 					// is this not the inbox?
-					if ((needs != kNeedsPoll) || (node != LocateInboxForPers(pers)))
+					if ((needs != kNeedsPoll)
+					    || (node !=
+						LocateInboxForPers(pers)))
 					{
 						// set the property
-						SetIMAPMailboxNeeds(node, needs, on);
-						
+						SetIMAPMailboxNeeds(node,
+								    needs,
+								    on);
+
 						// are we hiding or showing deleted messages?
 						if (needs == kShowDeleted)
-							HideDeletedMessages(node, true, on);
-							
+							HideDeletedMessages
+							    (node, true,
+							     on);
+
 						// update the cache mailbox now
-						WriteIMAPMailboxInfo(&spec, node);
+						WriteIMAPMailboxInfo(&spec,
+								     node);
 					}
 				}
 			}
-		}		
-		
+		}
+
 		// update the list
-		MBTickle(nil,nil);
+		MBTickle(nil, nil);
 	}
 }
 
@@ -2571,31 +2648,29 @@ void MBCompactMailboxes(void)
 	FSSpec spec;
 	PersHandle pers = nil;
 	MailboxNodeHandle node = nil;
-	
+
 	// properly set autocheck property
-	if (count = LVCountSelection(&MB.list))
-	{	
-		for (i=1;(i<=count) && !CommandPeriod;i++)
-		{	
-			//	get mailbox spec
-			MBGetData(&data,i);
-			MakeMBSpec(&data,&spec);
-				
-			// compact the mailbox	
-			if ((data.nodeID != kIMAPFolder) && (data.nodeID != kEudoraFolder))
-			{
+	if (count = LVCountSelection(&MB.list)) {
+		for (i = 1; (i <= count) && !CommandPeriod; i++) {
+			//      get mailbox spec
+			MBGetData(&data, i);
+			MakeMBSpec(&data, &spec);
+
+			// compact the mailbox  
+			if ((data.nodeID != kIMAPFolder)
+			    && (data.nodeID != kEudoraFolder)) {
 				// is this an IMAP mailbox?
 				if (IsIMAPBox(&data))
 					spec.parID = SpecDirId(&spec);
 				// is this a POP folder?
 				else if (FSpIsItAFolder(&spec))
 					continue;
-				
-				CompactMailbox(&spec,false);
+
+				CompactMailbox(&spec, false);
 			}
-		}		
-		
+		}
+
 		// update the list
-		MBTickle(nil,nil);
+		MBTickle(nil, nil);
 	}
 }

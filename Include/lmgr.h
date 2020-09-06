@@ -34,21 +34,25 @@
 
 #include <Lists.h>
 
-Boolean FirstSelected(Cell *c,ListHandle list);
-short Next1Selected(short thisOne,ListHandle list);
-short InWhich1Cell(Point mouse,ListHandle list);
-Boolean Cell1Selected(short which,ListHandle list);
-void SelectSingleCell(short which,ListHandle list);
-void ResizeList(ListHandle lHand,Rect *r,Point c);
-Boolean MyLClick(Point pt,short modifiers,ListHandle lHandle);
-Boolean LClickWDrag(Point pt, short modifiers, ListHandle lHand, Boolean *drag,void (*hook)(short cell,ListHandle lHand));
+Boolean FirstSelected(Cell * c, ListHandle list);
+short Next1Selected(short thisOne, ListHandle list);
+short InWhich1Cell(Point mouse, ListHandle list);
+Boolean Cell1Selected(short which, ListHandle list);
+void SelectSingleCell(short which, ListHandle list);
+void ResizeList(ListHandle lHand, Rect * r, Point c);
+Boolean MyLClick(Point pt, short modifiers, ListHandle lHandle);
+Boolean LClickWDrag(Point pt, short modifiers, ListHandle lHand,
+		    Boolean * drag, void (*hook)(short cell,
+						 ListHandle lHand));
 RgnHandle MyLDragRgn(ListHandle lHand);
 #define ldtInterstice 0x0001
 #define ldtIgnoreSelection 0x0002
-short MyLDragTracker(DragReference drag,Point pt,short flags,ListHandle lHand);
-Rect *Cell1Rect(ListHandle lHand,short cell,Rect *r);
-Boolean ListApp1(EventRecord *event, ListHandle lHand);
-void MyListHilite(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
+short MyLDragTracker(DragReference drag, Point pt, short flags,
+		     ListHandle lHand);
+Rect *Cell1Rect(ListHandle lHand, short cell, Rect * r);
+Boolean ListApp1(EventRecord * event, ListHandle lHand);
+void MyListHilite(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle);
 
 // Glue to get backgrounds right
 #define LAddColumn MyLAddColumn
@@ -81,9 +85,11 @@ void MyLUpdate(RgnHandle theRgn, ListRef lHandle);
 void MyLActivate(Boolean act, ListRef lHandle);
 void MyLCellSize(Point cSize, ListRef lHandle);
 Boolean MyLClick(Point pt, short modifiers, ListRef lHandle);
-void MyLAddToCell(const void *dataPtr, short dataLen, Cell theCell, ListRef lHandle);
+void MyLAddToCell(const void *dataPtr, short dataLen, Cell theCell,
+		  ListRef lHandle);
 void MyLClrCell(Cell theCell, ListRef lHandle);
-void MyLSetCell(const void *dataPtr, short dataLen, Cell theCell, ListRef lHandle);
+void MyLSetCell(const void *dataPtr, short dataLen, Cell theCell,
+		ListRef lHandle);
 void MyLSetSelect(Boolean setIt, Cell theCell, ListRef lHandle);
 void MyLDraw(Cell theCell, ListRef lHandle);
 

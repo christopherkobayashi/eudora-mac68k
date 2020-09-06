@@ -51,15 +51,15 @@
 //
 
 #define USE_NETWORK_SETUP
-#endif //TARGET_CPU_PPC
+#endif				//TARGET_CPU_PPC
 
 
-#define CONFIG_RESOURCE 	'ccfg'		// indicates which configuration is currently selected
+#define CONFIG_RESOURCE 	'ccfg'	// indicates which configuration is currently selected
 #define CONFIG_RESOURCE_ID	1
-#define LOADED_RESOURCE 	'unld'		// == 3 when TCP/IP is not loaded
-#define PORT_RESOURCE		'port'		// resource where the individual configs are stored
-#define IITF_RESOURCE		'iitf'		// current TCP info resouce
-#define	PPP_NAME			"\pPPP"		// 'port' resource contains this when PPP is selected
+#define LOADED_RESOURCE 	'unld'	// == 3 when TCP/IP is not loaded
+#define PORT_RESOURCE		'port'	// resource where the individual configs are stored
+#define IITF_RESOURCE		'iitf'	// current TCP info resouce
+#define	PPP_NAME			"\pPPP"	// 'port' resource contains this when PPP is selected
 #define TCP_PREF_FILE_TYPE 'pref'
 #define TCP_PREF_FILE_CREATOR 'ztcp'
 #define PPP_PREF_FILE_TYPE 'lzcn'
@@ -70,21 +70,21 @@
 #define NS_LIBRARY_CREATOR 'ntex'
 
 struct TypeAndClassParam {
-	OSType  fType;
-	OSType  fClass;
+	OSType fType;
+	OSType fClass;
 	Boolean found;
 	CfgEntityRef *currentEntity;
 };
 typedef struct TypeAndClassParam TypeAndClassParam;
 
 struct TCPiitfPref {
-	UInt8    fActive;
+	UInt8 fActive;
 	InetHost fIPAddress;
 	InetHost fSubnetMask;
-	Str255   fAppleTalkZone;
-	UInt8    fPath[36];			// Pascal string
-	UInt8    fModuleName[31];	// Pascal string
-	UInt32   fFramingFlags;
+	Str255 fAppleTalkZone;
+	UInt8 fPath[36];	// Pascal string
+	UInt8 fModuleName[31];	// Pascal string
+	UInt32 fFramingFlags;
 };
 typedef struct TCPiitfPref TCPiitfPref;
 
@@ -105,31 +105,31 @@ enum {
 };
 
 struct NSHTCPv4ConfigurationDigest {
-	OSType				fProtocol;			// always kOTTCPv4NetworkConnection for NSHTCPv4ConfigurationDigest
-	Str255 				fConfigName;		// user-visible name of the configuration
-	OTPortRef			fPortRef;			// OT port for the config (lookup Òddp1Ó for MacIP)
-											// "Connect via" in the UI
-	TCPv4ConfigMethod	fConfigMethod;		// one of the constants given above
-											// "Configure:" in the UI
-	InetHost			fIPAddress;			// IP address
-	InetHost			fSubnetMask;		// IP subnet mask
-	Handle				fRouterList;		// array of InetHost
-	Handle				fDNSServerList;		// list of DNS servers, array of InetHost
-	Str255				fLocalDomain;		// the local domain for this machine
-											// "Implicit Search Path: Starting domain name:" in the UI
-	Str255				fAdminDomain;		// "Implicit Search Path: Ending domain name:" in the UI
-	Handle				fSearchDomains;		// STR# format
-	Str32				fAppleTalkZone;		// for MacIP only, specify empty string otherwise
-	UInt32				fFraming;			// framing attributes for this port
-											// "Use 802.3" in the UI
-											// Only for port with device type kOTEthernetDevcie
-											// - use kOTFramingEthernet by default
-											// - use kOTFraming8022 if the 802.3 checkbox is set
-	TCPv4UnloadAttr		fUnloadAttr;		// one of the constants given above
-	Str255				fHintUserVisiblePortName;	// Hints to find the port name if fPortRef is kOTInvalidPortRef
-	Str63				fHintPortName;
-	Str63				fHintDriverName;
-	UInt16				fHintDeviceType;
+	OSType fProtocol;	// always kOTTCPv4NetworkConnection for NSHTCPv4ConfigurationDigest
+	Str255 fConfigName;	// user-visible name of the configuration
+	OTPortRef fPortRef;	// OT port for the config (lookup Òddp1Ó for MacIP)
+	// "Connect via" in the UI
+	TCPv4ConfigMethod fConfigMethod;	// one of the constants given above
+	// "Configure:" in the UI
+	InetHost fIPAddress;	// IP address
+	InetHost fSubnetMask;	// IP subnet mask
+	Handle fRouterList;	// array of InetHost
+	Handle fDNSServerList;	// list of DNS servers, array of InetHost
+	Str255 fLocalDomain;	// the local domain for this machine
+	// "Implicit Search Path: Starting domain name:" in the UI
+	Str255 fAdminDomain;	// "Implicit Search Path: Ending domain name:" in the UI
+	Handle fSearchDomains;	// STR# format
+	Str32 fAppleTalkZone;	// for MacIP only, specify empty string otherwise
+	UInt32 fFraming;	// framing attributes for this port
+	// "Use 802.3" in the UI
+	// Only for port with device type kOTEthernetDevcie
+	// - use kOTFramingEthernet by default
+	// - use kOTFraming8022 if the 802.3 checkbox is set
+	TCPv4UnloadAttr fUnloadAttr;	// one of the constants given above
+	Str255 fHintUserVisiblePortName;	// Hints to find the port name if fPortRef is kOTInvalidPortRef
+	Str63 fHintPortName;
+	Str63 fHintDriverName;
+	UInt16 fHintDeviceType;
 };
 typedef struct NSHTCPv4ConfigurationDigest NSHTCPv4ConfigurationDigest;
 
@@ -139,7 +139,7 @@ typedef struct NSHTCPv4ConfigurationDigest NSHTCPv4ConfigurationDigest;
 // changed.  The following are the two most common values.
 
 enum {
-	kRemoteDefaultVersion  = 0x00020003,
+	kRemoteDefaultVersion = 0x00020003,
 	kRemoteAcceptedVersion = 0x00010000
 };
 
@@ -155,8 +155,11 @@ OSErr CloseNetworkSetup(void);
 //
 
 OSErr GetConnectionModeFromDatabase(unsigned long *connectionSelection);
-OSErr GetPPPDialingInformationFromDatabase(Boolean *redial, unsigned long *numRedials, unsigned long *delay);
-OSErr GetCurrentPortNameFromFile(unsigned char *longPortName,  char *portName, Boolean *enabled);
+OSErr GetPPPDialingInformationFromDatabase(Boolean * redial,
+					   unsigned long *numRedials,
+					   unsigned long *delay);
+OSErr GetCurrentPortNameFromFile(unsigned char *longPortName,
+				 char *portName, Boolean * enabled);
 
 //
 // TCP/IP Will Dial

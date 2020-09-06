@@ -37,16 +37,14 @@
 /************************************************************************
  * Profiles & profile components
  ************************************************************************/
-typedef struct
-{
+typedef struct {
 	long lines;
 	long bytes;
 	long height;
 	long width;
 } ConConQualifier, *ConConQualPtr, *ConConQualH;
 
-typedef struct
-{
+typedef struct {
 	ConConKeyEnum type;
 	long lines;
 	long bytes;
@@ -57,8 +55,7 @@ typedef struct
 	short summaryLevel;
 } ConConOutDesc, *ConConOutDescPtr, **ConConOutDescH;
 
-typedef struct ConConElementStruct
-{
+typedef struct ConConElementStruct {
 	long elementID;
 	ConConKeyEnum type;
 	InterestHeadEnum headerID;	// calculated; id of header from InterestingHeadStrn
@@ -69,8 +66,7 @@ typedef struct ConConElementStruct
 	struct ConConElementStruct **inner;
 } ConConElement, *ConConElmPtr, **ConConElmH;
 
-typedef struct ConConProfileStruct
-{
+typedef struct ConConProfileStruct {
 	Str31 name;
 	uLong hash;
 	ConConElmH cceh;
@@ -80,18 +76,16 @@ typedef struct ConConProfileStruct
 /************************************************************************
  * Message parsing data types
  ************************************************************************/
-typedef struct
-{
-	long start;							// offset of beginning of structure
-	long stop;							// offset of end (plus one) of structure
-	short type;							// type of structure found
-	short headerID;					// id of header (from InterestingHeadStrn)
-	Str63 headerName;				// name of header, not including colon
-	short quoteLevel;				// the quote level of this element
+typedef struct {
+	long start;		// offset of beginning of structure
+	long stop;		// offset of end (plus one) of structure
+	short type;		// type of structure found
+	short headerID;		// id of header (from InterestingHeadStrn)
+	Str63 headerName;	// name of header, not including colon
+	short quoteLevel;	// the quote level of this element
 } ConConMessElm, *ConConMessElmPtr, **ConConMessElmH;
 
-typedef enum
-{
+typedef enum {
 	conConParaTypeOrdinary,
 	conConParaTypeBlank,
 	conConParaTypeWhite,
@@ -105,49 +99,57 @@ typedef enum
 	conConParaTypeComplete
 } ConConParaType, *ConConParaTypePtr, **ConConParaTypeH;
 
-typedef struct
-{
-	long start;							// offset of start of paragraph
-	long stop;							// offset of end (plus one) of paragraph
-	short quoteLevel;				// quoting level
-	short quoteChars;				// # of quote chars found (in addition to quote level, if any)
-	ConConParaType type;		// paragraph type
+typedef struct {
+	long start;		// offset of start of paragraph
+	long stop;		// offset of end (plus one) of paragraph
+	short quoteLevel;	// quoting level
+	short quoteChars;	// # of quote chars found (in addition to quote level, if any)
+	ConConParaType type;	// paragraph type
 #ifdef DEBUG
-	Str63 paraStr;					// for debugging, an idea of what's in the paragraph
+	Str63 paraStr;		// for debugging, an idea of what's in the paragraph
 #endif
-}	ConConPara, *ConConParaPtr, **ConConParaH;
+} ConConPara, *ConConParaPtr, **ConConParaH;
 
-typedef struct
-{
-	OSErr err;								// error value
-	ConConKeyEnum state;			// current state of the parser
-	long spot;								// current spot we're looking at
-	MessHandle messH;					// message we're parsing
-	StackHandle messStack;		// stack we're putting stuff into
-	ConConMessElm thisElm;		// element currently being parsed
-	ConConPara lastPara;			// the last paragraph we parsed
-	ConConPara thisPara;			// the para we're looking at
-	ConConPara nextPara;			// the para after us
-	short quoteLevel;					// the quote level where we began
-	Boolean presumeForward;		// are first-level quotes forwards?
-	Boolean isDigest;		// is the message a digest?
-	ConConMessElm lastElm;		// the element directory before us (convenience)
-	long end;									// end of the text (convenience)
-	UHandle text;							// text (convenience)
-	PETEHandle body;						// message body (convenience)
+typedef struct {
+	OSErr err;		// error value
+	ConConKeyEnum state;	// current state of the parser
+	long spot;		// current spot we're looking at
+	MessHandle messH;	// message we're parsing
+	StackHandle messStack;	// stack we're putting stuff into
+	ConConMessElm thisElm;	// element currently being parsed
+	ConConPara lastPara;	// the last paragraph we parsed
+	ConConPara thisPara;	// the para we're looking at
+	ConConPara nextPara;	// the para after us
+	short quoteLevel;	// the quote level where we began
+	Boolean presumeForward;	// are first-level quotes forwards?
+	Boolean isDigest;	// is the message a digest?
+	ConConMessElm lastElm;	// the element directory before us (convenience)
+	long end;		// end of the text (convenience)
+	UHandle text;		// text (convenience)
+	PETEHandle body;	// message body (convenience)
 } ConConMessParseContext, *ConConMessPrsPtr, **ConConMessPrsH;
 
 
-typedef void (*ConConOutFilterProcPtr)(ConConOutDescPtr thisODP,ConConMessElmPtr thisMEP,MessHandle messH,ConConElmH cceh,StackHandle stack,PETEHandle pte,void *userData);
+typedef void (*ConConOutFilterProcPtr)(ConConOutDescPtr thisODP,
+				       ConConMessElmPtr thisMEP,
+				       MessHandle messH, ConConElmH cceh,
+				       StackHandle stack, PETEHandle pte,
+				       void *userData);
 
-OSErr ConConMessR(MessHandle messH,PETEHandle pte,short conConID,ConConOutFilterProcPtr filter,void *userData);
-OSErr ConConMess(MessHandle messH,PETEHandle pte,PStr profileStr,ConConOutFilterProcPtr filter,void *userData);
-OSErr ConConMultipleR(TOCHandle tocH,PETEHandle pte,short conConID,short separatorType,ConConOutFilterProcPtr filter,void *userData);
-OSErr ConConMultiple(TOCHandle tocH,PETEHandle pte,PStr profileStr,short separatorType,ConConOutFilterProcPtr filter,void *userData);
+OSErr ConConMessR(MessHandle messH, PETEHandle pte, short conConID,
+		  ConConOutFilterProcPtr filter, void *userData);
+OSErr ConConMess(MessHandle messH, PETEHandle pte, PStr profileStr,
+		 ConConOutFilterProcPtr filter, void *userData);
+OSErr ConConMultipleR(TOCHandle tocH, PETEHandle pte, short conConID,
+		      short separatorType, ConConOutFilterProcPtr filter,
+		      void *userData);
+OSErr ConConMultiple(TOCHandle tocH, PETEHandle pte, PStr profileStr,
+		     short separatorType, ConConOutFilterProcPtr filter,
+		     void *userData);
 OSErr ConConAddItems(MenuHandle mh);
 OSErr ConConInit(void);
 void ConConDispose(void);
 ConConProH ConConProFind(PStr profileStr);
 ConConProH ConConProFindHash(uLong profileHash);
 Boolean ConConMultipleAppropriate(TOCHandle tocH);
-#endif // CONCENTRATOR_H
+#endif				// CONCENTRATOR_H

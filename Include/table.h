@@ -39,111 +39,107 @@
 
 /* Copyright (c) 2000 by Qualcomm, Inc. */
 
-typedef struct
-{
-	short 	hAlign;					// horizontal alignment
-	UniChar	alignChar;				// for character alignment
-	short	charOff;				// character alignment offset
-	short 	vAlign;					// vertical alignment
-	short	direction;				// text direction
+typedef struct {
+	short hAlign;		// horizontal alignment
+	UniChar alignChar;	// for character alignment
+	short charOff;		// character alignment offset
+	short vAlign;		// vertical alignment
+	short direction;	// text direction
 } TabAlignData;
 
-//	Row group info
-typedef struct
-{
-	TabAlignData	align;
-	short			rowGroup;
-	short			row;
+//      Row group info
+typedef struct {
+	TabAlignData align;
+	short rowGroup;
+	short row;
 } TabRowGroupData, *TabRowGroupPtr, **TabRowGroupHandle;
 
-//	Row info
-typedef struct
-{
-	TabAlignData	align;
-	short	row;					// 0-based row #
+//      Row info
+typedef struct {
+	TabAlignData align;
+	short row;		// 0-based row #
 } TabRowData, *TabRowPtr, **TabRowHandle;
 
-//	Column info, only used if COLGROUP or COL element is specified
-typedef struct
-{
-	short	column;					// 0-based column #
-	short	span;
-	short	width;					// width in pixels or proportion if > 0, percent if < 0
-	Boolean propWidth;				// Above width is proportional
-	TabAlignData	align;
+//      Column info, only used if COLGROUP or COL element is specified
+typedef struct {
+	short column;		// 0-based column #
+	short span;
+	short width;		// width in pixels or proportion if > 0, percent if < 0
+	Boolean propWidth;	// Above width is proportional
+	TabAlignData align;
 } TabColData, *TabColPtr, **TabColHandle;
 
-//	Cell info
-typedef struct
-{
+//      Cell info
+typedef struct {
 	// data parsed from HTML
-	short 	rowSpan;
-	short 	colSpan;
-	short	width;					// width in pixels
-	short	height;					// height in pixels
-	TabAlignData	align;
-	Handle	abbr;					// Abbreviated text
-	Boolean header;					// table header?
+	short rowSpan;
+	short colSpan;
+	short width;		// width in pixels
+	short height;		// height in pixels
+	TabAlignData align;
+	Handle abbr;		// Abbreviated text
+	Boolean header;		// table header?
 
 	// misc data
-	short	row;					// 0-based row #
-	short	column;					// 0-based column #
-	Rect	bounds;					// display position
-	long	textOffset;				// offset from table beginning to cell's text
-	long	textLength;				// length of cell's text
+	short row;		// 0-based row #
+	short column;		// 0-based column #
+	Rect bounds;		// display position
+	long textOffset;	// offset from table beginning to cell's text
+	long textLength;	// length of cell's text
 	PETEStyleListHandle styleInfo;
-	PETEParaScrapHandle paraInfo;	
+	PETEParaScrapHandle paraInfo;
 } TabCellData, *TabCellPtr, **TabCellHandle;
 
 
-//	Table info
-typedef struct TableData
-{
+//      Table info
+typedef struct TableData {
 	// data parsed from HTML
-	short 	align;					// horizontal alignment
-	short	direction;				// text direction
-	short	width;					// width in pixels if positive, percent if negative
-	short	border;					// width of border
-	short	cellSpacing;			// space between cell borders
-	short 	cellPadding;			// pad between cell contents and its borders
-	Boolean	cellSpacingSpecified;	// so we can tell the difference between zero and not specified cellspacing
+	short align;		// horizontal alignment
+	short direction;	// text direction
+	short width;		// width in pixels if positive, percent if negative
+	short border;		// width of border
+	short cellSpacing;	// space between cell borders
+	short cellPadding;	// pad between cell contents and its borders
+	Boolean cellSpacingSpecified;	// so we can tell the difference between zero and not specified cellspacing
 
 	// misc data
-	short	rows;					// # of rows
-	short	rowHtSum;				// height of all rows
-	short	columns;				// # of columns in columnData
-	short	cells;					// # of cells in cellData;
-	Boolean	editing;				// are we editing in this table?
-	PETEHandle	pteEdit;			// pte used for editing
+	short rows;		// # of rows
+	short rowHtSum;		// height of all rows
+	short columns;		// # of columns in columnData
+	short cells;		// # of cells in cellData;
+	Boolean editing;	// are we editing in this table?
+	PETEHandle pteEdit;	// pte used for editing
 	TabRowGroupHandle rowGroupData;	// Info for each row group
-	TabRowHandle	rowData;		// Info for each row
-	TabColHandle	columnData;		// Info for each column
-	TabColHandle	columnGroupData;// Info for each column group
-	TabCellHandle	cellData;		// Info for each cell
+	TabRowHandle rowData;	// Info for each row
+	TabColHandle columnData;	// Info for each column
+	TabColHandle columnGroupData;	// Info for each column group
+	TabCellHandle cellData;	// Info for each cell
 } TableData, *TablePtr, **TableHandle;
 
-typedef struct TableInfo
-{
+typedef struct TableInfo {
 	PETEGraphicInfo pgi;
-	TableHandle		table;
-	PETEHandle		pteSpare; // nil for cloned tables
-	uLong			offset;
-	long			maxWidth;
+	TableHandle table;
+	PETEHandle pteSpare;	// nil for cloned tables
+	uLong offset;
+	long maxWidth;
 } TableInfo, *TIPtr, **TIHandle;
 
 
-OSErr MakeTableGraphic(PETEHandle pte,long offset,TableHandle,PETEStyleEntryPtr pse);
-void CheckTableItems(MyWindowPtr win,Boolean allMenu);
-void EnableTableMenu(MyWindowPtr win,Boolean all);
+OSErr MakeTableGraphic(PETEHandle pte, long offset, TableHandle,
+		       PETEStyleEntryPtr pse);
+void CheckTableItems(MyWindowPtr win, Boolean allMenu);
+void EnableTableMenu(MyWindowPtr win, Boolean all);
 void TableMenuChoice(MyWindowPtr win, short item);
 short TableColIndex(TabColHandle columnData, short c);
 short TableColGroupIndex(TabColHandle columnGroupData, short c);
 short TableRowIndex(TabRowHandle rowData, short r);
 short TableRowGroupIndex(TabRowGroupHandle rowGroupData, short r);
 void TableDispose(TableHandle table);
-void GetCellHAlign(TableHandle table, short cell, short *hAlign, UniChar *alignChar, short *charOff);
+void GetCellHAlign(TableHandle table, short cell, short *hAlign,
+		   UniChar * alignChar, short *charOff);
 void GetCellVAlign(TableHandle table, short cell, short *vAlign);
 void GetCellDirection(TableHandle table, short cell, short *direction);
-pascal OSErr TableGraphic(PETEHandle pte,TIHandle table,long offset,PETEGraphicMessage message,void *data);
+pascal OSErr TableGraphic(PETEHandle pte, TIHandle table, long offset,
+			  PETEGraphicMessage message, void *data);
 
 #endif

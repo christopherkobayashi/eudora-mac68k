@@ -39,34 +39,48 @@
 #pragma segment Links
 #define FILE_NUM 57
 
-OSErr GleanLinkInfo(TOCHandle *tocH,short *sumNum,UPtr buffer,long bSize);
-Handle GrabHexHead(UPtr buffer,long bSize,short hId);
+OSErr GleanLinkInfo(TOCHandle * tocH, short *sumNum, UPtr buffer,
+		    long bSize);
+Handle GrabHexHead(UPtr buffer, long bSize, short hId);
 
 /************************************************************************
  * OpenLink - open a link to a message
  ************************************************************************/
-MyWindowPtr OpenLink(TOCHandle tocH,short sumNum,WindowPtr theWindow, MyWindowPtr win,Boolean showIt)
+MyWindowPtr OpenLink(TOCHandle tocH, short sumNum, WindowPtr theWindow,
+		     MyWindowPtr win, Boolean showIt)
 {
-	UPtr buffer = NuPtr(GetMessageLength(tocH,sumNum));
+	UPtr buffer = NuPtr(GetMessageLength(tocH, sumNum));
 
-	if (!buffer) {WarnUser(NO_MESS_BUF,MemError()); return(nil);}
-	if (!ReadMessage(tocH,sumNum,buffer))
-	{
-		if (!GleanLinkInfo(&tocH,&sumNum,buffer,(*tocH)->sums[sumNum].length))
-		{
-			DisposePtr(buffer); buffer = nil;
-			if (IsALink(tocH,sumNum)) return(OpenLink(tocH,sumNum,theWindow,win,showIt));
-			else return(GetAMessage(tocH,sumNum,theWindow,win,showIt));
-		}
-		else WarnUser(BROKEN_LINK,0);
+	if (!buffer) {
+		WarnUser(NO_MESS_BUF, MemError());
+		return (nil);
 	}
-	if (buffer) DisposePtr(buffer);
+	if (!ReadMessage(tocH, sumNum, buffer)) {
+		if (!GleanLinkInfo
+		    (&tocH, &sumNum, buffer,
+		     (*tocH)->sums[sumNum].length)) {
+			DisposePtr(buffer);
+			buffer = nil;
+			if (IsALink(tocH, sumNum))
+				return (OpenLink
+					(tocH, sumNum, theWindow, win,
+					 showIt));
+			else
+				return (GetAMessage
+					(tocH, sumNum, theWindow, win,
+					 showIt));
+		} else
+			WarnUser(BROKEN_LINK, 0);
+	}
+	if (buffer)
+		DisposePtr(buffer);
 }
 
 /************************************************************************
  * GleanLinkInfo - extract the linked-to data
  ************************************************************************/
-short GleanLinkInfo(TOCHandle *tocH,short *sumNum,UPtr buffer,long bSize)
+short GleanLinkInfo(TOCHandle * tocH, short *sumNum, UPtr buffer,
+		    long bSize)
 {
 	Handle tocAliasH;
 	Handle msgIdH;
@@ -76,53 +90,53 @@ short GleanLinkInfo(TOCHandle *tocH,short *sumNum,UPtr buffer,long bSize)
 	Boolean junk;
 	TOCHandle localTocH;
 	short mNum;
-	
-	tocAliasH = GrabHexHead(buffer,bSize,TOC_ALIAS_HEAD);
-	msgIdH = GrabHexHead(buffer,bSize,XLINK_HEAD);
-	
-	if (tocAliasH && msgIdH)
-	{
+
+	tocAliasH = GrabHexHead(buffer, bSize, TOC_ALIAS_HEAD);
+	msgIdH = GrabHexHead(buffer, bSize, XLINK_HEAD);
+
+	if (tocAliasH && msgIdH) {
 		msgId = **msgIdH;
-		FSMakeFSSpec(Root.vRef,Root.dirId,"",&rootSpec);
-		if (!(err=ResolveAlias(&rootSpec,tocAliasH,&spec,&junk)))
-		{
-			if (!(err = GetTOCByFSS(&spec,&localTocH)))
-			{
-				for (mNum=0;mNum<(*localTocH)->count;mNum++)
-					if ((*localTocH)->sums[mNum].msgId == msgId) break;
-				if (mNum<(*localTocH)->count)
-				{
+		FSMakeFSSpec(Root.vRef, Root.dirId, "", &rootSpec);
+		if (!
+		    (err =
+		     ResolveAlias(&rootSpec, tocAliasH, &spec, &junk))) {
+			if (!(err = GetTOCByFSS(&spec, &localTocH))) {
+				for (mNum = 0; mNum < (*localTocH)->count;
+				     mNum++)
+					if ((*localTocH)->sums[mNum].
+					    msgId == msgId)
+						break;
+				if (mNum < (*localTocH)->count) {
 					*tocH = localTocH;
 					*sumNum = mNum;
 					err = 0;
-				}
-				else err = fnfErr;
+				} else
+					err = fnfErr;
 			}
 		}
 	}
 	ZapHandle(tocAliasH);
 	ZapHandle(msgIdH);
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * GrabHexHead - grab the value of a hexadecimally encoded header
  ************************************************************************/
-Handle GrabHexHead(UPtr buffer,long bSize,short hId)
+Handle GrabHexHead(UPtr buffer, long bSize, short hId)
 {
 	Str63 head;
 	Handle data;
 	UPtr spot;
-	
-	if (spot = FindHeaderString(buffer,GetRString(head,hId),&bSize))
-	{
-		if (!(data = NuHandle(bSize/2))) WarnUser(MEM_ERR,MemError());
-		else
-		{
-			Hex2Bytes(spot,bSize,LDRef(data));
+
+	if (spot = FindHeaderString(buffer, GetRString(head, hId), &bSize)) {
+		if (!(data = NuHandle(bSize / 2)))
+			WarnUser(MEM_ERR, MemError());
+		else {
+			Hex2Bytes(spot, bSize, LDRef(data));
 			UL(data);
 		}
 	}
-	return(data);
+	return (data);
 }
 #endif

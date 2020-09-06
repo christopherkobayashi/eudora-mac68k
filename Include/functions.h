@@ -51,43 +51,47 @@ void AddSelectionAsTo(void);
 void AddStringAsTo(UPtr string);
 void RemoveFromTo(UPtr name);
 void ToMenusChanged(void);
-void MyBalloon(Rect *tipRect,short percentRight,short method,short resSelect,short pict,PStr message);
+void MyBalloon(Rect * tipRect, short percentRight, short method,
+	       short resSelect, short pict, PStr message);
 Boolean CloseAll(Boolean toolbarToo);
 Boolean CloseAllBoxes(void);
 Boolean CloseAllMessages(void);
 void DoHelp(WindowPtr winWP);
 void HandleWindowChoice(short item);
 short ChangePassword(void);
-OSErr GetAppLocation(AEAddressDescPtr aead,AliasHandle *alias);
+OSErr GetAppLocation(AEAddressDescPtr aead, AliasHandle * alias);
 OSErr LaunchByAlias(AliasHandle alias);
-OSErr FindPSNBySpec(ProcessSerialNumberPtr psnPtr,FSSpecPtr spec);
-OSErr FindPSNByCreator(ProcessSerialNumberPtr psnPtr,OSType creator);
-OSErr FindPSNByAlias(ProcessSerialNumberPtr psnPtr,AliasHandle alias);
+OSErr FindPSNBySpec(ProcessSerialNumberPtr psnPtr, FSSpecPtr spec);
+OSErr FindPSNByCreator(ProcessSerialNumberPtr psnPtr, OSType creator);
+OSErr FindPSNByAlias(ProcessSerialNumberPtr psnPtr, AliasHandle alias);
 OSErr LocateApp(AliasHandle alias);
 uLong DefaultOutFlags(void);
 void HelpTextWin(short itm);
 void TextResWin(PStr name);
 void HelpPICTWin(short itm);
 void PICTResWin(PStr name);
-void PreciseHelpRectString(Rect *tipRect,UPtr string,Point tip,short method);
-void Type2Select(EventRecord *event);
+void PreciseHelpRectString(Rect * tipRect, UPtr string, Point tip,
+			   short method);
+void Type2Select(EventRecord * event);
 #ifdef TWO
 OSErr FindSpeller(void);
-OSErr ServeThemWords(short item,AEDescPtr objAD);
-void ApplyDefaultStationery(MyWindowPtr win,Boolean bodyToo,Boolean personality);
+OSErr ServeThemWords(short item, AEDescPtr objAD);
+void ApplyDefaultStationery(MyWindowPtr win, Boolean bodyToo,
+			    Boolean personality);
 OSErr DoCompWStationery(FSSpecPtr spec);
 #endif
 OSErr OpenAttachedApp(FSSpecPtr spec);
 void PurchaseEudora(void);
-void ApplyIndexStationery(MyWindowPtr win,short which,Boolean bodyToo,Boolean personality);
+void ApplyIndexStationery(MyWindowPtr win, short which, Boolean bodyToo,
+			  Boolean personality);
 OSErr InstallSpeller(FSSpecPtr spec);
 void DoSFOpen(short modifiers);
 void DoSFOpenStd(short modifiers);
-void DelWSService(short item,Boolean toolbarToo);
-OSErr InsertTextFile(MyWindowPtr win, FSSpecPtr spec, Boolean rich, Boolean delSP);
+void DelWSService(short item, Boolean toolbarToo);
+OSErr InsertTextFile(MyWindowPtr win, FSSpecPtr spec, Boolean rich,
+		     Boolean delSP);
 PStr AboutRegisterString(PStr s);
-typedef struct
-{
+typedef struct {
 	Boolean insert;
 	Str255 buttonName;
 	StandardFileReply *reply;
@@ -95,9 +99,12 @@ typedef struct
 	Boolean html;
 	Boolean insertDefault;
 } InsertHookData;
-pascal short TextInsertHook(short item,DialogPtr dgPtr, InsertHookData *ihdp);
+pascal short TextInsertHook(short item, DialogPtr dgPtr,
+			    InsertHookData * ihdp);
 pascal Boolean SFOpenFilter(CInfoPBPtr pb, UPtr data);
-pascal Boolean ModalThreadYieldDialogFilter(DialogPtr theDialog, EventRecord *theEvent,short *itemHit,void *data);
+pascal Boolean ModalThreadYieldDialogFilter(DialogPtr theDialog,
+					    EventRecord * theEvent,
+					    short *itemHit, void *data);
 void ReportABug(void);
 void MakeASuggestion(void);
 Boolean MyHMHideTag(void);

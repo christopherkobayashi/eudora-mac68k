@@ -52,10 +52,9 @@ Boolean DoWeUseSelectedIMAPPersonalities(void);
 
 #ifdef IMAP
 Boolean IsIMAPPers(PersHandle pers);
-Boolean RenameIMAPPers(PersHandle pers,StringPtr newName);
+Boolean RenameIMAPPers(PersHandle pers, StringPtr newName);
 void DeleteIMAPPers(PersHandle pers, Boolean bCacheOnly);
 Boolean IMAPPersActive(PersHandle pers);
 #endif
 
 #endif
-

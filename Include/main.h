@@ -34,23 +34,23 @@
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 void main(void);
-Boolean DoDependentMenu(WindowPtr,int,int,short);
+Boolean DoDependentMenu(WindowPtr, int, int, short);
 #define DieWithError(cmbid,num) DWE(cmbid,num,FNAME_STRN+FILE_NUM,__LINE__)
-void DWE(int,int,int,int);
+void DWE(int, int, int, int);
 #define WarnUser(cmbid,num) WU(kAlertCautionAlert,cmbid,num,FNAME_STRN+FILE_NUM,__LINE__)
 #define NoteUser(cmbid,num) WU(kAlertNoteAlert,cmbid,num,FNAME_STRN+FILE_NUM,__LINE__)
 long MonitorGrow(Boolean report);
 void FlushHIQ(void);
-int WU(AlertType,int,int,int,int);
-void DumpData(UPtr description, UPtr data,int length);
+int WU(AlertType, int, int, int, int);
+void DumpData(UPtr description, UPtr data, int length);
 pascal long GrowZone(unsigned long needed);
-void MakeGrow(long howMuch,short which);
-void Trace(UPtr message,...);
+void MakeGrow(long howMuch, short which);
+void Trace(UPtr message, ...);
 #define FileSystemError(ctext,name,err)\
 	FSE(ctext,name,err,FNAME_STRN+FILE_NUM,__LINE__)
-int FSE(int context, UPtr name, int err, int file,int line);
-Boolean WNELo(short eventMask,EventRecord *event,long sleep);
-Boolean MiniMainLoop(EventRecord *event);
+int FSE(int context, UPtr name, int err, int file, int line);
+Boolean WNELo(short eventMask, EventRecord * event, long sleep);
+Boolean MiniMainLoop(EventRecord * event);
 Boolean HandleControl(Point pt, MyWindowPtr win);
 void TransferMenuHelp(short id);
 uLong CurrentSize(void);
@@ -62,21 +62,21 @@ void *NuHandle(long size);
 void *NuPtr(long size);
 void *NuPtrClear(long size);
 void RefreshLabelsMenu(void);
-Boolean HandleEvent(EventRecord *event);
-Boolean DoApp4(WindowPtr topWinWP,EventRecord *event);
+Boolean HandleEvent(EventRecord * event);
+Boolean DoApp4(WindowPtr topWinWP, EventRecord * event);
 void FccFlop(MyWindowPtr win);
 void CheckSLIP(void);
 void MightSwitch(void);
 void AfterSwitch(void);
-Boolean WinBGDrag(MyWindowPtr win,EventRecord *event);
+Boolean WinBGDrag(MyWindowPtr win, EventRecord * event);
 Boolean HasCommandPeriod(void);
-Boolean DoApp1NoPTE(MyWindowPtr topWin,EventRecord *event);
+Boolean DoApp1NoPTE(MyWindowPtr topWin, EventRecord * event);
 pascal long MyGrowZone(unsigned long needed);
 void TendNotificationManager(Boolean isActive);
 #ifdef DEBUG
 void ValidateResourceMaps(void);
 void ValidateResourceMap(UHandle map);
-void CheckHandle(UHandle map,long offset,long size,THz hz,PStr string);
+void CheckHandle(UHandle map, long offset, long size, THz hz, PStr string);
 #endif
 /*
 	NeedYield is now a function:
@@ -86,7 +86,9 @@ void CheckHandle(UHandle map,long offset,long size,THz hz,PStr string);
 Boolean NeedYield(void);
 #define NEED_YIELD NeedYield()
 
-pascal OSErr PantyTrack(DragTrackingMessage message, WindowPtr qWinWP, Ptr handlerRfCon, DragReference drag);
-pascal OSErr PantyReceive(WindowPtr qWin, Ptr handlerRfCon, DragReference drag);
+pascal OSErr PantyTrack(DragTrackingMessage message, WindowPtr qWinWP,
+			Ptr handlerRfCon, DragReference drag);
+pascal OSErr PantyReceive(WindowPtr qWin, Ptr handlerRfCon,
+			  DragReference drag);
 
 #endif

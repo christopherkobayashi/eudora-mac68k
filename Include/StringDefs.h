@@ -1363,7 +1363,7 @@
 #define MIME_WIN_1252	13707	/*windows-1252*/	//
 #define PROFILE_FILE_NAME	13708	/*Demog.txt*/	//Name of file containing demographic profiling information
 #define TECH_SUPPORT_SITE	13709	/*http://jump.eudora.com*/	//DO NOT LOCALIZE
-#define PREF_OFFLINE_LINK_ACTION	13710	/*0*/	//This setting governs what happens when the user clicks on a link while offline: (0) Do nothing, (1) Connect Automatically, (3) Bookmark the link, or (4) Remind me later. 
+#define PREF_OFFLINE_LINK_ACTION	13710	/*0*/	//This setting governs what happens when the user clicks on a link while offline: (0) Do nothing, (1) Connect Automatically, (3) Bookmark the link, or (4) Remind me later.
 #define OFFLINE_LINK_OPEN_TIMEOUT	13711	/*2*/	//Timeout for pinging the ad server.
 #define OFFLINE_LINK_NAG_TIME	13712	/*300*/	//Number of ticks user should be idle before nagging about remembered links.
 #define DEBUG_PLAYLIST_URL	13713	/**/	//Alternate playlist URL. Debug mode only.

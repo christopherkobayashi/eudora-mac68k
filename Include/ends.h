@@ -42,7 +42,8 @@ void BuildBoxMenus(void);
 void RememberOpenWindows(void);
 void RecallOpenWindows(void);
 void TrashMenu(MenuHandle mh, short beginAtItem);
-void OpenNewSettings(FSSpecPtr spec, Boolean changeUserState, UserStateType newState);
+void OpenNewSettings(FSSpecPtr spec, Boolean changeUserState,
+		     UserStateType newState);
 void SetSendQueue(void);
 void GetBoxLines(void);
 void SystemEudoraFolder(void);
@@ -51,33 +52,52 @@ void AddFinderItems(MenuHandle mh);
 void BuildStationMenu(void);
 void BuildPersMenu(void);
 void BuildSigMenu(void);
-void MySetMenuTitle(MenuHandle menu,PStr title);
+void MySetMenuTitle(MenuHandle menu, PStr title);
 void CleanTempFolder(void);
 Boolean DateWarning(Boolean uiOK);
 #ifdef THREADING_ON
 void CreateTempBox(short which);
-#endif // THREADING_ON
+#endif				// THREADING_ON
 #ifdef HAVE_KEYCHAIN
 void KeychainConvert(void);
-#endif // HAVE_KEYCHAIN
+#endif				// HAVE_KEYCHAIN
 
-pascal void SettingsListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
+pascal void SettingsListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			    Cell lCell, short lDataOffset, short lDataLen,
+			    ListHandle lHandle);
 #ifdef FANCY_FILT_LDEF
-pascal void FiltListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
+pascal void FiltListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			Cell lCell, short lDataOffset, short lDataLen,
+			ListHandle lHandle);
 #endif
-pascal void TlateListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
-pascal void ListViewListDef(short message, Boolean select, Rect *pRect, Cell cell, short dataOffset, short dataLen, ListHandle hList);
-pascal void ListItemDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
-pascal long AppCdef(short varCode, ControlHandle theControl, short message, long param);
-pascal long ColCdef(short varCode, ControlHandle theControl, short message, long param);
-pascal long ListCdef(short varCode, ControlHandle theControl, short message, long param);
-pascal void FeatureListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
+pascal void TlateListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			 Cell lCell, short lDataOffset, short lDataLen,
+			 ListHandle lHandle);
+pascal void ListViewListDef(short message, Boolean select, Rect * pRect,
+			    Cell cell, short dataOffset, short dataLen,
+			    ListHandle hList);
+pascal void ListItemDef(short lMessage, Boolean lSelect, Rect * lRect,
+			Cell lCell, short lDataOffset, short lDataLen,
+			ListHandle lHandle);
+pascal long AppCdef(short varCode, ControlHandle theControl, short message,
+		    long param);
+pascal long ColCdef(short varCode, ControlHandle theControl, short message,
+		    long param);
+pascal long ListCdef(short varCode, ControlHandle theControl,
+		     short message, long param);
+pascal void FeatureListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			   Cell lCell, short lDataOffset, short lDataLen,
+			   ListHandle lHandle);
 #ifdef DEBUG
-pascal long DebugCdef(short varCode, ControlHandle theControl, short message, long param);
+pascal long DebugCdef(short varCode, ControlHandle theControl,
+		      short message, long param);
 #endif
 
-typedef OSErr (*FolderSnifferFunc)(short vRefNum,long parID,uLong refCon);
-void FolderSniffer(short subfolderID,FolderSnifferFunc sniffer,uLong refCon);
-void FolderSnifferStr(PStr subfolderName,FolderSnifferFunc sniffer,uLong refCon);
+typedef OSErr(*FolderSnifferFunc) (short vRefNum, long parID,
+				   uLong refCon);
+void FolderSniffer(short subfolderID, FolderSnifferFunc sniffer,
+		   uLong refCon);
+void FolderSnifferStr(PStr subfolderName, FolderSnifferFunc sniffer,
+		      uLong refCon);
 
 #endif

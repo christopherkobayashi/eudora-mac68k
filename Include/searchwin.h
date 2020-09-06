@@ -34,20 +34,21 @@
 
 MyWindowPtr SearchOpen(short searchMode);
 #define SearchNewFindString(w) SearchNewFindStringLo(w,false)
-void SearchNewFindStringLo(PStr what,Boolean withPrejuidice);
+void SearchNewFindStringLo(PStr what, Boolean withPrejuidice);
 void StartSearch(MyWindowPtr win);
-void SearchUpdateSum(TOCHandle tocH, short sumNum, TOCHandle oldTocH, long oldSerialNum, Boolean transfer, Boolean nuke);
+void SearchUpdateSum(TOCHandle tocH, short sumNum, TOCHandle oldTocH,
+		     long oldSerialNum, Boolean transfer, Boolean nuke);
 MyWindowPtr OpenSearchFile(FSSpecPtr spec);
 MyWindowPtr OpenSearchFileAndStart(FSSpecPtr spec);
 Boolean IsSearchWindow(WindowPtr theWindow);
-Boolean GetSearchWinSpec(WindowPtr winWP,FSSpecPtr spec);
+Boolean GetSearchWinSpec(WindowPtr winWP, FSSpecPtr spec);
 void BuildSearchMenu(void);
 void OpenSearchMenu(short item);
-void TellSearchMBRename(FSSpecPtr spec,FSSpecPtr newSpec);
+void TellSearchMBRename(FSSpecPtr spec, FSSpecPtr newSpec);
 TOCHandle GetTOCFromSearchWin(FSSpecPtr spec);
 void SearchMBUpdate(void);
-void SearchFixUnread(MenuHandle mh,short item,Boolean unread);
-void GetSearchTOC(MyWindowPtr win,TOCHandle *ptoc);
+void SearchFixUnread(MenuHandle mh, short item, Boolean unread);
+void GetSearchTOC(MyWindowPtr win, TOCHandle * ptoc);
 void SearchInvalTocBox(TOCHandle tocH, short sumNum, short box);
 void CopySum(MSumPtr sumFrom, MSumPtr sumTo, short virtualMBIdx);
 Boolean SearchViewIsMailbox(TOCHandle tocH);

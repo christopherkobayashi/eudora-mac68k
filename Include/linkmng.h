@@ -39,48 +39,47 @@
  **********************************************************************/
 
 /* LinkSortTypeEnum - types of sorts we can do */
-typedef enum 
-{
-	sType=0x0000,
-	sName=0x0001,
-	sDate=0x0002,
-	sSpecialRemind=0xFFFF,
+typedef enum {
+	sType = 0x0000,
+	sName = 0x0001,
+	sDate = 0x0002,
+	sSpecialRemind = 0xFFFF,
 	LinkSortTypeLimit
 } LinkSortTypeEnum;
 
 /* LinkSortMaskEnum - modifications of sorts we can do */
-typedef enum
-{
-	kLinkSortTypeMask=0x0000FFFF,			// sort type mask
-	kLinkHasNoCustomIcons=0x00010000,		// no custom icons
-	kLinkReverseSort=0x00020000,			// reverse sort order
+typedef enum {
+	kLinkSortTypeMask = 0x0000FFFF,	// sort type mask
+	kLinkHasNoCustomIcons = 0x00010000,	// no custom icons
+	kLinkReverseSort = 0x00020000,	// reverse sort order
 	LinkSortModLimit
 } LinkSortMaskEnum;
 
 
 /* Offline Link Dialog Actions - errors returned by OpenURL we are interested in */
-enum
-{
+enum {
 	oldaCancel = 4747,	// user pressed cancel in offline link dialog
 	oldaBookmark,		// bookmark the link
-	oldaRemind			// remind the user to visit later
+	oldaRemind		// remind the user to visit later
 };
 
 // Link management
 OSErr GenHistoriesList(void);
 void ZapHistoriesList(Boolean destroy);
 OSErr AddURLToMainHistory(PStr url, PStr name, OSErr urlOpenErr);
-OSErr AddAdToLinkHistory(AdId adId, StringPtr pUrl, Str255 adTitle, FSSpecPtr adGraphic);
+OSErr AddAdToLinkHistory(AdId adId, StringPtr pUrl, Str255 adTitle,
+			 FSSpecPtr adGraphic);
 OSErr SaveAllHistoryFiles(void);
 void AdWasClicked(AdId adId, OSErr openErr);
 void AgeLinks(void);
 
 // Link Window related
-void AddAllHistoryItems(ViewListPtr pView, Boolean needsSort, LinkSortTypeEnum sortType);
-void DeleteHistoryEntry(VLNodeInfo *info);
-OSErr OpenHistoryEntry(VLNodeInfo *info);
+void AddAllHistoryItems(ViewListPtr pView, Boolean needsSort,
+			LinkSortTypeEnum sortType);
+void DeleteHistoryEntry(VLNodeInfo * info);
+OSErr OpenHistoryEntry(VLNodeInfo * info);
 Boolean GetDateString(VLNodeID id, Str255 dateStr);
-Handle GetLinkURL(VLNodeInfo *info);
+Handle GetLinkURL(VLNodeInfo * info);
 Handle GetLHPreviewIcon(VLNodeID id);
 void ZapPVICache(void);
 
@@ -90,8 +89,11 @@ Boolean FindRemindLink(void);
 void UnRemindLinks(Boolean labelToo);
 
 // Icon functions
-OSErr MakeIconSuite (GWorldPtr gWorld, Rect *pRect, RGBColor *transparentColor, PStr name);
-Handle MakeIcon(GWorldPtr srcGWorld, Rect *srcRect, short dstDepth, short iconSize);
-Handle MakeICN_pound(GWorldPtr gwp, Rect *srcRect, short iconDimension, RGBColor *transparentColor);
+OSErr MakeIconSuite(GWorldPtr gWorld, Rect * pRect,
+		    RGBColor * transparentColor, PStr name);
+Handle MakeIcon(GWorldPtr srcGWorld, Rect * srcRect, short dstDepth,
+		short iconSize);
+Handle MakeICN_pound(GWorldPtr gwp, Rect * srcRect, short iconDimension,
+		     RGBColor * transparentColor);
 
 #endif

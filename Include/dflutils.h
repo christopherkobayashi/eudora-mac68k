@@ -44,11 +44,11 @@
 
 enum {
 	kDFLBaseErrNum = 101,
-	kDFLNeedMixedModeMgrErr = kDFLBaseErrNum, /* 101 */
-	kDFLNeedCFMErr, /* 102 */
-	kDFLBadCFM68KVersErr, /* 103 */
-	kDFLBadLibVersErr, /* 104 */
-	kDFLLibCodeNotLoadedErr /* 105 */
+	kDFLNeedMixedModeMgrErr = kDFLBaseErrNum,	/* 101 */
+	kDFLNeedCFMErr,		/* 102 */
+	kDFLBadCFM68KVersErr,	/* 103 */
+	kDFLBadLibVersErr,	/* 104 */
+	kDFLLibCodeNotLoadedErr	/* 105 */
 };
 
 
@@ -117,54 +117,62 @@ InvalDFR(routineName##UPP)
 
 
 
-/* FINISH *//* remove these */
+	    /* FINISH *//* remove these */
 #if 0
 #if GENERATING68KSEGLOAD
 
 void A0ResultToD0(void)
-	= {0x2008};
+= { 0x2008 };
+
 	/*
-		MOVE.L		A0,D0
-	*/
+	   MOVE.L               A0,D0
+	 */
 
 
 void D0ResultToA0(void)
-	= {0x2040};
+= { 0x2040 };
+
 	/*
-		MOVEA.L		D0,A0
-	*/
+	   MOVEA.L              D0,A0
+	 */
 
 
-long CallThinkCRegA0ResultUPP(RoutineDescriptorPtr theProcPtr, ProcInfoType procInfo, ...)
-	= {0x205F, 0x584F, 0x4E90, 0x2008};
+long CallThinkCRegA0ResultUPP(RoutineDescriptorPtr theProcPtr,
+			      ProcInfoType procInfo, ...)
+= { 0x205F, 0x584F, 0x4E90, 0x2008 };
+
 	/*
-		MOVEA.L		(A7)+,A0
-		ADDQ.W		#4,A7
-		JSR				(A0)
-		MOVE.L		A0,D0
-	*/
+	   MOVEA.L              (A7)+,A0
+	   ADDQ.W               #4,A7
+	   JSR                          (A0)
+	   MOVE.L               A0,D0
+	 */
 
 
-/* FINISH *//* which of these is right? */
+	    /* FINISH *//* which of these is right? */
 #if 0
-long CallThinkCRegD0ResultUPP(RoutineDescriptorPtr theProcPtr, ProcInfoType procInfo, ...)
-	= {0x205F, 0x584F, 0x4E90, 0x2040};
+long CallThinkCRegD0ResultUPP(RoutineDescriptorPtr theProcPtr,
+			      ProcInfoType procInfo, ...)
+= { 0x205F, 0x584F, 0x4E90, 0x2040 };
+
 	/*
-		MOVEA.L		(A7)+,A0
-		ADDQ.W		#4,A7
-		JSR				(A0)
-		MOVEA.L		D0,A0
-	*/
+	   MOVEA.L              (A7)+,A0
+	   ADDQ.W               #4,A7
+	   JSR                          (A0)
+	   MOVEA.L              D0,A0
+	 */
 #endif
 
 
-long CallThinkCRegD0ResultUPP(RoutineDescriptorPtr theProcPtr, ProcInfoType procInfo, ...)
-	= {0x205F, 0x584F, 0x4E90};
+long CallThinkCRegD0ResultUPP(RoutineDescriptorPtr theProcPtr,
+			      ProcInfoType procInfo, ...)
+= { 0x205F, 0x584F, 0x4E90 };
+
 	/*
-		MOVEA.L		(A7)+,A0
-		ADDQ.W		#4,A7
-		JSR				(A0)
-	*/
+	   MOVEA.L              (A7)+,A0
+	   ADDQ.W               #4,A7
+	   JSR                          (A0)
+	 */
 
 #endif
 #endif
@@ -178,12 +186,14 @@ extern Boolean useDFLStubLib;
 void ResetDFRLoaderGlobals(void);
 void SetDFRLoaderGlobals(CFragConnectionID connID, ISAType connISA);
 OSErr DFRLoaderErr(void);
-OSErr InitDFR(char* symbolNameCStr, RoutineDescriptorPtr routineRD, ProcInfoType procInfo);
+OSErr InitDFR(char *symbolNameCStr, RoutineDescriptorPtr routineRD,
+	      ProcInfoType procInfo);
 void InvalDFR(RoutineDescriptorPtr routineRD);
 Boolean CFM68KOkay(void);
 OSErr SystemSupportsDFRLibraries(OSType libArchType);
-OSErr LoadDFRLibrary(ConstStr63Param libName, OSType libArchType, CFragConnectionID *connID, Str255 errMessage);
-OSErr UnloadDFRLibrary(CFragConnectionID *connID);
+OSErr LoadDFRLibrary(ConstStr63Param libName, OSType libArchType,
+		     CFragConnectionID * connID, Str255 errMessage);
+OSErr UnloadDFRLibrary(CFragConnectionID * connID);
 
 
 #endif

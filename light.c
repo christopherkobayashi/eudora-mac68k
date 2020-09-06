@@ -31,7 +31,7 @@
 
 //light.c
 //
-//	contains all the functions I'm creating for the decaying light version of Eudora.
+//      contains all the functions I'm creating for the decaying light version of Eudora.
 
 #include <conf.h>
 #include <mydefs.h>
@@ -54,18 +54,19 @@ void UnmarkAsProOnly(MenuHandle mh, short item);
 /*									a Pro Only feature
 /***********************************************************************************/
 
-void LightEnableIf(MenuHandle mh, short item, Boolean enabledIf, Boolean ProOnlyFeature)
+void LightEnableIf(MenuHandle mh, short item, Boolean enabledIf,
+		   Boolean ProOnlyFeature)
 {
 	Boolean enabled = enabledIf && !ProOnlyFeature;
 
-#ifdef	USED_FOR_DECAYING_VERSION	
+#ifdef	USED_FOR_DECAYING_VERSION
 	if (ProOnlyFeature)
-		MarkAsProOnly(mh,item);
+		MarkAsProOnly(mh, item);
 	else
-		UnmarkAsProOnly(mh,item);
-#endif	//USED_FOR_DECAYING_VERSION
+		UnmarkAsProOnly(mh, item);
+#endif				//USED_FOR_DECAYING_VERSION
 
-	EnableIf(mh,item,enabled);
+	EnableIf(mh, item, enabled);
 	return;
 }
 
@@ -79,23 +80,23 @@ void LightEnableIf(MenuHandle mh, short item, Boolean enabledIf, Boolean ProOnly
 
 void MarkAsProOnly(MenuHandle theMenu, short item)
 {
-	Str255	newMenuItemText, theSubString;
+	Str255 newMenuItemText, theSubString;
 
 	DisableItem(theMenu, item);
 
-	//First, add some text to the menu item to mark it as a pro only feature	
-	theSubString[0] = 1;		//build the substring we'll add to the menu item.  Use the string from the resource
-	theSubString[1] = 0;		//plus a NULL character, so we know it's really our text when we find it
+	//First, add some text to the menu item to mark it as a pro only feature        
+	theSubString[0] = 1;	//build the substring we'll add to the menu item.  Use the string from the resource
+	theSubString[1] = 0;	//plus a NULL character, so we know it's really our text when we find it
 	PCatR(theSubString, PRO_ONLY_FEATURE);
-		
-	GetMenuItemText(theMenu,item,newMenuItemText);
-	if (PPtrFindSub(theSubString, newMenuItemText+1, newMenuItemText[0]) == 0)
-	{
-		PCat(newMenuItemText,theSubString);
-		SetMenuItemText(theMenu,item,newMenuItemText);
+
+	GetMenuItemText(theMenu, item, newMenuItemText);
+	if (PPtrFindSub
+	    (theSubString, newMenuItemText + 1, newMenuItemText[0]) == 0) {
+		PCat(newMenuItemText, theSubString);
+		SetMenuItemText(theMenu, item, newMenuItemText);
 	}
-	
+
 	return;
 }
 
-#endif	//LIGHT
+#endif				//LIGHT

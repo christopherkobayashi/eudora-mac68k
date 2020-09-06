@@ -34,5 +34,5 @@
 void RegisterEudoraHi(void);
 void RegisterSuccess(uLong what);
 void AutoRegister(void);
-OSErr AddConfig(AccuPtr accu,Boolean doShort);
+OSErr AddConfig(AccuPtr accu, Boolean doShort);
 #endif

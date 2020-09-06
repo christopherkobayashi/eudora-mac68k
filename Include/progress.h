@@ -37,16 +37,22 @@
  * Declarations for progress monitoring
  ************************************************************************/
 #ifdef DEBUG
-typedef enum {NoBar = -2,NoChange,kpMessage,kpRemaining,kpSubTitle,kpTitle,kpBar,kpBeat} ProgressRectEnum;
+typedef enum { NoBar =
+	    -2, NoChange, kpMessage, kpRemaining, kpSubTitle, kpTitle,
+	    kpBar, kpBeat } ProgressRectEnum;
 #else
-typedef enum {NoBar = -2,NoChange,kpMessage,kpRemaining,kpSubTitle,kpTitle,kpBar} ProgressRectEnum;
+typedef enum { NoBar =
+	    -2, NoChange, kpMessage, kpRemaining, kpSubTitle, kpTitle,
+	    kpBar } ProgressRectEnum;
 #endif
 
 int OpenProgress(void);
-void Progress(short percent,short remaining,PStr title,PStr subTitle,PStr message);
-void ProgressMessage(short which,PStr message);
-void ProgressMessageR(short which,short messageId);
-void ProgressR(short percent,short remaining,short titleId,short subTitleId,PStr message);
+void Progress(short percent, short remaining, PStr title, PStr subTitle,
+	      PStr message);
+void ProgressMessage(short which, PStr message);
+void ProgressMessageR(short which, short messageId);
+void ProgressR(short percent, short remaining, short titleId,
+	       short subTitleId, PStr message);
 void CloseProgress(void);
 void ByteProgress(UPtr message, int onLine, int totLines);
 void PushProgress(void);
@@ -58,17 +64,17 @@ void PressStop(void);
 void ByteProgressExcess(int excess);
 int GetProgressBytes(void);
 
-typedef struct ProgressBlock ProgressBlock, *ProgressBPtr, **ProgressBHandle;
+typedef struct ProgressBlock ProgressBlock, *ProgressBPtr,
+    **ProgressBHandle;
 struct ProgressBlock {
 	short percent;
-	int on, total,
-			excessOn;	// amount we under-estimated
+	int on, total, excessOn;	// amount we under-estimated
 #ifdef DEBUG
-	Rect rects[kpBeat+1];
+	Rect rects[kpBeat + 1];
 #else
-	Rect rects[kpBar+1];
+	Rect rects[kpBar + 1];
 #endif
-	Str255 messages[kpTitle+1];
+	Str255 messages[kpTitle + 1];
 	ProgressBHandle next;
 	Str255 title;
 	ControlHandle bar;

@@ -38,27 +38,27 @@
  *
  *		This file contains the functions that manage IMAP connections
  **********************************************************************/
- 
+
 #ifndef IMAPCONNECTIONS_H
 #define IMAPCONNECTIONS_H
 
 // IMAPConnectionStruct - an entity to maintain an open connection to an IMAP server
-typedef struct IMAPConnectionStruct IMAPConnectionStruct, *IMAPConnectionPtr, **IMAPConnectionHandle;
-struct IMAPConnectionStruct
-{
+typedef struct IMAPConnectionStruct IMAPConnectionStruct,
+    *IMAPConnectionPtr, **IMAPConnectionHandle;
+struct IMAPConnectionStruct {
 	IMAPStreamPtr imapStream;	// a stream to an IMAP server
-	long owner;					// the ID of personality that owns this stream
-	
-	long lastUsed;				// TickCount of when this connection was last used
-	long lifeTime;				// number of seconds to keep this connection open
-	
-	Boolean inUse;				// lock
-	Boolean dontReuse;			// true if this connection can't be reused.
-	
-	TaskKindEnum task;			// what this connection is being used for
-	
-	Boolean rude;				// be rude and slam the connection closed.
-	
+	long owner;		// the ID of personality that owns this stream
+
+	long lastUsed;		// TickCount of when this connection was last used
+	long lifeTime;		// number of seconds to keep this connection open
+
+	Boolean inUse;		// lock
+	Boolean dontReuse;	// true if this connection can't be reused.
+
+	TaskKindEnum task;	// what this connection is being used for
+
+	Boolean rude;		// be rude and slam the connection closed.
+
 	IMAPConnectionHandle next;
 };
 
@@ -71,10 +71,11 @@ void ZapAllIMAPConnections(Boolean force);
 void IMAPInvalidatePerConnections(PersHandle pers);
 
 // Connection use
-IMAPStreamPtr GetIMAPConnectionLo(TaskKindEnum forWhat, Boolean bSilent, Boolean bPerformUpdate);
+IMAPStreamPtr GetIMAPConnectionLo(TaskKindEnum forWhat, Boolean bSilent,
+				  Boolean bPerformUpdate);
 #define GetIMAPConnection(forWhat, bSilent) GetIMAPConnectionLo(forWhat, bSilent, true)
-void CleanupConnection(IMAPStreamPtr *imapStream);
+void CleanupConnection(IMAPStreamPtr * imapStream);
 void PrepareToExpunge(IMAPStreamPtr imapStream);
 void IMAPRudeConnectionClose(IMAPStreamPtr imapStream);
 
-#endif	//IMAPCONNECTIONS_H
+#endif				//IMAPCONNECTIONS_H

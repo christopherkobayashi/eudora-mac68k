@@ -34,8 +34,7 @@
 
 typedef struct Accumulator *AccuPtr;
 
-typedef struct
-{
+typedef struct {
 	Str31 styleName;
 	PETETextStyle textStyle;
 	long textValid;
@@ -44,19 +43,27 @@ typedef struct
 	Boolean wholePara;
 	Boolean formatBar;
 } EuStyleSheet, *ESSPtr, **ESSHandle;
-	
 
-OSErr BuildEnriched(AccuPtr enriched,PETEHandle pte,UHandle text,long len,long offset,PETEStyleListHandle pslh,Boolean xrich);
-OSErr PeteRich(PETEHandle pte,long start, long stop,Boolean unwrap);
-short IncrementTextSize(short size,short increment);
+
+OSErr BuildEnriched(AccuPtr enriched, PETEHandle pte, UHandle text,
+		    long len, long offset, PETEStyleListHandle pslh,
+		    Boolean xrich);
+OSErr PeteRich(PETEHandle pte, long start, long stop, Boolean unwrap);
+short IncrementTextSize(short size, short increment);
 Boolean SetMessRich(MessHandle messH);
-typedef enum {hasNoStyle, hasOnlyExcerpt, hasTonsOCrap} StyleLevelEnum;
-StyleLevelEnum HasStyles(PETEHandle pte,long from,long to,Boolean allowGraphics);
-OSErr ParaIndent2Margin(PSMPtr marg,PStr string);
-OSErr InsertRichLo(UHandle text,long textOffset,long textLen,long offset,Boolean headers,Boolean unwrap,PETEHandle pte,StackHandle partStack,MessHandle messH,Boolean delSP);
-OSErr InsertRich(UHandle text,long textOffset,long textLen,long offset,Boolean unwrap,PETEHandle pte,StackHandle partStack,Boolean delSP);
-PStr Style2String(ESSPtr ess,PStr string);
-OSErr String2Style(ESSPtr ess,PStr string);
+typedef enum { hasNoStyle, hasOnlyExcerpt, hasTonsOCrap } StyleLevelEnum;
+StyleLevelEnum HasStyles(PETEHandle pte, long from, long to,
+			 Boolean allowGraphics);
+OSErr ParaIndent2Margin(PSMPtr marg, PStr string);
+OSErr InsertRichLo(UHandle text, long textOffset, long textLen,
+		   long offset, Boolean headers, Boolean unwrap,
+		   PETEHandle pte, StackHandle partStack, MessHandle messH,
+		   Boolean delSP);
+OSErr InsertRich(UHandle text, long textOffset, long textLen, long offset,
+		 Boolean unwrap, PETEHandle pte, StackHandle partStack,
+		 Boolean delSP);
+PStr Style2String(ESSPtr ess, PStr string);
+OSErr String2Style(ESSPtr ess, PStr string);
 short FindSizeInc(short size);
 
 #endif

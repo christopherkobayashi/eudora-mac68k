@@ -35,22 +35,19 @@
 #ifdef TWO
 #include "FiltDefs.h"
 
-typedef struct CountedSpecStruct
-{
+typedef struct CountedSpecStruct {
 	FSSpec spec;
 	short count;
 } CSpec, *CSpecPtr, **CSpecHandle;
 
 typedef struct FAction *FActionPtr, **FActionHandle;
-typedef struct FAction
-{
+typedef struct FAction {
 	Handle data;
 	FActionHandle next;
 	FilterKeywordEnum action;
 } FAction;
 
-typedef enum
-{
+typedef enum {
 	faeInit,
 	faeDraw,
 	faeClose,
@@ -76,15 +73,15 @@ typedef enum
 	faeLimit
 } FACallEnum;
 
-typedef short FActionProc(FACallEnum callType,FActionHandle action,Rect *r,void *dataPtr);
+typedef short FActionProc(FACallEnum callType, FActionHandle action,
+			  Rect * r, void *dataPtr);
 #define CallAction(callType,act,r,dataPtr)\
 	(*(FActionProc *)FATable((*act)->action))(callType,act,r,dataPtr)
 
 #define MAX_ACTIONS	5
 
-typedef enum
-{
-	mbmContains=1,
+typedef enum {
+	mbmContains = 1,
 	mbmNotContains,
 	mbmIs,
 	mbmIsnt,
@@ -100,21 +97,19 @@ typedef enum
 	mbmJunkLess,
 	mbmJunkMore,
 	mbmLimit
-}	MatchEnum;
+} MatchEnum;
 
-typedef enum
-{
-	cjIgnore=1,
+typedef enum {
+	cjIgnore = 1,
 	cjAnd,
 	cjOr,
 	cjUnless,
 	cjLimit
-}	ConjunctionEnum;
+} ConjunctionEnum;
 
-typedef struct
-{
+typedef struct {
 	Str63 header;
-	short headerID;	//0 or FILTER_BODY|FILTER_ADDRESSEE|FILTER_ANY
+	short headerID;		//0 or FILTER_BODY|FILTER_ADDRESSEE|FILTER_ANY
 	Str127 value;
 	MatchEnum verb;
 	UHandle nickExpanded;
@@ -123,14 +118,12 @@ typedef struct
 } MatchTerm, *MTPtr, **MTHandle;
 
 
-typedef struct
-{
+typedef struct {
 	long id;
 	uLong lastMatch;
-}	FilterUse, *FUPtr, **FUHandle;
+} FilterUse, *FUPtr, **FUHandle;
 
-typedef struct
-{
+typedef struct {
 	Str31 name;
 	FSSpec transferSpec;
 	Boolean incoming;
@@ -141,13 +134,12 @@ typedef struct
 	FActionHandle actions;
 	FilterUse fu;
 	Boolean kill;
-}	FilterRecord, *FRPtr, **FRHandle;
+} FilterRecord, *FRPtr, **FRHandle;
 
 #define NFilters (Filters ? GetHandleSize_(Filters)/sizeof(FilterRecord) : 0)
 #define FR (*(FRHandle)Filters)
 
-typedef struct
-{
+typedef struct {
 	TOCHandle tocH;
 	short sumNum;
 	Boolean openMailbox;

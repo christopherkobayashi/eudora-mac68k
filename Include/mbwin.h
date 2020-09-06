@@ -38,50 +38,55 @@
  **********************************************************************/
 #define kMBDragType 'MBox'
 
-//	special node ID's
-enum	{ kEudoraFolder=-1,kIMAPFolder=-2 };
+//      special node ID's
+enum { kEudoraFolder = -1, kIMAPFolder = -2 };
 
-//	expand/collapse folder list
+//      expand/collapse folder list
 typedef struct ExpandListRec **ExpandListHandle;
-typedef struct
-{
-	ExpandListHandle	hExpandList;
-	short		resID;
-	Boolean	fExpandListChanged;
+typedef struct {
+	ExpandListHandle hExpandList;
+	short resID;
+	Boolean fExpandListChanged;
 } ExpandInfo, *ExpandInfoPtr;
 
 #define kExpandListType 'ExMB'
-enum	{ kMBExpandID=1001,kSearchExpandID,kAddressBookExpandID,kMBDrawerExpandID };
+enum { kMBExpandID =
+	    1001, kSearchExpandID, kAddressBookExpandID,
+	    kMBDrawerExpandID };
 
-//	Data sent for a drag
-typedef struct
-{
-	short		menuID;
-	short		menuItem;
-	Str32		name;
-	FSSpec	spec;
+//      Data sent for a drag
+typedef struct {
+	short menuID;
+	short menuItem;
+	Str32 name;
+	FSSpec spec;
 } MBDragData, *MBDragPtr;
 
 void OpenMBWin(void);
-void MBTickle(UPtr fromSelect,UPtr toSelect);
-MenuHandle ParentMailboxMenu(MenuHandle mh,short *itemPtr);
-void MBFixUnread(MenuHandle mh,short item,Boolean unread);
-void MBFixUnreadLo(ViewListPtr pView,MenuHandle mh,short item,Boolean unread,Boolean draw);
-void MBOpenFolder(Handle hStringList,Boolean IsIMAP);
-long MailboxesLVCallBack(ViewListPtr pView, VLCallbackMessage message, long data);
-void AddMailboxListItems(ViewListPtr pView, short menuId, ExpandInfoPtr pExpList);
-void OpenMBFolder(ViewListPtr pView,short menuID,StringPtr s);
-void SaveExpandStatus(VLNodeInfo *data,ExpandInfoPtr pExpList);
+void MBTickle(UPtr fromSelect, UPtr toSelect);
+MenuHandle ParentMailboxMenu(MenuHandle mh, short *itemPtr);
+void MBFixUnread(MenuHandle mh, short item, Boolean unread);
+void MBFixUnreadLo(ViewListPtr pView, MenuHandle mh, short item,
+		   Boolean unread, Boolean draw);
+void MBOpenFolder(Handle hStringList, Boolean IsIMAP);
+long MailboxesLVCallBack(ViewListPtr pView, VLCallbackMessage message,
+			 long data);
+void AddMailboxListItems(ViewListPtr pView, short menuId,
+			 ExpandInfoPtr pExpList);
+void OpenMBFolder(ViewListPtr pView, short menuID, StringPtr s);
+void SaveExpandStatus(VLNodeInfo * data, ExpandInfoPtr pExpList);
 void SaveExpandedFolderList(ExpandInfoPtr pExpList);
-long *FindExpandDirID(long dirID,ExpandInfoPtr pExpList);
-Boolean IsIMAPBox(VLNodeInfo *pData);
-Boolean MBFindInCollapsed(MyWindowPtr win,ViewListPtr pView,PStr what,short menuID);
+long *FindExpandDirID(long dirID, ExpandInfoPtr pExpList);
+Boolean IsIMAPBox(VLNodeInfo * pData);
+Boolean MBFindInCollapsed(MyWindowPtr win, ViewListPtr pView, PStr what,
+			  short menuID);
 short MBGetFolderMenuID(short id, StringPtr name);
 void MBListOpen(ViewListPtr pView);
-void MakeMBSpec(VLNodeInfo *pData,FSSpec *pSpec);
+void MakeMBSpec(VLNodeInfo * pData, FSSpec * pSpec);
 ExpandInfoPtr MBGetExpList(void);
 ViewListPtr MBGetList(void);
-typedef OSErr (*MBRenameProcPtr)(FSSpecPtr spec,FSSpecPtr newSpec,Boolean folder,Boolean will,Boolean dontWarn);
-OSErr MBDragMessages(DragReference drag, VLNodeInfo *targetInfo);
+typedef OSErr(*MBRenameProcPtr) (FSSpecPtr spec, FSSpecPtr newSpec,
+				 Boolean folder, Boolean will,
+				 Boolean dontWarn);
+OSErr MBDragMessages(DragReference drag, VLNodeInfo * targetInfo);
 #endif
-

@@ -98,19 +98,23 @@ OSErr ArchiveJunk(TOCHandle tocH);
 Boolean SpecIsJunkSpec(FSSpecPtr spec);
 Boolean BoxIsJunkBox(TOCHandle tocH);
 void PreexistingJunkWarning(FSSpecPtr spec);
-short JunkRescanBox (TOCHandle tocH);
-short JunkRescanJunkMailbox ();
-OSErr Junk(TOCHandle tocH,short sumNum,Boolean isJunk,Boolean ezOpen);
-OSErr JunkSetScore(TOCHandle tocH,short sumNum,short because,short score);
+short JunkRescanBox(TOCHandle tocH);
+short JunkRescanJunkMailbox();
+OSErr Junk(TOCHandle tocH, short sumNum, Boolean isJunk, Boolean ezOpen);
+OSErr JunkSetScore(TOCHandle tocH, short sumNum, short because,
+		   short score);
 short JunkIntro(void);
 Boolean JunkTrimOK(void);
-Boolean JunkItemsEnable(MyWindowPtr win,Boolean not);
+Boolean JunkItemsEnable(MyWindowPtr win, Boolean not);
 void JunkReassignKeys(Boolean switchem);
 
-Boolean	CanScoreJunk ();
-void JunkScoreBox ( TOCHandle tocH, short first, short last, Boolean rescore );
-void JunkScoreIMAPBox ( TOCHandle tocH, short first, short last, Boolean unfiltered );
-void JunkScoreSelected ( TOCHandle tocH );
-OSErr MoveToJunk ( TOCHandle source, short spamThresh, FilterPB *fpb );
-OSErr MoveToIMAPJunk ( TOCHandle source, short sumNum, short spamThresh, FilterPB *fpb );
+Boolean CanScoreJunk();
+void JunkScoreBox(TOCHandle tocH, short first, short last,
+		  Boolean rescore);
+void JunkScoreIMAPBox(TOCHandle tocH, short first, short last,
+		      Boolean unfiltered);
+void JunkScoreSelected(TOCHandle tocH);
+OSErr MoveToJunk(TOCHandle source, short spamThresh, FilterPB * fpb);
+OSErr MoveToIMAPJunk(TOCHandle source, short sumNum, short spamThresh,
+		     FilterPB * fpb);
 #endif

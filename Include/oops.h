@@ -52,9 +52,8 @@
 /************************************************************************
  * definitions for undo
  ************************************************************************/
-#if 0 // CK bad hack
-typedef struct
-{
+#if 0				// CK bad hack
+typedef struct {
 	FSSpec fromSpec;
 	FSSpec toSpec;
 	Accumulator ids;
@@ -68,8 +67,9 @@ void DoUndo(void);
 void NukeUndo(MyWindowPtr win);
 void SetUndoMenu(MyWindowPtr win);
 void NukeXfUndo(void);
-void AddXfUndo(TOCHandle fromTocH, TOCHandle toTocH,short sumNum);
-OSErr AddIMAPXfUndoUIDs(TOCHandle fromTocH, TOCHandle toTocH, Handle uids, Boolean bDelete);
+void AddXfUndo(TOCHandle fromTocH, TOCHandle toTocH, short sumNum);
+OSErr AddIMAPXfUndoUIDs(TOCHandle fromTocH, TOCHandle toTocH, Handle uids,
+			Boolean bDelete);
 
 
 #endif

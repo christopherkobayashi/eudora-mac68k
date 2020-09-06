@@ -36,7 +36,7 @@
 #define kMyProductCode	32
 #define kMyPlatformCode	0
 #define kFaceIntervalBefore 0	// wrong, but others are dumb
-#define kFaceIntervalAfter 60 // debatable
+#define kFaceIntervalAfter 60	// debatable
 #define kFaceInterval (kFaceIntervalBefore+kFaceIntervalAfter)
 
 #define AUDITCONTROLID(w,c) (((long)(w)<<16)+c)
@@ -51,17 +51,18 @@ OSErr FaceMeasureReset(FMBHandle fmb);	// Reset face time in this block
 OSErr DisposeFaceMeasure(FMBHandle fmb);	// Destroy an FMB
 #define ZapFaceMeasure(fmb)	do{DisposeFaceMeasure(fmb);(fmb)=nil;}while(0)
 // See what's in the block.  Reports times in seconds.
-OSErr FaceMeasureReport(FMBHandle fmb,uLong *faceTime,uLong *rearTime,uLong *connectTime,uLong *totalTime);
+OSErr FaceMeasureReport(FMBHandle fmb, uLong * faceTime, uLong * rearTime,
+			uLong * connectTime, uLong * totalTime);
 
 // Informational stuff
-Boolean HaveFace(void);	// user is using Eudora
-Boolean SurfsUp(void); // the internet is connected
+Boolean HaveFace(void);		// user is using Eudora
+Boolean SurfsUp(void);		// the internet is connected
 
 // Event Filter that makes it all go
-Boolean FMBEventFilter(EventRecord *event,Boolean oldResult); 
+Boolean FMBEventFilter(EventRecord * event, Boolean oldResult);
 
 // Called at startup to determine if we should ask user to send audit
 void RandomSendAudit(void);
 void AskSendAudit(void);
 
-#endif //AUDIT_H
+#endif				//AUDIT_H

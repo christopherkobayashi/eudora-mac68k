@@ -45,7 +45,7 @@ typedef struct regexp {
 
 RegexpHandle regcomp(char *exp);
 
-long SearchRegExpPtr(StringPtr s,UPtr text,long offset,long len);
-long SearchRegExpHandle(StringPtr s,UHandle text,long offset);
+long SearchRegExpPtr(StringPtr s, UPtr text, long offset, long len);
+long SearchRegExpHandle(StringPtr s, UHandle text, long offset);
 
 #endif

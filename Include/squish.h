@@ -32,8 +32,8 @@
 #ifndef SQUISH_H
 #define SQUISH_H
 
-void DoCompact(short vRef,long dirId,CInfoPBRec *hfi,short suffixLen);
-void CompactMailbox(FSSpecPtr spec,Boolean opened);
+void DoCompact(short vRef, long dirId, CInfoPBRec * hfi, short suffixLen);
+void CompactMailbox(FSSpecPtr spec, Boolean opened);
 Boolean NeedAutoCompact(TOCHandle tocH);
 
 

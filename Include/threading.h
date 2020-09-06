@@ -45,40 +45,40 @@
 typedef struct HexBinGlobals_ **HBGHandle;
 typedef struct UUGlobals_ **UUGlobalsHandle;
 
-typedef struct decoderGlobals_ decoderGlobalsRec, *decoderGlobalsPtr, **decoderGlobalsHandle;
-struct decoderGlobals_
-{
+typedef struct decoderGlobals_ decoderGlobalsRec, *decoderGlobalsPtr,
+    **decoderGlobalsHandle;
+struct decoderGlobals_ {
 	Boolean DealingWithIdiotIMail;	// is IMail here?
-	Boolean AnyRich;					/* any body parts with richText? */
-	Boolean AnyHTML;					/* any body parts with html? */
-	Boolean AnyFlow;					/* any body parts with flow? */
-	Boolean AnyDelSP;					/* any body parts with flow? */
-	Boolean AnyCharset;					/* any body parts with charset */
-	FSSpecHandle LastAttSpec;			/* the received attachments */
-	Boolean BadBinHex;					/* a bad binhex file was found */
-	Boolean BadEncoding;				/* errors were found in encoding */
-	Boolean Headering;					/* we're fetching only headers */
-	Boolean FixServers;					/* do we need to fix up the server areas? */
-	int Prr;							/* Pop Error code */
-	Boolean NoAttachments;				/* don't recognize attachments file */
-	FSSpecHandle SingleSpec;			/* an appledouble attachment */
-	MIMEMapHandle MMIn;					/* incoming MIME map */
-	MIMEMapHandle MMOut;				/* outgoing MIME map */
-	UHandle  AttachedFiles; 			/* list of attachments saved */
-	PGPRecvContextPtr PGPRContext;		/* PGP globals */
-	UUGlobalsHandle UUG;				/* uudecoder globals */
-	HBGHandle HBG;						/* hexbin globals */
-	StringHandle parseHeaderHandle;		/* used in HeaderRecvLine */
-	long parseHeaderOffset;				/* used in HeaderRecvLine */
-	long parseHeaderSize;				/* used in HeaderRecvLine */
+	Boolean AnyRich;	/* any body parts with richText? */
+	Boolean AnyHTML;	/* any body parts with html? */
+	Boolean AnyFlow;	/* any body parts with flow? */
+	Boolean AnyDelSP;	/* any body parts with flow? */
+	Boolean AnyCharset;	/* any body parts with charset */
+	FSSpecHandle LastAttSpec;	/* the received attachments */
+	Boolean BadBinHex;	/* a bad binhex file was found */
+	Boolean BadEncoding;	/* errors were found in encoding */
+	Boolean Headering;	/* we're fetching only headers */
+	Boolean FixServers;	/* do we need to fix up the server areas? */
+	int Prr;		/* Pop Error code */
+	Boolean NoAttachments;	/* don't recognize attachments file */
+	FSSpecHandle SingleSpec;	/* an appledouble attachment */
+	MIMEMapHandle MMIn;	/* incoming MIME map */
+	MIMEMapHandle MMOut;	/* outgoing MIME map */
+	UHandle AttachedFiles;	/* list of attachments saved */
+	PGPRecvContextPtr PGPRContext;	/* PGP globals */
+	UUGlobalsHandle UUG;	/* uudecoder globals */
+	HBGHandle HBG;		/* hexbin globals */
+	StringHandle parseHeaderHandle;	/* used in HeaderRecvLine */
+	long parseHeaderOffset;	/* used in HeaderRecvLine */
+	long parseHeaderSize;	/* used in HeaderRecvLine */
 	StackHandle tAttFolderStack;	// stack of attachment folders
-	FSSpec tCurrentAttFolderSpec;			// our current attachment folder
+	FSSpec tCurrentAttFolderSpec;	// our current attachment folder
 };
 
 /* Encodier globals - these were once globals, but need to be thread specific for the encoders/send code to work properly */
-typedef struct encoderGlobals_ encoderGlobalsRec, *encoderGlobalsPtr, **encoderGlobalsHandle;
-struct encoderGlobals_
-{
+typedef struct encoderGlobals_ encoderGlobalsRec, *encoderGlobalsPtr,
+    **encoderGlobalsHandle;
+struct encoderGlobals_ {
 	// static variables for BufferSend
 	DecoderPB pb;
 	Handle buffers[2];
@@ -88,12 +88,13 @@ struct encoderGlobals_
 
 
 /* thread globals */
-typedef struct threadGlobals_ threadGlobalsRec, *threadGlobalsPtr, **threadGlobalsHandle;
+typedef struct threadGlobals_ threadGlobalsRec, *threadGlobalsPtr,
+    **threadGlobalsHandle;
 struct threadGlobals_ {
 	MyWindowPtr tProgWindow;
 	short tCommandPeriod;
-	SCHandle tStringCache;		/* cache for settings */
-	short tSettingsRefN; 		/* refNum of settings file */
+	SCHandle tStringCache;	/* cache for settings */
+	short tSettingsRefN;	/* refNum of settings file */
 	StackHandle tPersStack;
 	PersHandle tPersList;
 	PersHandle tCurPers;
@@ -104,16 +105,16 @@ struct threadGlobals_ {
 	Boolean tCanPipeline;
 	Boolean tNoProxify;
 	Boolean tETLDeleteRequest;	/* The translators have asked that the last decoded message be deleted */
-	decoderGlobalsRec decoderG;	
+	decoderGlobalsRec decoderG;
 	encoderGlobalsRec encoderG;
-	Str255 GlobalTemp;			/* a temporary buffer used, among other places, while reading headers */
+	Str255 GlobalTemp;	/* a temporary buffer used, among other places, while reading headers */
 };
 
 /* Here's some macros to help access these variables */
 #define ProgWindow (CurThreadGlobals->tProgWindow)
 #define CommandPeriod (CurThreadGlobals->tCommandPeriod)
-#define StringCache (CurThreadGlobals->tStringCache)		
-#define SettingsRefN (CurThreadGlobals->tSettingsRefN)		
+#define StringCache (CurThreadGlobals->tStringCache)
+#define SettingsRefN (CurThreadGlobals->tSettingsRefN)
 #define PersStack (CurThreadGlobals->tPersStack)
 #define PersList (CurThreadGlobals->tPersList)
 #define CurPers (CurThreadGlobals->tCurPers)
@@ -163,89 +164,92 @@ struct threadGlobals_ {
 #include "mailxfer.h"
 #include "progress.h"
 
-typedef enum
-{
+typedef enum {
 	UndefinedTask = 0,
-	CheckingTask,			// pop check mail
-	SendingTask,			// smtp send mail
-	IMAPResyncTask,			// imap resync
-	IMAPFetchingTask,		// imap fetch
-	IMAPDeleteTask,			// imap delete
-	IMAPUndeleteTask,		// imap undelete
-	IMAPTransferTask,		// imap transfer task
-	IMAPExpungeTask,		// imap expunge
-	IMAPMailboxList,		// imap list command - not currently threaded.
+	CheckingTask,		// pop check mail
+	SendingTask,		// smtp send mail
+	IMAPResyncTask,		// imap resync
+	IMAPFetchingTask,	// imap fetch
+	IMAPDeleteTask,		// imap delete
+	IMAPUndeleteTask,	// imap undelete
+	IMAPTransferTask,	// imap transfer task
+	IMAPExpungeTask,	// imap expunge
+	IMAPMailboxList,	// imap list command - not currently threaded.
 	IMAPAttachmentFetch,	// imap attachment fetch
-	IMAPSearchTask,			// imap search
-	IMAPAppendTask,			// imap append
-	IMAPMultResyncTask,		// imap multiple resync
+	IMAPSearchTask,		// imap search
+	IMAPAppendTask,		// imap append
+	IMAPMultResyncTask,	// imap multiple resync
 	IMAPMultExpungeTask,	// imap multuple expunge
-	IMAPUploadTask,			// POP->IMAP message transfer
-	IMAPPollingTask,		// imap polling task
-	IMAPFilterTask,			// imap filtering of incoming messages
-	IMAPAlertTask=1000		// imap ALERT recevied
+	IMAPUploadTask,		// POP->IMAP message transfer
+	IMAPPollingTask,	// imap polling task
+	IMAPFilterTask,		// imap filtering of incoming messages
+	IMAPAlertTask = 1000	// imap ALERT recevied
 } TaskKindEnum;
 
 struct threadContextData_ {
 #if !TARGET_RT_MAC_CFM
 	long appsA5;
 #endif
-	threadGlobalsPtr	newThreadGlobals;
+	threadGlobalsPtr newThreadGlobals;
 	StackHandle prefStack;	// keep track of pref changes
 };
 
 // keep less than size of int so it can fit in void *
 typedef struct xferMailParams_ {
-	unsigned check : 1;
-	unsigned send : 1;
-	unsigned manual : 1;
-	unsigned ae : 1;
+	unsigned check:1;
+	unsigned send:1;
+	unsigned manual:1;
+	unsigned ae:1;
 	XferFlags flags;
 } xferMailParamsRec;
 
 #ifdef	IMAP
 // special structs used inside the IMAPTransferRec_
-typedef struct MailboxNode MailboxNode, *MailboxNodePtr, **MailboxNodeHandle;
+typedef struct MailboxNode MailboxNode, *MailboxNodePtr,
+    **MailboxNodeHandle;
 typedef struct IMAPSCStruct IMAPSCStruct, *IMAPSCPtr, **IMAPSCHandle;
-typedef struct IMAPSResultStruct IMAPSResultStruct, *IMAPSResultPtr, **IMAPSResultHandle;
-typedef struct IMAPAppendStruct IMAPAppendStruct, *IMAPAppendPtr, **IMAPAppendHandle;
+typedef struct IMAPSResultStruct IMAPSResultStruct, *IMAPSResultPtr,
+    **IMAPSResultHandle;
+typedef struct IMAPAppendStruct IMAPAppendStruct, *IMAPAppendPtr,
+    **IMAPAppendHandle;
 
 // IMAPTransferRec.  Used to pass IMAP parameters into check mail thread.
-struct IMAPTransferRec_
-{
-	FSSpec targetSpec;				// the interesting file
-	TOCHandle sourceToc;			// handle to TOC where messages are ocming from
-	TOCHandle destToc;				// handle to TOC for messge to be downloaded into
-	TOCHandle delToc;				// handle to TOC from which message is to be deleted.
-	short sumNum;					// sumNum of message to be operated on
-	Boolean nuke;					// don't copy the message to the trash
-	Boolean expunge;				// expunge the mailbox
-	Boolean copy;					// copy messages
-	Boolean attachmentsToo;				// download everything in one big chunk
-	Handle uids;					// list of uids
+struct IMAPTransferRec_ {
+	FSSpec targetSpec;	// the interesting file
+	TOCHandle sourceToc;	// handle to TOC where messages are ocming from
+	TOCHandle destToc;	// handle to TOC for messge to be downloaded into
+	TOCHandle delToc;	// handle to TOC from which message is to be deleted.
+	short sumNum;		// sumNum of message to be operated on
+	Boolean nuke;		// don't copy the message to the trash
+	Boolean expunge;	// expunge the mailbox
+	Boolean copy;		// copy messages
+	Boolean attachmentsToo;	// download everything in one big chunk
+	Handle uids;		// list of uids
 	MailboxNodeHandle targetBox;	// the interesting mailbox
-	FSSpecHandle attachments;		// list of attachment stubs to fetch
-	FSSpecHandle toResync;			// list of mailboxes to resync
+	FSSpecHandle attachments;	// list of attachment stubs to fetch
+	FSSpecHandle toResync;	// list of mailboxes to resync
 	IMAPAppendHandle appendData;	// data for message apends
-	
+
 	// message search
-	Handle toSearch;				// list of FSSpecs to search.  These are indexes into a BoxCount handle
-	Handle boxesToSearch;			// list of mailboxes to search
-	IMAPSCHandle searchC;			// list of search criteria
-	Boolean matchAll;				// AND or OR
-	IMAPSResultHandle results;		// results of the search
-	long firstUID;					// where to start the search from.  Only makes sense on a single box search.
-	
-	TaskKindEnum command;			// what this thread should be doing
+	Handle toSearch;	// list of FSSpecs to search.  These are indexes into a BoxCount handle
+	Handle boxesToSearch;	// list of mailboxes to search
+	IMAPSCHandle searchC;	// list of search criteria
+	Boolean matchAll;	// AND or OR
+	IMAPSResultHandle results;	// results of the search
+	long firstUID;		// where to start the search from.  Only makes sense on a single box search.
+
+	TaskKindEnum command;	// what this thread should be doing
 };
 #endif
 
-typedef struct threadContextData_ threadContextDataRec, *threadContextDataPtr;
-typedef struct threadData_ threadDataRec, *threadDataPtr, **threadDataHandle;
+typedef struct threadContextData_ threadContextDataRec,
+    *threadContextDataPtr;
+typedef struct threadData_ threadDataRec, *threadDataPtr,
+    **threadDataHandle;
 #ifdef	IMAP
 typedef struct IMAPTransferRec_ IMAPTransferRec, *IMAPTransferPtr;
 #endif
-	
+
 /* data structures */
 struct threadData_ {
 	TaskKindEnum currentTask;
@@ -257,10 +261,8 @@ struct threadData_ {
 	ControlHandle stopButton;
 #endif
 #ifdef DEBUG
-	long 	startTime, 
-			totalTimeThread,
-			switchInTime;
-	short 	switchCount;
+	long startTime, totalTimeThread, switchInTime;
+	short switchCount;
 #endif
 #if __profile__
 	ProfilerThreadRef threadRef;
@@ -275,50 +277,54 @@ struct threadData_ {
 
 void YieldCPUNow(void);
 
-void CleanTempOutTOC (void);
-void CleanRealOutTOC (void);
-void DecrementNumBackgroundThreads (void);
-short GetMainGlobalSettingsRefN (void);
-short GetNumBackgroundThreads (void);
+void CleanTempOutTOC(void);
+void CleanRealOutTOC(void);
+void DecrementNumBackgroundThreads(void);
+short GetMainGlobalSettingsRefN(void);
+short GetNumBackgroundThreads(void);
 TaskKindEnum GetCurrentTaskKind(void);
-void GetCurrentThreadData (threadDataHandle *threadData);	
-void GetThreadData (ThreadID threadID, threadDataHandle *threadData);
+void GetCurrentThreadData(threadDataHandle * threadData);
+void GetThreadData(ThreadID threadID, threadDataHandle * threadData);
 #ifdef TASK_PROGRESS_ON
 #include "progress.h"
-ProgressBlock **GetCurrentThreadPrbl(void);	
+ProgressBlock **GetCurrentThreadPrbl(void);
 #endif
-Boolean InAThread (void);
-void IncrementNumBackgroundThreads (void);
-OSErr MyInitThreads (void);
-void KillThreads (void);
-void MyThreadBeginCritical (void);
-void MyThreadEndCritical (void);
-OSErr MyYieldToAnyThread (void);
-OSErr PushThreadPrefChange (short pref);
+Boolean InAThread(void);
+void IncrementNumBackgroundThreads(void);
+OSErr MyInitThreads(void);
+void KillThreads(void);
+void MyThreadBeginCritical(void);
+void MyThreadEndCritical(void);
+OSErr MyYieldToAnyThread(void);
+OSErr PushThreadPrefChange(short pref);
 void SetCurrentTaskKind(TaskKindEnum taskKind);
-void SetThreadGlobalCommandPeriod (ThreadID threadID, Boolean value);
+void SetThreadGlobalCommandPeriod(ThreadID threadID, Boolean value);
 #ifdef IMAP
-OSErr SetupXferMailThread (Boolean check, Boolean send, Boolean manual,Boolean ae,XferFlags flags,IMAPTransferPtr imapInfo);
+OSErr SetupXferMailThread(Boolean check, Boolean send, Boolean manual,
+			  Boolean ae, XferFlags flags,
+			  IMAPTransferPtr imapInfo);
 #else
-OSErr SetupXferMailThread (Boolean check, Boolean send, Boolean manual,Boolean ae,XferFlags flags);
+OSErr SetupXferMailThread(Boolean check, Boolean send, Boolean manual,
+			  Boolean ae, XferFlags flags);
 #endif
-Boolean ThreadsAvailable (void);
-OSErr SetThreadStackSize (long newSize);
-long GetThreadStackSize (void);
+Boolean ThreadsAvailable(void);
+OSErr SetThreadStackSize(long newSize);
+long GetThreadStackSize(void);
 
-pascal Handle GetResourceMainThread(ResType theType,short theID);
+pascal Handle GetResourceMainThread(ResType theType, short theID);
 OSErr ZapSettingsResourceMainThread(OSType type, short id);
-OSErr AddMyResourceMainThread(Handle h,OSType type,short id,ConstStr255Param name);
+OSErr AddMyResourceMainThread(Handle h, OSType type, short id,
+			      ConstStr255Param name);
 
 #define GetResourceMainThread_(t,i) (void*)GetResourceMainThread((ResType)t,i)
 #define ZapSettingsResourceMainThread_(t,i) (void*)ZapSettingsResourceMainThread((ResType)t,i)
 #define AddMyResourceMainThread_(h,t,i,n)	AddMyResourceMainThread((void *)(h),(ResType)(t),i,(ConstStr255Param)(n))
 
-#else	// threading off
+#else				// threading off
 #define GetResourceMainThread_ GetResource_
 #define ZapSettingsResourceMainThread ZapSettingsResource
 #define AddMyResourceMainThread_(h,t,i,n)	AddMyRsource_
 
-#endif // THREADING_ON
+#endif				// THREADING_ON
 
-#endif // THREADING_H
+#endif				// THREADING_H

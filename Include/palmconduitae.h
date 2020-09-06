@@ -35,29 +35,31 @@
 #define PALMCONDUITAE_H
 
 // Palm Conduit Commands
-enum
-{
-	kPCCGetSettings = 0x00000001,		// return the settings file
-	kPCCCheckAddressBooks,				// close address books in Eudora
-	kPCCBackupChangedAddressBooks,		// backup modified address books
-	kPCCReloadAddressBooks,				// reopen the address books in Eudora
-	kPCCGenerateUniqueID,				// generate an id for a new nickname
+enum {
+	kPCCGetSettings = 0x00000001,	// return the settings file
+	kPCCCheckAddressBooks,	// close address books in Eudora
+	kPCCBackupChangedAddressBooks,	// backup modified address books
+	kPCCReloadAddressBooks,	// reopen the address books in Eudora
+	kPCCGenerateUniqueID,	// generate an id for a new nickname
 	kPCCCommandLimit
 };
 
 // return the active settings file
-OSErr ABConduitGetSettingsFile(AppleEvent *reply, uLong refCon);
+OSErr ABConduitGetSettingsFile(AppleEvent * reply, uLong refCon);
 
 // ABConduitCanSyncAddressBooks - can we synchronize the address books?
-OSErr ABConduitCanSyncAddressBooks(AppleEvent *reply, void *data, long dataSize);
+OSErr ABConduitCanSyncAddressBooks(AppleEvent * reply, void *data,
+				   long dataSize);
 
 // ABConduitBackupAddressBooks - backup the changed address book files
-OSErr ABConduitBackupAddressBooks(AppleEvent *reply, FSSpecPtr cbSpecs, long ptrSize);
+OSErr ABConduitBackupAddressBooks(AppleEvent * reply, FSSpecPtr cbSpecs,
+				  long ptrSize);
 
 // reopen all the nickname files
-OSErr ABConduitReopenAddressBooks(AppleEvent *reply);
+OSErr ABConduitReopenAddressBooks(AppleEvent * reply);
 
 // generate an id for a new nickname
-OSErr ABconduitGenerateUniqueID(AppleEvent *reply, void *data, long dataSize);
+OSErr ABconduitGenerateUniqueID(AppleEvent * reply, void *data,
+				long dataSize);
 
-#endif	//PALMCONDUITAE_H
+#endif				//PALMCONDUITAE_H

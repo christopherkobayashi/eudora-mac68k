@@ -36,18 +36,16 @@
 #define FILE_NUM 132
 /* Copyright (c) 2000 by Qualcomm, Inc */
 
-enum
-{
+enum {
 	kHeaderHeight = 30
 };
 
-typedef struct
-{
+typedef struct {
 	MyWindowPtr win;
-	Boolean	inited;
-	ControlHandle	ctlHeader,ctlTimePeriod,ctlMore;
-	PETEHandle	pte;
-	short	timePeriod,more;
+	Boolean inited;
+	ControlHandle ctlHeader, ctlTimePeriod, ctlMore;
+	PETEHandle pte;
+	short timePeriod, more;
 } WinData;
 static WinData gWin;
 
@@ -55,56 +53,71 @@ static WinData gWin;
  * prototypes
  ************************************************************************/
 static Boolean StatClose(MyWindowPtr win);
-static void StatDidResize(MyWindowPtr win, Rect *oldContR);
-static void StatClick(MyWindowPtr win,EventRecord *event);
-static Boolean StatMenu(MyWindowPtr win, int menu, int item, short modifiers);
-static void StatZoomSize(MyWindowPtr win,Rect *zoom);
-static Boolean StatKey(MyWindowPtr win, EventRecord *event);
+static void StatDidResize(MyWindowPtr win, Rect * oldContR);
+static void StatClick(MyWindowPtr win, EventRecord * event);
+static Boolean StatMenu(MyWindowPtr win, int menu, int item,
+			short modifiers);
+static void StatZoomSize(MyWindowPtr win, Rect * zoom);
+static Boolean StatKey(MyWindowPtr win, EventRecord * event);
 
 /************************************************************************
  * OpenStatWin - open statistics window
  ************************************************************************/
 void OpenStatWin(void)
 {
-	WindowPtr	gWinWinWP;
-	
+	WindowPtr gWinWinWP;
+
 	if (!HasFeature(featureStatistics))
 		return;
-		
-	if (SelectOpenWazoo(STAT_WIN)) return;	//	Already opened in a wazoo
 
-	if (!gWin.inited)
-	{
-		short err=0;
+	if (SelectOpenWazoo(STAT_WIN))
+		return;		//      Already opened in a wazoo
+
+	if (!gWin.inited) {
+		short err = 0;
 		PETEDocInitInfo pi;
-		
-		if (!(gWin.win=GetNewMyWindow(STAT_WIND,nil,nil,BehindModal,false,false,STAT_WIN)))
-			{err=MemError(); goto fail;}
+
+		if (!
+		    (gWin.win =
+		     GetNewMyWindow(STAT_WIND, nil, nil, BehindModal,
+				    false, false, STAT_WIN))) {
+			err = MemError();
+			goto fail;
+		}
 		gWinWinWP = GetMyWindowWindowPtr(gWin.win);
-		SetWinMinSize(gWin.win,-1,-1);
+		SetWinMinSize(gWin.win, -1, -1);
 		SetPort_(GetWindowPort(gWinWinWP));
-		ConfigFontSetup(gWin.win);	
-		MySetThemeWindowBackground(gWin.win,kThemeListViewBackgroundBrush,False);
+		ConfigFontSetup(gWin.win);
+		MySetThemeWindowBackground(gWin.win,
+					   kThemeListViewBackgroundBrush,
+					   False);
 
 		// controls
-		if (!(gWin.ctlHeader = GetNewControlSmall_(PLACARD_CNTL,gWinWinWP)) ||
-			!(gWin.ctlTimePeriod = GetNewControlSmall_(STAT_TIME_MENU_CNTL,gWinWinWP)) ||
-			!(gWin.ctlMore = GetNewControlSmall_(STAT_MORE_CNTL,gWinWinWP)))
-				goto fail;
-		
-		EmbedControl(gWin.ctlTimePeriod,gWin.ctlHeader);
-		EmbedControl(gWin.ctlMore,gWin.ctlHeader);
-		SetControlValue(gWin.ctlTimePeriod,gWin.timePeriod = GetPrefLong(PREF_STAT_TIME_PERIOD));
+		if (!
+		    (gWin.ctlHeader =
+		     GetNewControlSmall_(PLACARD_CNTL, gWinWinWP))
+		    || !(gWin.ctlTimePeriod =
+			 GetNewControlSmall_(STAT_TIME_MENU_CNTL,
+					     gWinWinWP))
+		    || !(gWin.ctlMore =
+			 GetNewControlSmall_(STAT_MORE_CNTL, gWinWinWP)))
+			goto fail;
+
+		EmbedControl(gWin.ctlTimePeriod, gWin.ctlHeader);
+		EmbedControl(gWin.ctlMore, gWin.ctlHeader);
+		SetControlValue(gWin.ctlTimePeriod, gWin.timePeriod =
+				GetPrefLong(PREF_STAT_TIME_PERIOD));
 		if (gWin.timePeriod)
 			gWin.timePeriod--;
-		SetControlValue(gWin.ctlMore,gWin.more = GetPrefLong(PREF_STAT_MORE));
+		SetControlValue(gWin.ctlMore, gWin.more =
+				GetPrefLong(PREF_STAT_MORE));
 
-		DefaultPII(gWin.win,true,peVScroll|peGrowBox,&pi);
-		if (err=PeteCreate(gWin.win,&gWin.pte,0,&pi))
+		DefaultPII(gWin.win, true, peVScroll | peGrowBox, &pi);
+		if (err = PeteCreate(gWin.win, &gWin.pte, 0, &pi))
 			goto fail;
 		CleanPII(&pi);
-		PeteLock(gWin.pte,0,0x7fffffff,peModLock);
-		PeteFocus(gWin.win,gWin.pte,true);
+		PeteLock(gWin.pte, 0, 0x7fffffff, peModLock);
+		PeteFocus(gWin.win, gWin.pte, true);
 
 		gWin.win->dontControl = true;
 		gWin.win->position = PositionPrefsTitle;
@@ -128,18 +141,20 @@ void OpenStatWin(void)
 #endif
 
 		ShowMyWindow(gWinWinWP);
-		MyWindowDidResize(gWin.win,&gWin.win->contR);
+		MyWindowDidResize(gWin.win, &gWin.win->contR);
 		gWin.inited = true;
 		RedisplayStats();
 		UseFeature(featureStatistics);
 		return;
-		
-		fail:
-			if (gWin.win) CloseMyWindow(GetMyWindowWindowPtr(gWin.win));
-			if (err) WarnUser(COULDNT_WIN,err);
-			return;
+
+	      fail:
+		if (gWin.win)
+			CloseMyWindow(GetMyWindowWindowPtr(gWin.win));
+		if (err)
+			WarnUser(COULDNT_WIN, err);
+		return;
 	}
-	UserSelectWindow(GetMyWindowWindowPtr(gWin.win));	
+	UserSelectWindow(GetMyWindowWindowPtr(gWin.win));
 }
 
 /************************************************************************
@@ -147,28 +162,30 @@ void OpenStatWin(void)
  ************************************************************************/
 void RedisplayStats(void)
 {
-	Handle	textH;
+	Handle textH;
 	long hOff = 0L, iOff = 0L;
-	OSErr	err;
-	
-	if (!gWin.inited) return;	//	Statistics window not open
-	
-	if (GetWindowKind(GetMyWindowWindowPtr(gWin.win))!=STAT_WIN) return;	// Is in a wazoo, but not currently selected
-	
-	if (textH = GetStatsAsText(gWin.timePeriod,gWin.more))
-	{
+	OSErr err;
+
+	if (!gWin.inited)
+		return;		//      Statistics window not open
+
+	if (GetWindowKind(GetMyWindowWindowPtr(gWin.win)) != STAT_WIN)
+		return;		// Is in a wazoo, but not currently selected
+
+	if (textH = GetStatsAsText(gWin.timePeriod, gWin.more)) {
 		PeteCalcOff(gWin.pte);
-		PeteDelete(gWin.pte,0,0x7fffffff);
-		err = InsertHTML(textH,&hOff,GetHandleSize(textH),&iOff,gWin.pte,kDontEnsureCR);
+		PeteDelete(gWin.pte, 0, 0x7fffffff);
+		err =
+		    InsertHTML(textH, &hOff, GetHandleSize(textH), &iOff,
+			       gWin.pte, kDontEnsureCR);
 		PeteCalcOn(gWin.pte);
-		PeteLock(gWin.pte,0,0x7fffffff,peModLock);
-		if (!err)
-		{
-			PETEMarkDocDirty(PETE,gWin.pte,false);
+		PeteLock(gWin.pte, 0, 0x7fffffff, peModLock);
+		if (!err) {
+			PETEMarkDocDirty(PETE, gWin.pte, false);
 			gWin.win->isDirty = false;
 		}
 		PushGWorld();
-		PETEDraw(PETE,gWin.pte);
+		PETEDraw(PETE, gWin.pte);
 		PopGWorld();
 	}
 }
@@ -187,94 +204,98 @@ MyWindowPtr GetStatWin(void)
 static Boolean StatClose(MyWindowPtr win)
 {
 #pragma unused(win)
-	
-	if (gWin.inited)
-	{
+
+	if (gWin.inited) {
 		gWin.inited = false;
 	}
-	return(True);
+	return (True);
 }
 
 /************************************************************************
  * StatDidResize - resize the window
  ************************************************************************/
-static void StatDidResize(MyWindowPtr win, Rect *oldContR)
+static void StatDidResize(MyWindowPtr win, Rect * oldContR)
 {
 #pragma unused(oldContR)
-	Rect r,rMore;
+	Rect r, rMore;
 
 	r = gWin.win->contR;
-	MoveMyCntl(gWin.ctlHeader,-1,win->topMargin-1,RectWi(gWin.win->contR)+2,kHeaderHeight);
-	MoveMyCntl(gWin.ctlTimePeriod,5,win->topMargin+5,0,0);
-	GetControlBounds(gWin.ctlMore,&rMore);
-	MoveMyCntl(gWin.ctlMore,gWin.win->contR.right-RectWi(rMore),win->topMargin+5,0,0);
+	MoveMyCntl(gWin.ctlHeader, -1, win->topMargin - 1,
+		   RectWi(gWin.win->contR) + 2, kHeaderHeight);
+	MoveMyCntl(gWin.ctlTimePeriod, 5, win->topMargin + 5, 0, 0);
+	GetControlBounds(gWin.ctlMore, &rMore);
+	MoveMyCntl(gWin.ctlMore, gWin.win->contR.right - RectWi(rMore),
+		   win->topMargin + 5, 0, 0);
 
-	r.top = win->topMargin+kHeaderHeight;
-	PeteDidResize(gWin.pte,&r);
+	r.top = win->topMargin + kHeaderHeight;
+	PeteDidResize(gWin.pte, &r);
 }
 
 /************************************************************************
  * StatClick - handle a click in the stat window
  ************************************************************************/
-static void StatClick(MyWindowPtr win,EventRecord *event)
+static void StatClick(MyWindowPtr win, EventRecord * event)
 {
-	WindowPtr	winWP = GetMyWindowWindowPtr (win);
+	WindowPtr winWP = GetMyWindowWindowPtr(win);
 	Point pt;
-	
+
 	SetPort(GetWindowPort(winWP));
 	pt = event->where;
 	GlobalToLocal(&pt);
 
-	if (!win->isActive)
-	{
+	if (!win->isActive) {
 		SelectWindow_(winWP);
-		UpdateMyWindow(winWP);	//	Have to update manually since no events are processed
+		UpdateMyWindow(winWP);	//      Have to update manually since no events are processed
 	}
 
-	if (PtInPETE(pt,gWin.pte))
-		PeteEditWFocus(gWin.win,gWin.pte,peeEvent,event,nil);
-	else
-	{
-		ControlHandle	hCtl;
+	if (PtInPETE(pt, gWin.pte))
+		PeteEditWFocus(gWin.win, gWin.pte, peeEvent, event, nil);
+	else {
+		ControlHandle hCtl;
 
-		if (FindControl(pt,winWP,&hCtl))
-		if (TrackControl(hCtl,pt,(void *)(-1)))
-		{
-			short	timePeriod,more;
+		if (FindControl(pt, winWP, &hCtl))
+			if (TrackControl(hCtl, pt, (void *) (-1))) {
+				short timePeriod, more;
 
-			if (hCtl == gWin.ctlTimePeriod)
-				SetPrefLong(PREF_STAT_TIME_PERIOD,GetControlValue(hCtl));
-			else if (hCtl == gWin.ctlMore)
-			{
-				//	Toggle checkbox
-				SetControlValue(hCtl,1-GetControlValue(hCtl));
-				SetPrefLong(PREF_STAT_MORE,GetControlValue(hCtl));
+				if (hCtl == gWin.ctlTimePeriod)
+					SetPrefLong(PREF_STAT_TIME_PERIOD,
+						    GetControlValue(hCtl));
+				else if (hCtl == gWin.ctlMore) {
+					//      Toggle checkbox
+					SetControlValue(hCtl,
+							1 -
+							GetControlValue
+							(hCtl));
+					SetPrefLong(PREF_STAT_MORE,
+						    GetControlValue(hCtl));
+				}
+
+				timePeriod =
+				    GetControlValue(gWin.ctlTimePeriod) -
+				    1;
+				more = GetControlValue(gWin.ctlMore);
+				if (timePeriod != gWin.timePeriod
+				    || more != gWin.more) {
+					if (more != gWin.more)
+						PeteScroll(gWin.pte, 0, 0);
+					gWin.timePeriod = timePeriod;
+					gWin.more = more;
+					RedisplayStats();
+				}
 			}
-
-			timePeriod = GetControlValue(gWin.ctlTimePeriod)-1;
-			more = GetControlValue(gWin.ctlMore);
-			if (timePeriod != gWin.timePeriod || more != gWin.more)
-			{
-				if (more != gWin.more)
-					PeteScroll(gWin.pte,0,0);
-				gWin.timePeriod = timePeriod;
-				gWin.more = more;
-				RedisplayStats();
-			}
-		}
 	}
 }
 
 /************************************************************************
  * StatKey - handle key stroke for stat window
  ************************************************************************/
-static Boolean StatKey(MyWindowPtr win, EventRecord *event)
+static Boolean StatKey(MyWindowPtr win, EventRecord * event)
 {
-	if (!(event->modifiers&cmdKey))
-	{
-		switch (event->message&charCodeMask)
-		{
-			case ' ':			PeteScroll(gWin.pte,0,psePageDn); return true;
+	if (!(event->modifiers & cmdKey)) {
+		switch (event->message & charCodeMask) {
+		case ' ':
+			PeteScroll(gWin.pte, 0, psePageDn);
+			return true;
 		}
 	}
 	return false;
@@ -283,20 +304,20 @@ static Boolean StatKey(MyWindowPtr win, EventRecord *event)
 /************************************************************************
  * StatMenu - handle menu choices for stat window
  ************************************************************************/
-static Boolean StatMenu(MyWindowPtr win, int menu, int item, short modifiers)
+static Boolean StatMenu(MyWindowPtr win, int menu, int item,
+			short modifiers)
 {
 #pragma unused(modifiers)
-	switch (menu)
-	{
-		case FILE_MENU:
-			switch (item)
-			{
-				case FILE_PRINT_ITEM:
-				case FILE_PRINT_ONE_ITEM:
-					PeteFocus(gWin.win,gWin.pte,true);					
-					PrintOneMessage(win,modifiers&shiftKey,item==FILE_PRINT_ONE_ITEM);
-					return true;
-			}
+	switch (menu) {
+	case FILE_MENU:
+		switch (item) {
+		case FILE_PRINT_ITEM:
+		case FILE_PRINT_ONE_ITEM:
+			PeteFocus(gWin.win, gWin.pte, true);
+			PrintOneMessage(win, modifiers & shiftKey,
+					item == FILE_PRINT_ONE_ITEM);
+			return true;
+		}
 	}
 	return false;
 }
@@ -304,20 +325,21 @@ static Boolean StatMenu(MyWindowPtr win, int menu, int item, short modifiers)
 /************************************************************************
  * StatZoomSize - zoom to only the maximum size of list
  ************************************************************************/
-static void StatZoomSize(MyWindowPtr win,Rect *zoom)
+static void StatZoomSize(MyWindowPtr win, Rect * zoom)
 {
-	short zoomHi = zoom->bottom-zoom->top;
-	short zoomWi = zoom->right-zoom->left;
+	short zoomHi = zoom->bottom - zoom->top;
+	short zoomWi = zoom->right - zoom->left;
 	short hi, wi;
 	PETEDocInfo info;
-	
+
 	wi = GetRLong(STAT_GRAPH_WIDTH) + 24;
-	PETEGetDocInfo(PETE,gWin.pte,&info);
-	hi = info.docHeight+kHeaderHeight;
+	PETEGetDocInfo(PETE, gWin.pte, &info);
+	hi = info.docHeight + kHeaderHeight;
 
-	wi = MIN(wi,zoomWi); wi = MAX(wi,win->minSize.h);
-	hi = MIN(hi,zoomHi); hi = MAX(hi,win->minSize.v);
-	zoom->right = zoom->left+wi;
-	zoom->bottom = zoom->top+hi;
+	wi = MIN(wi, zoomWi);
+	wi = MAX(wi, win->minSize.h);
+	hi = MIN(hi, zoomHi);
+	hi = MAX(hi, win->minSize.v);
+	zoom->right = zoom->left + wi;
+	zoom->bottom = zoom->top + hi;
 }
-

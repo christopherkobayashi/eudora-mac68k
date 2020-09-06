@@ -32,9 +32,11 @@
 #ifndef TOOLBARPOPUP_H
 #define TOOLBARPOPUP_H
 
-Boolean	OpenToolbarPopup (Rect *buttonRect, ToolbarVEnum varCode, short numButtons, Boolean vertical);
-void		CloseToolbarPopup (void);
-OSErr		AddMenuToToolbarPopup (short index, short menuID, short item, PStr nickname);
-Boolean	MouseInToolbarPopup (Point mouse, Boolean checkButton);
+Boolean OpenToolbarPopup(Rect * buttonRect, ToolbarVEnum varCode,
+			 short numButtons, Boolean vertical);
+void CloseToolbarPopup(void);
+OSErr AddMenuToToolbarPopup(short index, short menuID, short item,
+			    PStr nickname);
+Boolean MouseInToolbarPopup(Point mouse, Boolean checkButton);
 
 #endif

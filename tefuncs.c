@@ -35,13 +35,14 @@
 
 #pragma segment TEFuncs
 
-	void UnwrapClip(void);
+void UnwrapClip(void);
 /**********************************************************************
  * ShowWinInsertion - show the insertion point
  **********************************************************************/
-void ShowInsertion(MyWindowPtr win,short whichEnd)
+void ShowInsertion(MyWindowPtr win, short whichEnd)
 {
-	if (win->showInsert) (*win->showInsert)(win,whichEnd);
+	if (win->showInsert)
+		(*win->showInsert) (win, whichEnd);
 }
 
 /************************************************************************
@@ -51,33 +52,31 @@ void UnwrapClip(void)
 {
 	long len;
 	long junk;
-	Handle textH=NuHandle(0);
-	
-	len = GetScrap(nil,'TEXT',&junk);
-	if (textH && 0<len && len<REAL_BIG)
-	{
-		len = GetScrap(textH,'TEXT',&junk);
-		if (0<len)
-		{
+	Handle textH = NuHandle(0);
+
+	len = GetScrap(nil, 'TEXT', &junk);
+	if (textH && 0 < len && len < REAL_BIG) {
+		len = GetScrap(textH, 'TEXT', &junk);
+		if (0 < len) {
 			void *oldSendTrans;
 			Str31 oldNewLine;
-			
-			if (WrapHandle = NuHandle(0))
-			{
+
+			if (WrapHandle = NuHandle(0)) {
 				oldSendTrans = SendTrans;
-				SendTrans = (void*)WrapSendTrans;
-				PCopy(oldNewLine,NewLine);
-				PCopy(NewLine,Cr);
-				UnwrapSave(LDRef(textH),len,0,0);
+				SendTrans = (void *) WrapSendTrans;
+				PCopy(oldNewLine, NewLine);
+				PCopy(NewLine, Cr);
+				UnwrapSave(LDRef(textH), len, 0, 0);
 				ZapHandle(textH);
-				if (WrapHandle) 
-				{
+				if (WrapHandle) {
 					ZeroScrap();
-					PutScrap(GetHandleSize_(WrapHandle),'TEXT',LDRef(WrapHandle));
+					PutScrap(GetHandleSize_
+						 (WrapHandle), 'TEXT',
+						 LDRef(WrapHandle));
 				}
 				SendTrans = oldSendTrans;
-				ZapHandle(WrapHandle);	
-				PCopy(NewLine,oldNewLine);
+				ZapHandle(WrapHandle);
+				PCopy(NewLine, oldNewLine);
 			}
 		}
 		ZapHandle(textH);
@@ -88,110 +87,109 @@ void UnwrapClip(void)
  * InsertCommaIfNeedBe - put a comma after previous address, if one is
  * not there
  ************************************************************************/
-Boolean InsertCommaIfNeedBe(PETEHandle pte,HSPtr hsp)
+Boolean InsertCommaIfNeedBe(PETEHandle pte, HSPtr hsp)
 {
-	short cur = hsp ? hsp->index:CompHeadCurrent(pte);
+	short cur = hsp ? hsp->index : CompHeadCurrent(pte);
 	UHandle text;
 	long spot;
 	HeadSpec hs;
 	long insertAt;
-	
-	if (cur!=TO_HEAD && cur!=CC_HEAD && cur!=BCC_HEAD) return(False);
-	
-	if (PeteGetTextAndSelection(pte,&text,&spot,nil)) return(False);
 
-	if (hsp)
-	{
+	if (cur != TO_HEAD && cur != CC_HEAD && cur != BCC_HEAD)
+		return (False);
+
+	if (PeteGetTextAndSelection(pte, &text, &spot, nil))
+		return (False);
+
+	if (hsp) {
 		insertAt = spot = hsp->stop;
-	}
-	else if (IsMessWindow(GetMyWindowWindowPtr((*PeteExtra(pte))->win)))
+	} else
+	    if (IsMessWindow(GetMyWindowWindowPtr((*PeteExtra(pte))->win)))
 	{
-		CompHeadFind(Win2MessH((*PeteExtra(pte))->win),cur,&hs);
+		CompHeadFind(Win2MessH((*PeteExtra(pte))->win), cur, &hs);
 		hsp = &hs;
 		insertAt = -1;
-	}
-	else
-	{
+	} else {
 		hsp = &hs;
 		hsp->value = 0;
 		insertAt = -1;
 	}
-	
-	while (spot>hsp->value && (IsWhite((*text)[spot-1]) || (*text)[spot-1]=='\015')) spot--;
-	if (spot>hsp->value && (*text)[spot-1]!=',')
-	{
-		PeteInsertPtr(pte,insertAt,", ",2);
-		hsp->stop+=2;
+
+	while (spot > hsp->value
+	       && (IsWhite((*text)[spot - 1])
+		   || (*text)[spot - 1] == '\015'))
+		spot--;
+	if (spot > hsp->value && (*text)[spot - 1] != ',') {
+		PeteInsertPtr(pte, insertAt, ", ", 2);
+		hsp->stop += 2;
 	}
 
-	NicknameWatcherModifiedField (pte); /* MJN */
+	NicknameWatcherModifiedField(pte);	/* MJN */
 
-	return(True);
+	return (True);
 }
 
 /**********************************************************************
  * TextWrap - wrap some text into WrapHandle
  **********************************************************************/
-OSErr TextWrap(Handle text,long start,long stop, Boolean unwrap)
+OSErr TextWrap(Handle text, long start, long stop, Boolean unwrap)
 {
 	void *oldSendTrans, *oldAsync;
 	Str31 oldNewLine;
 	OSErr err = noErr;
-	
-	if (WrapHandle = NuHandle(0))
-	{
+
+	if (WrapHandle = NuHandle(0)) {
 		oldSendTrans = SendTrans;
 		oldAsync = AsyncSendTrans;
-		SendTrans = (void*)WrapSendTrans;
+		SendTrans = (void *) WrapSendTrans;
 		AsyncSendTrans = nil;
-		PCopy(oldNewLine,NewLine);
-		PCopy(NewLine,Cr);
-		if (!unwrap)
-		{
+		PCopy(oldNewLine, NewLine);
+		PCopy(NewLine, Cr);
+		if (!unwrap) {
 			BufferSendRelease(NULL);
-			SendBodyLines(NULL,text,stop,start,FLAG_WRAP_OUT,False,nil,0,False,nil);
-			BufferSend(NULL,nil,nil,0,False);
+			SendBodyLines(NULL, text, stop, start,
+				      FLAG_WRAP_OUT, False, nil, 0, False,
+				      nil);
+			BufferSend(NULL, nil, nil, 0, False);
 			UL(text);
-		}
-		else
-		{
-			UnwrapSave(LDRef(text),stop,start,0);
+		} else {
+			UnwrapSave(LDRef(text), stop, start, 0);
 			UL(text);
 		}
 		SendTrans = oldSendTrans;
 		AsyncSendTrans = oldAsync;
-		PCopy(NewLine,oldNewLine);
-	}
-	else
+		PCopy(NewLine, oldNewLine);
+	} else
 		err = MemError();
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * WrapSendTrans - accumulate "sent" text.
  ************************************************************************/
-OSErr WrapSendTrans(TransStream stream, UPtr text,long size, ...)
+OSErr WrapSendTrans(TransStream stream, UPtr text, long size, ...)
 {
-	short err=0;
+	short err = 0;
 	UPtr buffer;
 	long bSize;
-	
-	if (WrapHandle)
-	{
-		err = PtrPlusHand_(text,WrapHandle,size);
-		if (!err)
-		{
+
+	if (WrapHandle) {
+		err = PtrPlusHand_(text, WrapHandle, size);
+		if (!err) {
 			va_list extra_buffers;
-			va_start(extra_buffers,size);
-			while (!err && (buffer = va_arg(extra_buffers,UPtr)))
-			{
+			va_start(extra_buffers, size);
+			while (!err
+			       && (buffer = va_arg(extra_buffers, UPtr))) {
 				CycleBalls();
-				bSize = va_arg(extra_buffers,int);
-				err = PtrPlusHand_(buffer,WrapHandle,bSize);
+				bSize = va_arg(extra_buffers, int);
+				err =
+				    PtrPlusHand_(buffer, WrapHandle,
+						 bSize);
 			}
 			va_end(extra_buffers);
 		}
 	}
-	if (err) ZapHandle(WrapHandle);
-	return(err);
+	if (err)
+		ZapHandle(WrapHandle);
+	return (err);
 }

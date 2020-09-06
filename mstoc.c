@@ -42,16 +42,23 @@ OSErr MSDestroyTOC(MStoreBoxHandle boxH);
 /************************************************************************
  * MSTOCFunc - dispatcher function
  ************************************************************************/
-OSErr MSTOCFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
+OSErr MSTOCFunc(MSSubCallEnum call, MStoreBoxHandle boxH)
 {
-	switch (call)
-	{
-		case msfcCreate: return(MSCreateTOC(boxH));
-		case msfcOpen: return(MSOpenTOC(boxH));
-		case msfcClose: case msfcCloseHard: return(MSCloseTOC(boxH));
-		case msfcDestroy: return(MSDestroyTOC(boxH));
-		case msfcFlush: return(noErr);
-		default: ASSERT(0); return(fnfErr);
+	switch (call) {
+	case msfcCreate:
+		return (MSCreateTOC(boxH));
+	case msfcOpen:
+		return (MSOpenTOC(boxH));
+	case msfcClose:
+	case msfcCloseHard:
+		return (MSCloseTOC(boxH));
+	case msfcDestroy:
+		return (MSDestroyTOC(boxH));
+	case msfcFlush:
+		return (noErr);
+	default:
+		ASSERT(0);
+		return (fnfErr);
 	}
 }
 
@@ -60,8 +67,8 @@ OSErr MSTOCFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSCreateTOC(MStoreBoxHandle boxH)
 {
-	OSErr err = MSCreateSubFile(boxH,mssfTOC);
-	return(err);
+	OSErr err = MSCreateSubFile(boxH, mssfTOC);
+	return (err);
 }
 
 /************************************************************************
@@ -69,9 +76,9 @@ OSErr MSCreateTOC(MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSOpenTOC(MStoreBoxHandle boxH)
 {
-	OSErr err = MSOpenSubFile(boxH,mssfTOC);
-	
-	return(err);
+	OSErr err = MSOpenSubFile(boxH, mssfTOC);
+
+	return (err);
 }
 
 /************************************************************************
@@ -80,10 +87,10 @@ OSErr MSOpenTOC(MStoreBoxHandle boxH)
 OSErr MSCloseTOC(MStoreBoxHandle boxH)
 {
 	OSErr err = noErr;
-	
-	err = MSCloseSubFile(boxH,mssfTOC);
-	
-	return(err);
+
+	err = MSCloseSubFile(boxH, mssfTOC);
+
+	return (err);
 }
 
 /************************************************************************
@@ -92,8 +99,8 @@ OSErr MSCloseTOC(MStoreBoxHandle boxH)
 OSErr MSDestroyTOC(MStoreBoxHandle boxH)
 {
 	OSErr err;
-	
+
 	if (!(err = MSCloseTOC(boxH)))
-		err = MSDestroySubFile(boxH,mssfTOC);
-	return(err);
+		err = MSDestroySubFile(boxH, mssfTOC);
+	return (err);
 }

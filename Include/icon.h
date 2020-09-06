@@ -32,12 +32,13 @@
 #ifndef ICON_H
 #define ICON_H
 
-void NamedIconCalc(Rect *inRect,PStr name,short hIndent,short vIndent,Rect *iconR,Point *textP);
-OSErr DTGetIconInfo(short dtRef,OSType creator, short index,OSType *type);
+void NamedIconCalc(Rect * inRect, PStr name, short hIndent, short vIndent,
+		   Rect * iconR, Point * textP);
+OSErr DTGetIconInfo(short dtRef, OSType creator, short index,
+		    OSType * type);
 
 typedef struct ICacheStruct *ICachePtr, **ICacheHandle;
-typedef struct ICacheStruct
-{
+typedef struct ICacheStruct {
 	long magic;
 	OSType type;
 	OSType creator;
@@ -47,25 +48,29 @@ typedef struct ICacheStruct
 	ICacheHandle next;
 } ICacheType;
 
-OSErr PlotIconFromICache(ICacheHandle ich,IconTransformType transform,Rect *inRect);
-OSErr ICacheToRgn(ICacheHandle ich,Rect *inRect,RgnHandle rgn);
-ICacheHandle FindICache(OSType type,OSType creator);
-ICacheHandle GetICache(OSType type,OSType creator);
+OSErr PlotIconFromICache(ICacheHandle ich, IconTransformType transform,
+			 Rect * inRect);
+OSErr ICacheToRgn(ICacheHandle ich, Rect * inRect, RgnHandle rgn);
+ICacheHandle FindICache(OSType type, OSType creator);
+ICacheHandle GetICache(OSType type, OSType creator);
 long DisposeICache(ICacheHandle ich);
-OSErr DupIconSuite(Handle fromSuite,Handle *toSuite,Boolean reuseSuite);
-OSErr DupDeskIconSuite(OSType creator,OSType type,Handle *toSuite);
-short Names2Icon(PStr baseName,PStr modifierNames);
-void PlotTinyIconAtPenID(IconTransformType transform,short icon);
-void PlotTinyULIconAtPenID(IconTransformType transform,short icon);
-Handle FSpGetCustomIconSuite(FSSpecPtr spec,short dataSelector);
+OSErr DupIconSuite(Handle fromSuite, Handle * toSuite, Boolean reuseSuite);
+OSErr DupDeskIconSuite(OSType creator, OSType type, Handle * toSuite);
+short Names2Icon(PStr baseName, PStr modifierNames);
+void PlotTinyIconAtPenID(IconTransformType transform, short icon);
+void PlotTinyULIconAtPenID(IconTransformType transform, short icon);
+Handle FSpGetCustomIconSuite(FSSpecPtr spec, short dataSelector);
 #ifdef LABEL_ICONS
-OSErr	RGBColorToIconFamily( RGBColor* theColor, short iconID, ConstStr255Param name, Boolean overWrite, Handle maskSuite );
-OSErr RefreshRGBIcon(short id,RGBColor *color,short template,Boolean *changed);
+OSErr RGBColorToIconFamily(RGBColor * theColor, short iconID,
+			   ConstStr255Param name, Boolean overWrite,
+			   Handle maskSuite);
+OSErr RefreshRGBIcon(short id, RGBColor * color, short template,
+		     Boolean * changed);
 #define atAbsoluteCenter atNone
 #endif
 #ifdef DEBUG
 #define PlotIconID MyPlotIconID
-OSErr MyPlotIconID (Rect *theRect, IconAlignmentType align, IconTransformType transform, short theResID);
+OSErr MyPlotIconID(Rect * theRect, IconAlignmentType align,
+		   IconTransformType transform, short theResID);
 #endif
 #endif
-

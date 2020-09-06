@@ -47,7 +47,7 @@ enum {
 };
 
 
-#if 0 // CK might just work under retro68
+#if 0				// CK might just work under retro68
 #if PRAGMA_STRUCT_ALIGN
 #pragma options align=mac68k
 #else
@@ -56,33 +56,33 @@ enum {
 #endif
 
 typedef struct {
-	OSType		fragArch;
-	long		updateLevel;
-	NumVersion	curVersion;
-	NumVersion	oldestDefVersion;
-	long		applStackSize;
-	short		applLibDirAlisID;
-	char		fragType;
-	char		fragLocationType;
-	long		offset;
-	long		length;
-	long		reserved1;
-	long		reserved2;
-	short		infoRecLen;
-	Str255		fragName;
+	OSType fragArch;
+	long updateLevel;
+	NumVersion curVersion;
+	NumVersion oldestDefVersion;
+	long applStackSize;
+	short applLibDirAlisID;
+	char fragType;
+	char fragLocationType;
+	long offset;
+	long length;
+	long reserved1;
+	long reserved2;
+	short infoRecLen;
+	Str255 fragName;
 	/* fragName is variable-length, and padded to make the record end on a longword boundary */
 } CodeFragInfoRec, *CodeFragInfoRecPtr;
 
 typedef struct {
-	long	reserved1;
-	long	reserved2;
-	long	cfrgRsrcVers;
-	long	reserved3;
-	long	reserved4;
-	long	reserved5;
-	long	reserved6;
-	long	numFragInfoRecs;
-	CodeFragInfoRec		firstFragInfoRec;
+	long reserved1;
+	long reserved2;
+	long cfrgRsrcVers;
+	long reserved3;
+	long reserved4;
+	long reserved5;
+	long reserved6;
+	long numFragInfoRecs;
+	CodeFragInfoRec firstFragInfoRec;
 	/* remaining data is variable length */
 } CodeFragRsrcRec, *CodeFragRsrcPtr, **CodeFragRsrcHdl;
 

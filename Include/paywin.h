@@ -69,13 +69,14 @@ typedef enum {
 	parseDoDialog
 } parseNoiseType;
 
-void								OpenPayWin (void);
-OSErr								UpdateRegInfoText (UserStateType state);
-void								TellPayWindowTheUpdateCheckIsDone (OSErr err);
-OSErr								CodeEntryForProduct (UserStateType state, CodeEntryVariantType variant);
-OSErr								CodeEntryDialog(StringHandle regInfo);
-OSErr								ParseRegFile(FSSpecPtr spec, parseNoiseType parseNoise, Boolean *needsRegistration, int *pnPolicyCode);
-Boolean							SendUserToProfile(void);
-void 								StartPaymentProcess(void);
+void OpenPayWin(void);
+OSErr UpdateRegInfoText(UserStateType state);
+void TellPayWindowTheUpdateCheckIsDone(OSErr err);
+OSErr CodeEntryForProduct(UserStateType state,
+			  CodeEntryVariantType variant);
+OSErr CodeEntryDialog(StringHandle regInfo);
+OSErr ParseRegFile(FSSpecPtr spec, parseNoiseType parseNoise,
+		   Boolean * needsRegistration, int *pnPolicyCode);
+Boolean SendUserToProfile(void);
+void StartPaymentProcess(void);
 #endif
-

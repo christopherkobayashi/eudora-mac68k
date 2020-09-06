@@ -42,4 +42,3 @@
 void OpenStationeryWin(void);
 void BuildStationeryList(void);
 #endif
-

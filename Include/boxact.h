@@ -42,70 +42,78 @@
  * function prototypes
  **********************************************************************/
 void BoxUpdate(MyWindowPtr win);
-void BoxClick(MyWindowPtr win,EventRecord *event);
+void BoxClick(MyWindowPtr win, EventRecord * event);
 void BoxActivate(MyWindowPtr win);
-Boolean BoxMenu(MyWindowPtr win,int menu,int item,short modifiers);
+Boolean BoxMenu(MyWindowPtr win, int menu, int item, short modifiers);
 Boolean BoxClose(MyWindowPtr win);
-Boolean BoxFind(MyWindowPtr win,PStr what);
+Boolean BoxFind(MyWindowPtr win, PStr what);
 void BoxOpen(MyWindowPtr win);
-Boolean BoxKey(MyWindowPtr win, EventRecord *event);
-void SelectBoxRange(TOCHandle tocH,int start,int end,Boolean cmd,int eStart,int eEnd);
-void BoxSetSummarySelected(TOCHandle tocH,short sumNum,Boolean selected);
+Boolean BoxKey(MyWindowPtr win, EventRecord * event);
+void SelectBoxRange(TOCHandle tocH, int start, int end, Boolean cmd,
+		    int eStart, int eEnd);
+void BoxSetSummarySelected(TOCHandle tocH, short sumNum, Boolean selected);
 void BoxCenterSelection(MyWindowPtr win);
 void BoxSelectAfter(MyWindowPtr win, short mNum);
-Boolean BoxPosition(Boolean save,MyWindowPtr win);
-void BoxSelectSame(TOCHandle tocH,short item,short clickedSum);
-void BoxLabelMenu(TOCHandle tocH,short mNum,MessHandle messH,Point pt);
-void MakeMessFileName(TOCHandle tocH,short sumNum, UPtr name);
+Boolean BoxPosition(Boolean save, MyWindowPtr win);
+void BoxSelectSame(TOCHandle tocH, short item, short clickedSum);
+void BoxLabelMenu(TOCHandle tocH, short mNum, MessHandle messH, Point pt);
+void MakeMessFileName(TOCHandle tocH, short sumNum, UPtr name);
 void BoxHelp(MyWindowPtr win, Point mouse);
 void BoxCursor(Point mouse);
-void BoxDidResize(MyWindowPtr win, Rect *oldContR);
-void BoxGrowSize(MyWindowPtr win, Point *newSize);
+void BoxDidResize(MyWindowPtr win, Rect * oldContR);
+void BoxGrowSize(MyWindowPtr win, Point * newSize);
 void BoxPlaceBevelButtons(MyWindowPtr win);
-void BoxListFocus(TOCHandle tocH,Boolean focus);
+void BoxListFocus(TOCHandle tocH, Boolean focus);
 #define SortedDescending(tocH) (((*(tocH))->sorts[blDate-1]&3)==SORT_DESCEND)
 OSErr BoxGonnaShow(MyWindowPtr win);
-UPtr PriorityString(UPtr string,Byte priority);
-void SetPriority(TOCHandle tocH,short sumNum,short priority);
+UPtr PriorityString(UPtr string, Byte priority);
+void SetPriority(TOCHandle tocH, short sumNum, short priority);
 #define Prior2Display(p) ((p)?RoundDiv(MIN((p),200),40):3)
 #define Display2Prior(p) ((p)*40)
-void SetTAEScore(TOCHandle tocH,short sumNum,short score);
+void SetTAEScore(TOCHandle tocH, short sumNum, short score);
 short Item2Status(short item);
 short Status2Item(short status);
-void InvalTocBox(TOCHandle tocH,short sumNum,short box);
+void InvalTocBox(TOCHandle tocH, short sumNum, short box);
 Boolean RedoTOC(TOCHandle tocH);
-short BoxLimits(BoxLinesEnum which,short *left,short *right,TOCHandle tocH);
-void DragXfer(Point pt, TOCHandle tocH,MessHandle messH);
+short BoxLimits(BoxLinesEnum which, short *left, short *right,
+		TOCHandle tocH);
+void DragXfer(Point pt, TOCHandle tocH, MessHandle messH);
 void RedoAllTOCs(void);
-void SelectOtherBox(Point pt,TOCHandle tocH);
+void SelectOtherBox(Point pt, TOCHandle tocH);
 void MBResort(TOCHandle tocH);
 OSErr FinishBoxDrag(void);
 void CheckSortItems(MyWindowPtr win);
-OSErr InterpretSortString(PStr s,Boolean *group,Byte *sorts,PStr menuItem);
+OSErr InterpretSortString(PStr s, Boolean * group, Byte * sorts,
+			  PStr menuItem);
 TextAddrHandle MenuItem2Handle(short menu, short item);
-short StatusMenu(MyWindowPtr win,short origStatus,Point where);
+short StatusMenu(MyWindowPtr win, short origStatus, Point where);
 void ShowBoxSizes(MyWindowPtr win);
 #define InvalBoxSizeBox ShowBoxSizes
-short EnableServerItems(MyWindowPtr win,short selectedSum,Boolean all,Boolean shiftPressed);
-void ServerMenuChoice(TOCHandle tocH,short sumNum,short item,Boolean shiftPressed);
-void BeenThereDoneThat(TOCHandle tocH,short sumNum);
+short EnableServerItems(MyWindowPtr win, short selectedSum, Boolean all,
+			Boolean shiftPressed);
+void ServerMenuChoice(TOCHandle tocH, short sumNum, short item,
+		      Boolean shiftPressed);
+void BeenThereDoneThat(TOCHandle tocH, short sumNum);
 void BoxAddBevelButtons(MyWindowPtr win);
-void BoxButton(MyWindowPtr win,ControlHandle button,long modifiers,short part);
-Boolean BoxScroll(MyWindowPtr win,short h,short v);
+void BoxButton(MyWindowPtr win, ControlHandle button, long modifiers,
+	       short part);
+Boolean BoxScroll(MyWindowPtr win, short h, short v);
 Boolean BoxHasSelection(MyWindowPtr win);
-OSErr BoxDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag);
+OSErr BoxDragHandler(MyWindowPtr win, DragTrackingMessage which,
+		     DragReference drag);
 void BoxIdle(MyWindowPtr win);
-PStr StationMenu(PStr name,Point where);
+PStr StationMenu(PStr name, Point where);
 void BoxInitialSelection(TOCHandle tocH);
-void AnalBox(TOCHandle tocH,short first, short last);
+void AnalBox(TOCHandle tocH, short first, short last);
 void BoxInversionSetup(void);
-Boolean BoxColumnShowing(BoxLinesEnum which,TOCHandle tocH);
+Boolean BoxColumnShowing(BoxLinesEnum which, TOCHandle tocH);
 int SubjCompare(PStr s1, PStr s2);
-void InvalTocBoxLo(TOCHandle tocH,short sumNum,short box);
-void SetFileView(MyWindowPtr win,TOCHandle tocH, Boolean fileView);
-Boolean MultiMessageOpOK(short fmt,short count);
+void InvalTocBoxLo(TOCHandle tocH, short sumNum, short box);
+void SetFileView(MyWindowPtr win, TOCHandle tocH, Boolean fileView);
+Boolean MultiMessageOpOK(short fmt, short count);
 void BoxSetBevelButtonValues(MyWindowPtr win);
-PStr BoxPreviewProfile(PStr profileName,TOCHandle tocH,short previewTypeID);
-PStr Sort2String(PStr s,TOCHandle tocH);
-void ApplySortString(TOCHandle tocH,PStr s);
+PStr BoxPreviewProfile(PStr profileName, TOCHandle tocH,
+		       short previewTypeID);
+PStr Sort2String(PStr s, TOCHandle tocH);
+void ApplySortString(TOCHandle tocH, PStr s);
 #endif

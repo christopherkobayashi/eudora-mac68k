@@ -40,8 +40,7 @@
 /*
  * Translator description structure
  */
-typedef struct TLMaster
-{
+typedef struct TLMaster {
 	Handle nameHandle;
 	short module;
 	short id;
@@ -69,57 +68,69 @@ typedef struct TOCType TOCType, **TOCHandle;
 #define TOOLBAR_ICON_ID	1001
 
 OSErr ETLInit(void);		// Initialize the whole darn thing, including UI
-void ETLCleanup(void);	// Shut it all down
-OSErr ETLListAllTranslatorsLo(TLMHandle *translators, short context, ModeTypeEnum forMode);
+void ETLCleanup(void);		// Shut it all down
+OSErr ETLListAllTranslatorsLo(TLMHandle * translators, short context,
+			      ModeTypeEnum forMode);
 OSErr ETLCountTranslatorsLo(short context, ModeTypeEnum forMode);
 #define ETLListAllTranslators(translators,context) ETLListAllTranslatorsLo(translators,context,GetCurrentPayMode())
 #define ETLCountTranslators(context) ETLCountTranslatorsLo(context,GetCurrentPayMode())
-OSErr ETLCanTranslate(TLMHandle translators,short context,emsMIMEHandle emsMIME,tlStringHandle *errorStr,long *errCode,emsHeaderDataP addrList,HeaderDHandle hdh);
+OSErr ETLCanTranslate(TLMHandle translators, short context,
+		      emsMIMEHandle emsMIME, tlStringHandle * errorStr,
+		      long *errCode, emsHeaderDataP addrList,
+		      HeaderDHandle hdh);
 OSErr ETLRemoveDeadTranslators(TLMHandle translators);
-OSErr ETLInterpretFile(short context,FSSpecPtr source, short resultRefN, AccuPtr resultAcc, emsHeaderDataP addrList,Boolean *dontSave);
+OSErr ETLInterpretFile(short context, FSSpecPtr source, short resultRefN,
+		       AccuPtr resultAcc, emsHeaderDataP addrList,
+		       Boolean * dontSave);
 void ETLDoAbout(void);
-enum { TLMIME_TYPE,TLMIME_SUBTYPE,TLMIME_PARAM,TLMIME_VERSION,TLMIME_CONTENTDISP,TLMIME_CONTENTDISP_PARAM };
-OSErr NewTLMIME(emsMIMEHandle *emsMIME);
+enum { TLMIME_TYPE, TLMIME_SUBTYPE, TLMIME_PARAM, TLMIME_VERSION,
+	    TLMIME_CONTENTDISP, TLMIME_CONTENTDISP_PARAM };
+OSErr NewTLMIME(emsMIMEHandle * emsMIME);
 void DisposeTLMIME(emsMIMEHandle emsMIME);
 #define ZapTLMIME(m) do{DisposeTLMIME(m); m = nil;}while(0)
-OSErr RecordTLID(FSSpecPtr spec,uLong id);
-OSErr AddTLMIME(emsMIMEHandle emsMIME,short what,PStr name, PStr value);
-OSErr FlattenTLMIME(emsMIMEHandle emsMIME,FlatTLMIMEHandle *flat);
-OSErr UnflattenTLMIME(FlatTLMIMEHandle flat,emsMIMEHandle *tlMIME);
-OSErr TransRecvLine(TransStream stream,UPtr line,long *size);
-OSErr ETLDisplayFile(FSSpecPtr spec,PETEHandle pte);
-OSErr ETLAddIcons(MyWindowPtr win,short startNumber);
+OSErr RecordTLID(FSSpecPtr spec, uLong id);
+OSErr AddTLMIME(emsMIMEHandle emsMIME, short what, PStr name, PStr value);
+OSErr FlattenTLMIME(emsMIMEHandle emsMIME, FlatTLMIMEHandle * flat);
+OSErr UnflattenTLMIME(FlatTLMIMEHandle flat, emsMIMEHandle * tlMIME);
+OSErr TransRecvLine(TransStream stream, UPtr line, long *size);
+OSErr ETLDisplayFile(FSSpecPtr spec, PETEHandle pte);
+OSErr ETLAddIcons(MyWindowPtr win, short startNumber);
 long ETLIconToID(short which);
-OSErr ETLIconToDescriptions(short which,PStr module,PStr translator);
+OSErr ETLIconToDescriptions(short which, PStr module, PStr translator);
 short ETLIDToIndex(long id);
-short ETLSendMessage(TransStream stream,MessHandle messH,Boolean chatter,Boolean sendDataCmd);
+short ETLSendMessage(TransStream stream, MessHandle messH, Boolean chatter,
+		     Boolean sendDataCmd);
 OSErr ETLCanTransOut(MessHandle messH);
-OSErr ETLTransOut(MessHandle messH,emsMIMEHandle emsMIME,FSSpecPtr from,FSSpecPtr to);
-OSErr ETLTransSelection(PETEHandle pte,HSPtr hs,short item);
-long ETLID(TLMHandle tl,short index);
-OSErr ETLIDToFileIcon(long id,Handle *suite);
-OSErr ETLReadTL(FSSpecPtr spec,long *id);
+OSErr ETLTransOut(MessHandle messH, emsMIMEHandle emsMIME, FSSpecPtr from,
+		  FSSpecPtr to);
+OSErr ETLTransSelection(PETEHandle pte, HSPtr hs, short item);
+long ETLID(TLMHandle tl, short index);
+OSErr ETLIDToFileIcon(long id, Handle * suite);
+OSErr ETLReadTL(FSSpecPtr spec, long *id);
 Boolean ETLExists(void);
 OSErr ETLSpecial(short item);
 void ETLEnableSpecialItems();
-OSErr ETLAttach(short item,MyWindowPtr win);
+OSErr ETLAttach(short item, MyWindowPtr win);
 OSErr ETLDoSettings(short item);
-void ETLNameAndIcon(short i,PStr name,Handle *suite);
+void ETLNameAndIcon(short i, PStr name, Handle * suite);
 OSErr ETLSelect(short which, Boolean selecting, MessHandle messH);
 void ETLGetSystemPlugins(void);
-OSErr ETLBuildAddrList(UHandle textIn,UHandle moreHeaders,HeaderDHandle hdh,emsHeaderDataP addrList,short context);
+OSErr ETLBuildAddrList(UHandle textIn, UHandle moreHeaders,
+		       HeaderDHandle hdh, emsHeaderDataP addrList,
+		       short context);
 void ETLDisposeAddrList(emsHeaderDataP addrList);
 void ETLIdle(long flags);
-ModeTypeEnum GetCurrentPayMode ();
-void ETLEudoraModeNotification(ModeEventEnum modeEvent, ModeTypeEnum newMode );
-void ETLDrawBoxTag(TOCHandle tocH,Rect *r);
+ModeTypeEnum GetCurrentPayMode();
+void ETLEudoraModeNotification(ModeEventEnum modeEvent,
+			       ModeTypeEnum newMode);
+void ETLDrawBoxTag(TOCHandle tocH, Rect * r);
 void ETLAddBoxButtons(TOCHandle tocH);
-void ETLButtonHit(MyWindowPtr win,short item);
-Boolean ETLClickContextMenu(MyWindowPtr win,Point pt,Rect *rSizeBox);
+void ETLButtonHit(MyWindowPtr win, short item);
+Boolean ETLClickContextMenu(MyWindowPtr win, Point pt, Rect * rSizeBox);
 Boolean ETLHasMBoxContextFolder(MyWindowPtr win);
-short ETLMBoxContextFolder(MyWindowPtr win, short * vRefNum, long * dirID);
-OSErr ETLGetPluginFolderSpec(FSSpec *spec,short nameId);
-Handle ETLMenu2Icon(short menu,short item);
+short ETLMBoxContextFolder(MyWindowPtr win, short *vRefNum, long *dirID);
+OSErr ETLGetPluginFolderSpec(FSSpec * spec, short nameId);
+Handle ETLMenu2Icon(short menu, short item);
 void ETLAddToToolbar(void);
 short ETLBoxTagWidth(MyWindowPtr win);
 short ETLQueueMessage(MessHandle messH);
@@ -127,36 +138,40 @@ long ETLDrain(void);
 Boolean IsPlugwindow(WindowPtr theWindow);
 Boolean IsModalPlugwindow(WindowPtr theWindow);
 Boolean IsNonModalPlugwindow(WindowPtr theWindow);
-Boolean PlugwindowEventFilter(EventRecord *event);
-void PlugwindowEnable(WindowPtr theWindow,long *flags);
-Boolean PlugwindowMenu(WindowPtr theWindow,long select);
+Boolean PlugwindowEventFilter(EventRecord * event);
+void PlugwindowEnable(WindowPtr theWindow, long *flags);
+Boolean PlugwindowMenu(WindowPtr theWindow, long select);
 Boolean PlugwindowClose(WindowPtr theWindow);
-OSErr PlugwindowDrag(WindowPtr theWindow,DragTrackingMessage message,DragReference drag);
-void PlugwindowSendFakeEvent(WindowPtr theWindow, UInt32 message, EventKind what, EventModifiers modifiers, Point * where);
+OSErr PlugwindowDrag(WindowPtr theWindow, DragTrackingMessage message,
+		     DragReference drag);
+void PlugwindowSendFakeEvent(WindowPtr theWindow, UInt32 message,
+			     EventKind what, EventModifiers modifiers,
+			     Point * where);
 void PlugwindowActivate(WindowPtr theWindow, Boolean active);
 void PlugwindowUpdate(WindowPtr theWindow);
-OSErr ETLImport(long id, ImportOperationEnum what, void *params, void *results);
-OSErr ETLQueryImporters(ImportAccountInfoH *results, long id, Boolean search);
+OSErr ETLImport(long id, ImportOperationEnum what, void *params,
+		void *results);
+OSErr ETLQueryImporters(ImportAccountInfoH * results, long id,
+			Boolean search);
 Handle GetImporterAppIcon(long id);
 void GetImporterName(long id, Str255 name);
 OSErr ETLImportSignatures(ImportAccountInfoP account);
 OSErr ETLImportAddresses(ImportAccountInfoP account);
 OSErr ETLImportMail(ImportAccountInfoP account);
-OSErr ETLImportSettings(ImportAccountInfoP account, ImportPersDataH *persData);
-OSErr ETLScoreJunk ( TLMPtr thePlugin, 
-    emsTranslatorP           transInfo,          /* In: Translator Info */
-    emsJunkInfoP             junkInfo,           /* In: Junk information */
-    emsMessageInfoP          message,            /* In: Message to score */
-    emsJunkScoreP            junkScore,          /* Out: Junk score */
-    emsResultStatusP         status              /* Out: Status information */
-	);
+OSErr ETLImportSettings(ImportAccountInfoP account,
+			ImportPersDataH * persData);
+OSErr ETLScoreJunk(TLMPtr thePlugin, emsTranslatorP transInfo,	/* In: Translator Info */
+		   emsJunkInfoP junkInfo,	/* In: Junk information */
+		   emsMessageInfoP message,	/* In: Message to score */
+		   emsJunkScoreP junkScore,	/* Out: Junk score */
+		   emsResultStatusP status	/* Out: Status information */
+    );
 
-OSErr ETLMarkJunk ( TLMPtr thePlugin, 
-    emsTranslatorP           transInfo,          /* In: Translator Info */
-    emsJunkInfoP             junkInfo,           /* In: Junk information */
-    emsMessageInfoP          message,            /* In: Message to score */
-    emsJunkScoreP            junkScore,          /* Out: Junk score */
-    emsResultStatusP         status              /* Out: Status information */
-	);
+OSErr ETLMarkJunk(TLMPtr thePlugin, emsTranslatorP transInfo,	/* In: Translator Info */
+		  emsJunkInfoP junkInfo,	/* In: Junk information */
+		  emsMessageInfoP message,	/* In: Message to score */
+		  emsJunkScoreP junkScore,	/* Out: Junk score */
+		  emsResultStatusP status	/* Out: Status information */
+    );
 
 #endif

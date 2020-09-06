@@ -42,16 +42,23 @@ OSErr MSDestroyInfo(MStoreBoxHandle boxH);
 /************************************************************************
  * MSInfoFunc - dispatcher function
  ************************************************************************/
-OSErr MSInfoFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
+OSErr MSInfoFunc(MSSubCallEnum call, MStoreBoxHandle boxH)
 {
-	switch (call)
-	{
-		case msfcCreate: return(MSCreateInfo(boxH));
-		case msfcOpen: return(MSOpenInfo(boxH));
-		case msfcClose: case msfcCloseHard: return(MSCloseInfo(boxH));
-		case msfcDestroy: return(MSDestroyInfo(boxH));
-		case msfcFlush: return(noErr);
-		default: ASSERT(0); return(fnfErr);
+	switch (call) {
+	case msfcCreate:
+		return (MSCreateInfo(boxH));
+	case msfcOpen:
+		return (MSOpenInfo(boxH));
+	case msfcClose:
+	case msfcCloseHard:
+		return (MSCloseInfo(boxH));
+	case msfcDestroy:
+		return (MSDestroyInfo(boxH));
+	case msfcFlush:
+		return (noErr);
+	default:
+		ASSERT(0);
+		return (fnfErr);
 	}
 }
 
@@ -60,8 +67,8 @@ OSErr MSInfoFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSCreateInfo(MStoreBoxHandle boxH)
 {
-	OSErr err = MSCreateSubFile(boxH,mssfInfo);
-	return(err);
+	OSErr err = MSCreateSubFile(boxH, mssfInfo);
+	return (err);
 }
 
 /************************************************************************
@@ -69,9 +76,9 @@ OSErr MSCreateInfo(MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSOpenInfo(MStoreBoxHandle boxH)
 {
-	OSErr err = MSOpenSubFile(boxH,mssfInfo);
-	
-	return(err);
+	OSErr err = MSOpenSubFile(boxH, mssfInfo);
+
+	return (err);
 }
 
 /************************************************************************
@@ -80,10 +87,10 @@ OSErr MSOpenInfo(MStoreBoxHandle boxH)
 OSErr MSCloseInfo(MStoreBoxHandle boxH)
 {
 	OSErr err = noErr;
-	
-	err = MSCloseSubFile(boxH,mssfInfo);
-	
-	return(err);
+
+	err = MSCloseSubFile(boxH, mssfInfo);
+
+	return (err);
 }
 
 /************************************************************************
@@ -92,8 +99,8 @@ OSErr MSCloseInfo(MStoreBoxHandle boxH)
 OSErr MSDestroyInfo(MStoreBoxHandle boxH)
 {
 	OSErr err;
-	
+
 	if (!(err = MSCloseInfo(boxH)))
-		err = MSDestroySubFile(boxH,mssfInfo);
-	return(err);
+		err = MSDestroySubFile(boxH, mssfInfo);
+	return (err);
 }

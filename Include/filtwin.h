@@ -33,11 +33,13 @@
 #define FILTWIN_H
 
 OSErr OpenFiltersWindow(void);
-short ForAllActionsDo(FACallEnum callType,void *dataPtr);
+short ForAllActionsDo(FACallEnum callType, void *dataPtr);
 void SaveCurrentFilter(void);
 void FilterWindowClean(Boolean clean);
 Boolean ChooseMailbox(short menu, short msg, FSSpecPtr spec);
-Boolean ChooseMailboxLo(short menu, PStr msgStr, FSSpecPtr spec, Boolean disableNew, Boolean disableOther, Boolean disableRemote);
+Boolean ChooseMailboxLo(short menu, PStr msgStr, FSSpecPtr spec,
+			Boolean disableNew, Boolean disableOther,
+			Boolean disableRemote);
 Boolean FiltWinOpen(void);
 void RefreshFiltersWindow(FilterRecord newFilter, Boolean details);
 Boolean FilterIsSelected(short which);

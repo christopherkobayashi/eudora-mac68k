@@ -41,8 +41,7 @@ void OpenLinkWin(void);
 void NotifyLinkWin(void);
 void LinkTickle(void);
 Boolean LinkHasCustomIcons(void);
-Boolean PreventOfflineLink(OSErr *err, Boolean justDoIt);
+Boolean PreventOfflineLink(OSErr * err, Boolean justDoIt);
 void RemindNag(void);
 
 #endif
-

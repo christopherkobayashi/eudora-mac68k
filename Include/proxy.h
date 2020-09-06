@@ -35,22 +35,21 @@
 #define PROXY_RTYPE	'PrXy'
 
 typedef struct ProxyStruct ProxyType, *ProxyPtr, **ProxyHandle;
-typedef struct ProxyEntryStruct ProxyEntryType, *ProxyEntryPtr, **ProxyEntryHandle;
-struct ProxyStruct
-{
+typedef struct ProxyEntryStruct ProxyEntryType, *ProxyEntryPtr,
+    **ProxyEntryHandle;
+struct ProxyStruct {
 	Str31 name;
 	ProxyEntryHandle peh;
 	ProxyHandle next;
 };
 
-struct ProxyEntryStruct
-{
+struct ProxyEntryStruct {
 	short id;
 	Str255 value;
 	ProxyEntryHandle next;
 };
-	
-	
+
+
 PStr ProxifyStr(PStr theString, short theIndex);
 void ProxyInit(void);
 void ProxyZap(void);

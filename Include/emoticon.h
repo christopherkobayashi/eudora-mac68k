@@ -36,7 +36,7 @@ void EmoScan(void);
 void EmoScanPete(PETEHandle pte, Boolean toCompletion);
 #define kEmoScanFinished (-1)
 #define IsEmoticonStyle(s) (!EmoTurdCache && (s)->graphicInfo && ((*(s)->graphicInfo)->privateType==pgtIcon||(*(s)->graphicInfo)->privateType==pgtImage) && (*(FGIHandle)(s)->graphicInfo)->isEmoticon)
-OSErr EmoInsert(MyWindowPtr win,short item);
+OSErr EmoInsert(MyWindowPtr win, short item);
 void EmoInit(void);
 void EmoSearchAndDestroy(void);
 void EmoSearchAndDestroyPete(PETEHandle pte);
@@ -45,4 +45,4 @@ void EmoSearchAndDestroyPete(PETEHandle pte);
 #define emoPrefLitterInternetWithTurdsBit	2
 #define EmoDo()	(!IsFreeMode() && !(GetPrefLong(PREF_BITE_ME_EMO)&emoPrefOffBit))
 #define EmoLitterInternetWithTurds()	(GetPrefLong(PREF_BITE_ME_EMO)&emoPrefLitterInternetWithTurdsBit)
-#endif //EMOTICON_H
+#endif				//EMOTICON_H

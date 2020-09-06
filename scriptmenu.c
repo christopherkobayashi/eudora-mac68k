@@ -42,57 +42,62 @@
 #define MENU_FILENAME_PROP 'fNam'
 
 typedef enum {
-	SCRIPTS_OPENFOLDER_ITEM=1,
+	SCRIPTS_OPENFOLDER_ITEM = 1,
 	SCRIPTS_DIVIDER_ITEM
 } ScriptsMenuEnum;
 
 static OSErr RunScript(FSSpecPtr spec);
 
-static ComponentInstance	gGenericComponent;
+static ComponentInstance gGenericComponent;
 
 /**********************************************************************
  * BuildScriptMenu - build the script menu
  **********************************************************************/
 void BuildScriptMenu(void)
 {
-	FSSpec	spec;
+	FSSpec spec;
 	MenuHandle mh = GetMenu(SCRIPTS_MENU);
 	CInfoPBRec hfi;
-	short	item;
-	
-	if (GetScriptFolderSpec(&spec)) return;	// no scripts
-	if (!HasFeature(featureScriptsMenu)) return;
-	if (!mh) return;
+	short item;
 
-	//	remove any scripts we've already added
-	for(item=CountMenuItems(mh);item>SCRIPTS_DIVIDER_ITEM;item--)
-		DeleteMenuItem(mh,item);
+	if (GetScriptFolderSpec(&spec))
+		return;		// no scripts
+	if (!HasFeature(featureScriptsMenu))
+		return;
+	if (!mh)
+		return;
 
-	IsAlias(&spec,&spec);
+	//      remove any scripts we've already added
+	for (item = CountMenuItems(mh); item > SCRIPTS_DIVIDER_ITEM;
+	     item--)
+		DeleteMenuItem(mh, item);
+
+	IsAlias(&spec, &spec);
 	*spec.name = 0;
 	Zero(hfi);
 	hfi.hFileInfo.ioNamePtr = spec.name;
-	while (!DirIterate(spec.vRefNum,spec.parID,&hfi))
-	{
-		if (hfi.hFileInfo.ioFlFndrInfo.fdType == 'osas' || 
-			(hfi.hFileInfo.ioFlFndrInfo.fdType == 'APPL' && 
-			(hfi.hFileInfo.ioFlFndrInfo.fdCreator=='aplt' || 
-			hfi.hFileInfo.ioFlFndrInfo.fdCreator=='dplt')))
-		{
-			//	found one
+	while (!DirIterate(spec.vRefNum, spec.parID, &hfi)) {
+		if (hfi.hFileInfo.ioFlFndrInfo.fdType == 'osas' ||
+		    (hfi.hFileInfo.ioFlFndrInfo.fdType == 'APPL' &&
+		     (hfi.hFileInfo.ioFlFndrInfo.fdCreator == 'aplt' ||
+		      hfi.hFileInfo.ioFlFndrInfo.fdCreator == 'dplt'))) {
+			//      found one
 			StrFileName fileName;
 			StrFileName extension;
 
 			// Remove any filename extension for menu item
-			SplitPerfectlyGoodFilenameIntoNameAndQuoteExtensionUnquote(spec.name,fileName,extension,31);
-			MyAppendMenu(mh,fileName);
+			SplitPerfectlyGoodFilenameIntoNameAndQuoteExtensionUnquote
+			    (spec.name, fileName, extension, 31);
+			MyAppendMenu(mh, fileName);
 
 			// Save full filename as menu property
-			SetMenuItemProperty(mh,CountMenuItems(mh),CREATOR,MENU_FILENAME_PROP,*spec.name+1,spec.name);
+			SetMenuItemProperty(mh, CountMenuItems(mh),
+					    CREATOR, MENU_FILENAME_PROP,
+					    *spec.name + 1, spec.name);
 		}
 	}
-	if (mh) 
-		InsertMenu(mh,HELP_MENU);
+	if (mh)
+		InsertMenu(mh, HELP_MENU);
 }
 
 /**********************************************************************
@@ -100,18 +105,17 @@ void BuildScriptMenu(void)
  **********************************************************************/
 void DoScriptMenu(short item)
 {
-	FSSpec	spec;
-	
+	FSSpec spec;
+
 	GetScriptFolderSpec(&spec);
-	if (item==SCRIPTS_OPENFOLDER_ITEM)
-	{
-		// open Scripts folder		
-		OpenOtherDoc(&spec,false,false,nil);
-	}
-	else
-	{
-		GetMenuItemProperty(GetMHandle(SCRIPTS_MENU),item,CREATOR,MENU_FILENAME_PROP,sizeof(spec.name),NULL,spec.name);
-		RunScript(&spec);		
+	if (item == SCRIPTS_OPENFOLDER_ITEM) {
+		// open Scripts folder          
+		OpenOtherDoc(&spec, false, false, nil);
+	} else {
+		GetMenuItemProperty(GetMHandle(SCRIPTS_MENU), item,
+				    CREATOR, MENU_FILENAME_PROP,
+				    sizeof(spec.name), NULL, spec.name);
+		RunScript(&spec);
 	}
 	UseFeature(featureScriptsMenu);
 }
@@ -121,44 +125,56 @@ void DoScriptMenu(short item)
  **********************************************************************/
 OSErr GetScriptFolderSpec(FSSpecPtr spec)
 {
-	Str255	filename;
-	OSErr	err;
-	long domains[]={kUserDomain,kLocalDomain,kSystemDomain,kNetworkDomain};
+	Str255 filename;
+	OSErr err;
+	long domains[] =
+	    { kUserDomain, kLocalDomain, kSystemDomain, kNetworkDomain };
 	FSSpec mySpec;
-	short n = sizeof(domains)/sizeof(domains[0]);
+	short n = sizeof(domains) / sizeof(domains[0]);
 
 	// look for scripts in the Eudora Folder itself
 	mySpec.vRefNum = ItemsFolder.vRef;
 	mySpec.parID = ItemsFolder.dirId;
 	*mySpec.name = 0;
-	if (!SubFolderSpecOf(&mySpec,SCRIPTS_FOLDER,false,&mySpec))
-	{
+	if (!SubFolderSpecOf(&mySpec, SCRIPTS_FOLDER, false, &mySpec)) {
 		*spec = mySpec;
 		return noErr;
 	}
-	
 	// look in application support folders
-	while (n-->0)
-		if (!FindSubFolderSpec(domains[n],kApplicationSupportFolderType,EUDORA_EUDORA,false,&mySpec))
-		{
-			if (!SubFolderSpecOf(&mySpec,SCRIPTS_FOLDER,false,&mySpec))
-			{
+	while (n-- > 0)
+		if (!FindSubFolderSpec
+		    (domains[n], kApplicationSupportFolderType,
+		     EUDORA_EUDORA, false, &mySpec)) {
+			if (!SubFolderSpecOf
+			    (&mySpec, SCRIPTS_FOLDER, false, &mySpec)) {
 				*spec = mySpec;
 				return noErr;
 			}
 		}
-	
 	// look inside Eudora application folder
-	if (!(err=GetFileByRef(AppResFile,spec)))
-		if (err=FSMakeFSSpec(spec->vRefNum,spec->parID,GetRString(filename,SCRIPTS_FOLDER),spec))
-		{
+	if (!(err = GetFileByRef(AppResFile, spec)))
+		if (err =
+		    FSMakeFSSpec(spec->vRefNum, spec->parID,
+				 GetRString(filename, SCRIPTS_FOLDER),
+				 spec)) {
 			// try inside Eudora Stuff folder
-			if (!(err=GetFileByRef(AppResFile,spec)))
-			if (!(err=FSMakeFSSpec(spec->vRefNum,spec->parID,GetRString(filename,STUFF_FOLDER),spec)))
-			err=FSMakeFSSpec(spec->vRefNum,SpecDirId(spec),GetRString(filename,SCRIPTS_FOLDER),spec);
+			if (!(err = GetFileByRef(AppResFile, spec)))
+				if (!
+				    (err =
+				     FSMakeFSSpec(spec->vRefNum,
+						  spec->parID,
+						  GetRString(filename,
+							     STUFF_FOLDER),
+						  spec)))
+					err =
+					    FSMakeFSSpec(spec->vRefNum,
+							 SpecDirId(spec),
+							 GetRString
+							 (filename,
+							  SCRIPTS_FOLDER),
+							 spec);
 		}
-	if (!err)
-	{
+	if (!err) {
 		spec->parID = SpecDirId(spec);
 		*spec->name = 0;
 	}
@@ -172,77 +188,83 @@ OSErr GetScriptFolderSpec(FSSpecPtr spec)
  **********************************************************************/
 static OSErr RunScript(FSSpecPtr spec)
 {
-	Handle	hScript = nil;
-	AEDesc	scriptDesc;
-	OSAID	scriptID;
-	OSErr	err = noErr;
-	short	savedRes, refNum;
-	Str255	sErr;
+	Handle hScript = nil;
+	AEDesc scriptDesc;
+	OSAID scriptID;
+	OSErr err = noErr;
+	short savedRes, refNum;
+	Str255 sErr;
 
-	if (!OSALoad) return -1;	// make sure OSA is available
+	if (!OSALoad)
+		return -1;	// make sure OSA is available
 
-	IsAlias(spec,spec);
+	IsAlias(spec, spec);
 
 	// Script may be in resource or data fork. Look first for resource.
 
 	// Open the resource fork and grab the script resource.
 	savedRes = CurResFile();
-	refNum = FSpOpenResFile(spec,fsRdPerm);
-	if (refNum != -1)
-	{
+	refNum = FSpOpenResFile(spec, fsRdPerm);
+	if (refNum != -1) {
 		UseResFile(refNum);
-		if (hScript = Get1Resource(kOSAScriptResourceType,128))
+		if (hScript = Get1Resource(kOSAScriptResourceType, 128))
 			DetachResource(hScript);
 		else
 			err = ResError();
-	}
-	else
+	} else
 		err = ResError();
 	CloseResFile(refNum);
 	UseResFile(savedRes);
 
-	if (!hScript)
-	{
+	if (!hScript) {
 		// No resource. Try data fork.
-		err = Snarf(spec,&hScript,0);
+		err = Snarf(spec, &hScript, 0);
 	}
-
 	// make sure we're connecting to generic scripting component
-	if (!gGenericComponent)
-	{
-		gGenericComponent = OpenDefaultComponent(kOSAComponentType,kOSAGenericScriptingComponentSubtype);
-		if (!gGenericComponent) err = -1;
+	if (!gGenericComponent) {
+		gGenericComponent =
+		    OpenDefaultComponent(kOSAComponentType,
+					 kOSAGenericScriptingComponentSubtype);
+		if (!gGenericComponent)
+			err = -1;
 	}
-	
 	// Prepare and run the script. 
-	if (hScript)
-	{
-		if (!(err = AECreateDesc(typeOSAGenericStorage,LDRef(hScript),GetHandleSize(hScript),&scriptDesc)))
-		{
-			if (OSALoadExecute(gGenericComponent,&scriptDesc,kOSANullScript,kOSAModeNull,&scriptID) == errOSAScriptError)
-			{
-				//	Report execution error
-				AEDesc	errorDesc;
-				Handle	hError;
-				if (!OSAScriptError(gGenericComponent,kOSAErrorMessage,typeChar,&errorDesc))
-				{
-					if (!AEGetDescDataHandle(&errorDesc,&hError))
-					{
-						MakePStr(sErr,*hError,GetHandleSize(hError));
-						AEDisposeDescDataHandle(hError);
-						ComposeStdAlert(kAlertStopAlert,SCRIPT_EXECUTION_ERR,spec->name,sErr);
+	if (hScript) {
+		if (!
+		    (err =
+		     AECreateDesc(typeOSAGenericStorage, LDRef(hScript),
+				  GetHandleSize(hScript), &scriptDesc))) {
+			if (OSALoadExecute
+			    (gGenericComponent, &scriptDesc,
+			     kOSANullScript, kOSAModeNull,
+			     &scriptID) == errOSAScriptError) {
+				//      Report execution error
+				AEDesc errorDesc;
+				Handle hError;
+				if (!OSAScriptError
+				    (gGenericComponent, kOSAErrorMessage,
+				     typeChar, &errorDesc)) {
+					if (!AEGetDescDataHandle
+					    (&errorDesc, &hError)) {
+						MakePStr(sErr, *hError,
+							 GetHandleSize
+							 (hError));
+						AEDisposeDescDataHandle
+						    (hError);
+						ComposeStdAlert
+						    (kAlertStopAlert,
+						     SCRIPT_EXECUTION_ERR,
+						     spec->name, sErr);
 					}
 					AEDisposeDesc(&errorDesc);
 				}
 			}
 		}
-		OSADispose(gGenericComponent,scriptID);
+		OSADispose(gGenericComponent, scriptID);
 		AEDisposeDesc(&scriptDesc);
 		ZapHandle(hScript);
-	}
-	else
+	} else
 		err = -1;
 
 	return err;
 }
-

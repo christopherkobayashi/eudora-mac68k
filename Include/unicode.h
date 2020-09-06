@@ -81,40 +81,61 @@ typedef OneFontInfo ScriptFontInfo[32];
 
 OSStatus InitUnicode();
 void CleanupUnicode();
-OSStatus DrawUTF8Text(BytePtr theText, ByteCount bufLen, short width, ScriptFontInfo fonts);
-OSStatus MeasureUTF8Text(BytePtr theText, ByteCount bufLen, short *width, FontInfo *maxFont, Boolean *rightToLeft, ScriptFontInfo fonts);
+OSStatus DrawUTF8Text(BytePtr theText, ByteCount bufLen, short width,
+		      ScriptFontInfo fonts);
+OSStatus MeasureUTF8Text(BytePtr theText, ByteCount bufLen, short *width,
+			 FontInfo * maxFont, Boolean * rightToLeft,
+			 ScriptFontInfo fonts);
 
 // Pass -1 for inOff if inText is a pointer instead of a handle
-OSStatus InternetToUTF8Text(StringPtr charset, TextEncoding encoding, ConstTextPtr *inText, long inOff, ByteCount inLen, AccuPtr a, Boolean hint);
+OSStatus InternetToUTF8Text(StringPtr charset, TextEncoding encoding,
+			    ConstTextPtr * inText, long inOff,
+			    ByteCount inLen, AccuPtr a, Boolean hint);
 
 // Pass encoding and a if you want UTF8 in an accumulator; pass pte and pOff if you want a PETE handle
 // Pass -1 for tOff if Text is pointer instead of handle
-OSStatus InsertIntlHeaders(Handle text, long len, long tOff, AccuPtr a, TextEncoding encoding, PETEHandle pte, long *pOff);
+OSStatus InsertIntlHeaders(Handle text, long len, long tOff, AccuPtr a,
+			   TextEncoding encoding, PETEHandle pte,
+			   long *pOff);
 
-OSStatus CreateIntlConverter(IntlConverter *converter, TextEncoding encoding);
-OSStatus ConvertIntlText(IntlConverter *converter, StringPtr inText, ByteCount *inLen, StringPtr outText, ByteCount *outLen, TextEncoding *encoding, WordSpaceEnum addSpace, ByteOffset *spaceOffset);
+OSStatus CreateIntlConverter(IntlConverter * converter,
+			     TextEncoding encoding);
+OSStatus ConvertIntlText(IntlConverter * converter, StringPtr inText,
+			 ByteCount * inLen, StringPtr outText,
+			 ByteCount * outLen, TextEncoding * encoding,
+			 WordSpaceEnum addSpace, ByteOffset * spaceOffset);
 void DisposeIntlConverter(IntlConverter converter);
-OSStatus UpdateIntlConverter(IntlConverter *converter, StringPtr charset);
-OSStatus EncodingPlusPeteStyle(TextEncoding encoding, PETEStyleEntry *pse, ScriptCode *outScript);
-OSStatus PeteInsertHeader(PETEHandle pte, long *pOff, Handle text, long len, long tOff);
-OSErr PeteSetIntlText(PETEHandle pte, Handle text, long start, long end, IntlConverter *converter, TextEncoding encoding);
-OSErr PeteInsertIntlText(PETEHandle pte, long *offset, Handle text, long start, long end, IntlConverter *converter, TextEncoding encoding, Boolean needSpace, Boolean flush);
+OSStatus UpdateIntlConverter(IntlConverter * converter, StringPtr charset);
+OSStatus EncodingPlusPeteStyle(TextEncoding encoding, PETEStyleEntry * pse,
+			       ScriptCode * outScript);
+OSStatus PeteInsertHeader(PETEHandle pte, long *pOff, Handle text,
+			  long len, long tOff);
+OSErr PeteSetIntlText(PETEHandle pte, Handle text, long start, long end,
+		      IntlConverter * converter, TextEncoding encoding);
+OSErr PeteInsertIntlText(PETEHandle pte, long *offset, Handle text,
+			 long start, long end, IntlConverter * converter,
+			 TextEncoding encoding, Boolean needSpace,
+			 Boolean flush);
 Boolean EncodingError(OSStatus err);
 Boolean HasUnicode();
 // End buffer *before* the CR
-OSStatus MessageToUTF8(Handle inText, long inOff, ByteCount inLen, AccuPtr a, int *context);
-OSStatus PeteGetUTF8Text(PETEHandle pte, long offset, long iLen, long *iUsed, UPtr out, long oLen, long *oUsed);
+OSStatus MessageToUTF8(Handle inText, long inOff, ByteCount inLen,
+		       AccuPtr a, int *context);
+OSStatus PeteGetUTF8Text(PETEHandle pte, long offset, long iLen,
+			 long *iUsed, UPtr out, long oLen, long *oUsed);
 
 ByteCount UniCharToUTF8(UniChar c, unsigned char *utf8, ByteCount maxLen);
 UniChar UTF8ToUniChar(unsigned char *utf8, unsigned char **next);
 
 TextEncoding CreateSystemRomanEncoding();
-Boolean UTF8ToRoman(BytePtr theText, ByteCount *textLen, ByteCount bufLen);
+Boolean UTF8ToRoman(BytePtr theText, ByteCount * textLen,
+		    ByteCount bufLen);
 Boolean RomanToUTF8(PStr s, long strSize);
 ByteCount GoodUTF8Len(BytePtr utf8, ByteCount bufLen);
 #define TrimUTF8(s) (s[0] = GoodUTF8Len(&s[1], s[0]))
 
-OSErr SniffAndConvertHandleToRoman(Handle *hp);
-OSErr ConvertHandleToRoman(Handle *hp,TextEncoding encoding,uLong offset);
+OSErr SniffAndConvertHandleToRoman(Handle * hp);
+OSErr ConvertHandleToRoman(Handle * hp, TextEncoding encoding,
+			   uLong offset);
 
-#endif // __UNICODE_H__
+#endif				// __UNICODE_H__

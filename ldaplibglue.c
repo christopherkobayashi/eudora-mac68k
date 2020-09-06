@@ -43,11 +43,11 @@
 
 
 #ifndef LDAP_USE_STD_LINK_MECHANISM
-/* FINISH *//* do I need all of these */
+	    /* FINISH *//* do I need all of these */
 static CFragConnectionID LDAPSharedLibConnID;
 static Boolean LDAPSharedLibLoaded;
 static OSErr LDAPSharedLibLoadErr;
-#endif  // LDAP_USE_STD_LINK_MECHANISM
+#endif				// LDAP_USE_STD_LINK_MECHANISM
 
 
 
@@ -71,33 +71,30 @@ DECLARE_DFR_UPP(ldap_value_free);
 DECLARE_DFR_UPP(ldap_abandon);
 DECLARE_DFR_UPP(ldap_result);
 DECLARE_DFR_UPP(ldap_result2error);
-#endif  // LDAP_USE_STD_LINK_MECHANISM
+#endif				// LDAP_USE_STD_LINK_MECHANISM
 
 
 
 OSErr LoadLDAPSharedLib(void)
-
 {
 #ifndef LDAP_USE_STD_LINK_MECHANISM
 
-	OSErr			err, scratchErr;
-	Str255		libName;
-	OSType		libArchType;
-	CFragConnectionID		connID;
-	unsigned long				libVers, libMinVers;
+	OSErr err, scratchErr;
+	Str255 libName;
+	OSType libArchType;
+	CFragConnectionID connID;
+	unsigned long libVers, libMinVers;
 
 
 	LDAPSharedLibLoadErr = noErr;
 
 	GetRString(libName, LDAP_SHARED_LIB_TRUE_NAME);
-	if (libName[0] > 63)
-	{
+	if (libName[0] > 63) {
 		err = paramErr;
 		goto Error;
 	}
 	libArchType = GetROSType(LDAP_SHARED_LIB_ARCH_TYPE);
-	if (!(long)libArchType)
-	{
+	if (!(long) libArchType) {
 		err = paramErr;
 		goto Error;
 	}
@@ -134,15 +131,14 @@ OSErr LoadLDAPSharedLib(void)
 
 	ResetDFRLoaderGlobals();
 
-	if (err)
-	{
+	if (err) {
 		scratchErr = UnloadLDAPSharedLib();
 		return err;
 	}
 
 	GetEudoraLDAPLibVers(&libVers, &libMinVers);
-	if ((AppEudoraLDAPLibCurVers < libMinVers) || (libVers < AppEudoraLDAPLibMinVers))
-	{
+	if ((AppEudoraLDAPLibCurVers < libMinVers)
+	    || (libVers < AppEudoraLDAPLibMinVers)) {
 		scratchErr = UnloadLDAPSharedLib();
 		err = kDFLBadLibVersErr;
 		goto Error;
@@ -151,35 +147,35 @@ OSErr LoadLDAPSharedLib(void)
 	return noErr;
 
 
-Error:
+      Error:
 	LDAPSharedLibLoadErr = err;
 	return err;
 
-#else  // LDAP_USE_STD_LINK_MECHANISM
+#else				// LDAP_USE_STD_LINK_MECHANISM
 
-	OSErr						err;
-	unsigned long		libVers, libMinVers;
+	OSErr err;
+	unsigned long libVers, libMinVers;
 
 
 	err = SystemSupportsDFRLibraries(kAnyCFragArch);
 	if (err)
 		return err;
-	if ((long)ldap_open == kUnresolvedCFragSymbolAddress)
+	if ((long) ldap_open == kUnresolvedCFragSymbolAddress)
 		return cfragNoSymbolErr;
 	GetEudoraLDAPLibVers(&libVers, &libMinVers);
-	if ((AppEudoraLDAPLibCurVers < libMinVers) || (libVers < AppEudoraLDAPLibMinVers))
+	if ((AppEudoraLDAPLibCurVers < libMinVers)
+	    || (libVers < AppEudoraLDAPLibMinVers))
 		return kDFLBadLibVersErr;
 	return noErr;
 
-#endif  // LDAP_USE_STD_LINK_MECHANISM
+#endif				// LDAP_USE_STD_LINK_MECHANISM
 }
 
 
 OSErr UnloadLDAPSharedLib(void)
-
 {
 #ifndef LDAP_USE_STD_LINK_MECHANISM
-	OSErr		err;
+	OSErr err;
 
 
 	/* call UnloadDFRLibrary before calling UnloadDFR for that library's functions */
@@ -207,9 +203,9 @@ OSErr UnloadLDAPSharedLib(void)
 	UnloadDFR(ldap_result);
 	UnloadDFR(ldap_result2error);
 
-	LDAPSharedLibConnID = (void *)kNoConnectionID;
+	LDAPSharedLibConnID = (void *) kNoConnectionID;
 	LDAPSharedLibLoaded = false;
-#endif  // LDAP_USE_STD_LINK_MECHANISM
+#endif				// LDAP_USE_STD_LINK_MECHANISM
 
 	return noErr;
 }

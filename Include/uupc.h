@@ -32,18 +32,20 @@
 #ifndef UUPC_H
 #define UUPC_H
 
-short GetUUPCMail(Boolean quietly,short *gotSome);
-short GetUUPCMailSpec(FSSpecPtr spec, Boolean quietly,short *gotSome);
-short GetUUPCMailSpecToMailBox (FSSpecPtr spec, SInt8 permission, TOCHandle destBox, short *gotSome);
+short GetUUPCMail(Boolean quietly, short *gotSome);
+short GetUUPCMailSpec(FSSpecPtr spec, Boolean quietly, short *gotSome);
+short GetUUPCMailSpecToMailBox(FSSpecPtr spec, SInt8 permission,
+			       TOCHandle destBox, short *gotSome);
 
 OSErr UUPCRecvLine(TransStream stream, UPtr buffer, long *size);
-OSErr UUPCSendTrans(TransStream stream,UPtr text,long size, ...);
+OSErr UUPCSendTrans(TransStream stream, UPtr text, long size, ...);
 OSErr UUPCPrime(UPtr server);
 OSErr UUPCDry(TransStream stream);
-OSErr GenSendWDS(TransStream stream,wdsEntry *theWDS);
-int UUPCSendMessage(TOCHandle tocH,short sumNum,CSpecHandle specList);
+OSErr GenSendWDS(TransStream stream, wdsEntry * theWDS);
+int UUPCSendMessage(TOCHandle tocH, short sumNum, CSpecHandle specList);
 int UUPCWriteAddr(UPtr addr);
-OSErr WriteMailFile(MessHandle messH,short refN,Boolean mimeOnly,emsMIMEHandle *tlMIME);
+OSErr WriteMailFile(MessHandle messH, short refN, Boolean mimeOnly,
+		    emsMIMEHandle * tlMIME);
 #define UUPCIn (*CurPers)->uupcIn
 #define UUPCOut (*CurPers)->uupcOut
 #endif

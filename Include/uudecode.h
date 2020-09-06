@@ -32,20 +32,27 @@
 #ifndef UUDECODE_H
 #define UUDECODE_H
 
-typedef enum {NotAb, AbHeader, AbFinfo, AbFDates, AbName, AbResFork, AbDataFork,
-				AbSkip, AbExcess, AbDone, AbJustData, AbSLimit} AbStates;
+typedef enum { NotAb, AbHeader, AbFinfo, AbFDates, AbName, AbResFork,
+	    AbDataFork,
+	AbSkip, AbExcess, AbDone, AbJustData, AbSLimit
+} AbStates;
 
 typedef struct MIMEMapStruct *MIMEMapPtr;
-Boolean BeginAbomination(PStr name,HeaderDHandle hdh);
+Boolean BeginAbomination(PStr name, HeaderDHandle hdh);
 short SaveAbomination(UPtr text, long size);
-Boolean IsAbLine(UPtr text, long size,HeaderDHandle hdh);
-long UURightLength(UPtr text,long size);
-Boolean ConvertUUSingle(short refN,UPtr buf,long *size,POPLineType lineType,long estSize,MIMEMapPtr hintMM,HeaderDHandle hdh);
-Boolean ConvertSingle(short refN,UPtr buf,long size);
-OSErr SendSingle(TransStream stream,FSSpecPtr spec,Boolean dataToo,struct AttMapStruct *amp);
-OSErr SendDouble(TransStream stream,FSSpecPtr spec,long flags,short tableID,struct AttMapStruct *amp);
-OSErr SendUU(TransStream stream,FSSpecPtr spec,struct AttMapStruct *amp);
-OSErr SendDataFork(TransStream stream,FSSpecPtr spec,long flags,short tableID,struct AttMapStruct *amp);
+Boolean IsAbLine(UPtr text, long size, HeaderDHandle hdh);
+long UURightLength(UPtr text, long size);
+Boolean ConvertUUSingle(short refN, UPtr buf, long *size,
+			POPLineType lineType, long estSize,
+			MIMEMapPtr hintMM, HeaderDHandle hdh);
+Boolean ConvertSingle(short refN, UPtr buf, long size);
+OSErr SendSingle(TransStream stream, FSSpecPtr spec, Boolean dataToo,
+		 struct AttMapStruct *amp);
+OSErr SendDouble(TransStream stream, FSSpecPtr spec, long flags,
+		 short tableID, struct AttMapStruct *amp);
+OSErr SendUU(TransStream stream, FSSpecPtr spec, struct AttMapStruct *amp);
+OSErr SendDataFork(TransStream stream, FSSpecPtr spec, long flags,
+		   short tableID, struct AttMapStruct *amp);
 
 
 #endif

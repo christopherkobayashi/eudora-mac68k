@@ -35,33 +35,36 @@
 #define kEAEImmediate (kAEWaitReply|kAECanInteract|kAECanSwitchLayer)
 #define kEAEWhenever (kAEQueueReply|kAECanInteract|kAECanSwitchLayer)
 Boolean HaveScriptableFinder(void);
-OSErr SimpleAESend(ProcessSerialNumber *psn,DescType eClass, DescType eId, AppleEvent *reply,AESendMode mode,...);
-AEDescList *SimpleAEList(AEDescList *list,...);
-void NullADList(AEDescPtr first,...);
-void DisposeADList(AEDescPtr first,...);
+OSErr SimpleAESend(ProcessSerialNumber * psn, DescType eClass,
+		   DescType eId, AppleEvent * reply, AESendMode mode, ...);
+AEDescList *SimpleAEList(AEDescList * list, ...);
+void NullADList(AEDescPtr first, ...);
+void DisposeADList(AEDescPtr first, ...);
 OSErr GetAEError(AppleEventPtr ae);
 #define NullDesc(desc) do{(desc)->descriptorType = typeNull; (desc)->dataHandle = nil;}while(0)
-OSErr AEPutEnum(AppleEvent *event,DescType key,long theLong);
-OSErr AEPutLong(AppleEvent *event,DescType key,long theLong);
-OSErr AEPutPStr(AppleEvent *event,DescType key,PStr str);
-OSErr AEPutBool(AppleEvent *event,DescType key,Boolean b);
-OSErr AEPutRect(AppleEvent *event,DescType key,Rect *r);
-OSErr AEPutLongDate(AppleEvent *event,DescType key,uLong secs);
-PStr GetAEPStr(PStr s,AEDescPtr desc);
-Handle GetAEText(AEDescPtr desc,AEDesc *coerced,Boolean *wasCoerced);
+OSErr AEPutEnum(AppleEvent * event, DescType key, long theLong);
+OSErr AEPutLong(AppleEvent * event, DescType key, long theLong);
+OSErr AEPutPStr(AppleEvent * event, DescType key, PStr str);
+OSErr AEPutBool(AppleEvent * event, DescType key, Boolean b);
+OSErr AEPutRect(AppleEvent * event, DescType key, Rect * r);
+OSErr AEPutLongDate(AppleEvent * event, DescType key, uLong secs);
+PStr GetAEPStr(PStr s, AEDescPtr desc);
+Handle GetAEText(AEDescPtr desc, AEDesc * coerced, Boolean * wasCoerced);
 long GetAELong(AEDescPtr desc);
 Boolean GetAEBool(AEDescPtr desc);
-OSErr GetAEFSSpec(AEDescPtr desc,FSSpecPtr spec);
-OSErr GetAERect(AEDescPtr desc,Rect *r);
-OSErr GetAEPoint(AEDescPtr desc,Point *pt);
-OSErr GotAERequired(AppleEvent *event);
-OSErr MyAEPutAlias(AppleEvent *event, AEKeyword keyword, FSSpecPtr spec);
-Boolean GetAEDefaultBool(AppleEvent *ae,DescType param,Boolean deflt);
-OSErr MyAESend (const AppleEvent *theAppleEvent, AppleEvent *reply,
-	 AESendMode sendMode, AESendPriority sendPriority,
-	 long timeOutInTicks);
+OSErr GetAEFSSpec(AEDescPtr desc, FSSpecPtr spec);
+OSErr GetAERect(AEDescPtr desc, Rect * r);
+OSErr GetAEPoint(AEDescPtr desc, Point * pt);
+OSErr GotAERequired(AppleEvent * event);
+OSErr MyAEPutAlias(AppleEvent * event, AEKeyword keyword, FSSpecPtr spec);
+Boolean GetAEDefaultBool(AppleEvent * ae, DescType param, Boolean deflt);
+OSErr MyAESend(const AppleEvent * theAppleEvent, AppleEvent * reply,
+	       AESendMode sendMode, AESendPriority sendPriority,
+	       long timeOutInTicks);
 OSErr WhackFinder(FSSpecPtr spec);
-OSErr CopyReply (const AppleEvent *sourceReplyEvent, AppleEvent *targetReplyEvent);
-OSErr	ReflectAppleEvent (const AppleEvent *appleEvent, AppleEvent *replyEvent);
+OSErr CopyReply(const AppleEvent * sourceReplyEvent,
+		AppleEvent * targetReplyEvent);
+OSErr ReflectAppleEvent(const AppleEvent * appleEvent,
+			AppleEvent * replyEvent);
 
 #endif

@@ -58,44 +58,51 @@ Boolean ProgressOff;
 void DisposProgress(ProgressBHandle prbl);
 void InvalProgress(ProgressRectEnum which);
 
-void ProgressButton(MyWindowPtr win,ControlHandle button,long modifiers,short part);
-void InstallProgMessage(PStr string,ProgressRectEnum which);
+void ProgressButton(MyWindowPtr win, ControlHandle button, long modifiers,
+		    short part);
+void InstallProgMessage(PStr string, ProgressRectEnum which);
 Boolean ProgPosition(Boolean save, MyWindowPtr win);
 Boolean ProgClose(MyWindowPtr win);
 
 ProgressBlock **GetPrbl(MyWindowPtr win);
-void SetPrbl(MyWindowPtr win, ProgressBlock **prbl);
+void SetPrbl(MyWindowPtr win, ProgressBlock ** prbl);
 
 /**********************************************************************
  * ProgressR - progress, but with resource id's for title/subtitle
  **********************************************************************/
-void ProgressR(short percent,short remaining,short titleId,short subTitleId,PStr message)
+void ProgressR(short percent, short remaining, short titleId,
+	       short subTitleId, PStr message)
 {
 	Str255 title, subTitle;
-	
+
 	*title = *subTitle = 0;
-	
-	if (titleId) GetRString(title,titleId);
-	if (subTitleId) GetRString(subTitle,subTitleId);
-	Progress(percent,remaining,titleId?title:nil,subTitleId?subTitle:nil,message);
+
+	if (titleId)
+		GetRString(title, titleId);
+	if (subTitleId)
+		GetRString(subTitle, subTitleId);
+	Progress(percent, remaining, titleId ? title : nil,
+		 subTitleId ? subTitle : nil, message);
 }
 
 
 /**********************************************************************
  * ProgressMessage - put something in one section of progress
  **********************************************************************/
-void ProgressMessage(short which,PStr message)
+void ProgressMessage(short which, PStr message)
 {
-	UPtr msgs[kpTitle+1];
+	UPtr msgs[kpTitle + 1];
 	Str15 empty;
 	ProgressRectEnum remaining;
-	
+
 	*empty = 0;
-	remaining = which==kpMessage ? NoChange : NoBar;
-	WriteZero(msgs,sizeof(msgs));
+	remaining = which == kpMessage ? NoChange : NoBar;
+	WriteZero(msgs, sizeof(msgs));
 	msgs[which] = message;
-	while (which) msgs[--which] = empty;
-	Progress(remaining,remaining,msgs[kpTitle],msgs[kpSubTitle],msgs[kpMessage]);
+	while (which)
+		msgs[--which] = empty;
+	Progress(remaining, remaining, msgs[kpTitle], msgs[kpSubTitle],
+		 msgs[kpMessage]);
 }
 
 #pragma segment Progress
@@ -107,13 +114,15 @@ void ProgressMessage(short which,PStr message)
 ProgressBlock **GetPrbl(MyWindowPtr win)
 {
 #ifndef TASK_PROGRESS_ON
-	return((ProgressBlock **)GetMyWindowPrivateData(ProgWindow);
+	return ((ProgressBlock **) GetMyWindowPrivateData(ProgWindow);
 #else
 	ProgressBlock **prbl;
 
 	if (win && (win != TaskProgressWindow))
-		prbl = ProgWindow ? (ProgressBlock **)GetMyWindowPrivateData(ProgWindow) : nil;
-	else 
+		prbl =
+		    ProgWindow ? (ProgressBlock **)
+		    GetMyWindowPrivateData(ProgWindow) : nil;
+	else
 		prbl = GetCurrentThreadPrbl();
 	return (prbl);
 #endif
@@ -122,20 +131,17 @@ ProgressBlock **GetPrbl(MyWindowPtr win)
 /************************************************************************
  * SetPrbl - set appropriate ProgressBlock
  ************************************************************************/
-void SetPrbl(MyWindowPtr win, ProgressBlock **prbl)
+void SetPrbl(MyWindowPtr win, ProgressBlock ** prbl)
 {
 #ifndef TASK_PROGRESS_ON
-	SetMyWindowPrivateData (win, (long)prbl);
-#else 
-	if (win && (win != TaskProgressWindow))
-	{
-			SetMyWindowPrivateData (win, (long)prbl);
-	}
-	else
-	{
+	SetMyWindowPrivateData(win, (long) prbl);
+#else
+	if (win && (win != TaskProgressWindow)) {
+		SetMyWindowPrivateData(win, (long) prbl);
+	} else {
 		threadDataHandle threadData = nil;
-		
-		GetCurrentThreadData (&threadData);
+
+		GetCurrentThreadData(&threadData);
 		if (threadData)
 			(*threadData)->prbl = prbl;
 	}
@@ -146,11 +152,11 @@ void SetPrbl(MyWindowPtr win, ProgressBlock **prbl)
 /**********************************************************************
  * ProgressMessageR - like progressmessage, but with resource id instead
  **********************************************************************/
-void ProgressMessageR(short which,short messageId)
+void ProgressMessageR(short which, short messageId)
 {
 	Str255 message;
-	
-	ProgressMessage(which,GetRString(message,messageId));
+
+	ProgressMessage(which, GetRString(message, messageId));
 }
 
 /************************************************************************
@@ -159,7 +165,7 @@ void ProgressMessageR(short which,short messageId)
 int GetProgressBytes(void)
 {
 	ProgressBlock **prbl;
-	if (prbl = (ProgressBlock **)GetPrbl(ProgWindow))
+	if (prbl = (ProgressBlock **) GetPrbl(ProgWindow))
 		return ((*prbl)->on);
 	return 0;
 }
@@ -170,7 +176,7 @@ int GetProgressBytes(void)
 void ByteProgressExcess(int excess)
 {
 	ProgressBlock **prbl;
-	if (prbl = (ProgressBlock **)GetPrbl(ProgWindow))
+	if (prbl = (ProgressBlock **) GetPrbl(ProgWindow))
 		(*prbl)->excessOn += excess;
 }
 
@@ -181,21 +187,16 @@ void ByteProgress(UPtr message, int onLine, int totLines)
 {
 	ProgressBlock **prbl;
 	static long lastTicks;
-	
+
 	CycleBalls();
-	
-	if (prbl = (ProgressBlock **)GetPrbl(ProgWindow))
-	{		
-		if (onLine>=0)
-		{
+
+	if (prbl = (ProgressBlock **) GetPrbl(ProgWindow)) {
+		if (onLine >= 0) {
 			(*prbl)->on = onLine;
 			(*prbl)->excessOn = 0;
 			lastTicks = 0;
-		}
-		else 
-		{
-			if ((*prbl)->excessOn > 0)
-			{
+		} else {
+			if ((*prbl)->excessOn > 0) {
 				if (((*prbl)->excessOn -= onLine) < 0)
 					onLine = (*prbl)->excessOn;
 				else
@@ -203,20 +204,20 @@ void ByteProgress(UPtr message, int onLine, int totLines)
 			}
 			(*prbl)->on -= onLine;
 		}
-		if (totLines)
-		{
+		if (totLines) {
 			(*prbl)->excessOn = 0;
 			(*prbl)->total = totLines;
 			lastTicks = 0;
 		}
-		
-		if (!(*prbl)->total) return;
 
-		if (TickCount()-lastTicks>10)
-		{
+		if (!(*prbl)->total)
+			return;
+
+		if (TickCount() - lastTicks > 10) {
 			lastTicks = TickCount();
-			ASSERT((*prbl)->total!=0);
-			Progress((100*(*prbl)->on)/(*prbl)->total,NoChange,nil,nil,message);
+			ASSERT((*prbl)->total != 0);
+			Progress((100 * (*prbl)->on) / (*prbl)->total,
+				 NoChange, nil, nil, message);
 		}
 	}
 }
@@ -229,66 +230,86 @@ int OpenProgress(void)
 	int err;
 	ProgressBlock **prbl;
 	MyWindowPtr win;
-	WindowPtr	winWP;
+	WindowPtr winWP;
 	ControlHandle stopH;
 	short v;
-	
+
 #ifdef TASK_PROGRESS_ON
-	if (InAThread())
-	{
-		if (TaskProgressWindow && GetWindowKind(GetMyWindowWindowPtr(TaskProgressWindow))==TASKS_WIN)
+	if (InAThread()) {
+		if (TaskProgressWindow
+		    &&
+		    GetWindowKind(GetMyWindowWindowPtr(TaskProgressWindow))
+		    == TASKS_WIN)
 			InvalContent(TaskProgressWindow);
-		return(0);	
+		return (0);
 	}
 #endif
-	if (ProgWindow || PrefIsSet(PREF_NO_PROGRESS)) return(0);
-	if ((win=GetNewMyWindow(PROGRESS_WIND,nil,nil,InFront,False,False,PROG_WIN))==nil)
-	{
-		WarnUser(COULDNT_WIN,err=MemError());
-		return(err);
+	if (ProgWindow || PrefIsSet(PREF_NO_PROGRESS))
+		return (0);
+	if ((win =
+	     GetNewMyWindow(PROGRESS_WIND, nil, nil, InFront, False, False,
+			    PROG_WIN)) == nil) {
+		WarnUser(COULDNT_WIN, err = MemError());
+		return (err);
 	}
-	
+
 	winWP = GetMyWindowWindowPtr(win);
-	MySetThemeWindowBackground(win,kThemeActiveModelessDialogBackgroundBrush,False);
-	
-	InsetRect(&win->contR,6,6);
-	
+	MySetThemeWindowBackground(win,
+				   kThemeActiveModelessDialogBackgroundBrush,
+				   False);
+
+	InsetRect(&win->contR, 6, 6);
+
 	prbl = NewZH(ProgressBlock);
-	stopH = GetNewControl(STOP_CNTL,winWP);
-	if (!prbl || !stopH) {WarnUser(MEM_ERR,err=MemError()); DisposeWindow_(winWP); return(err);}
+	stopH = GetNewControl(STOP_CNTL, winWP);
+	if (!prbl || !stopH) {
+		WarnUser(MEM_ERR, err = MemError());
+		DisposeWindow_(winWP);
+		return (err);
+	}
 	(*prbl)->stop = stopH;
-	
+
 	/*
 	 * set rectangles
 	 */
 	LDRef(prbl);
 
 	v = INSET;
-	SetRect(&(*prbl)->rects[kpSubTitle],win->contR.left,v,win->contR.right-(3*ControlWi(stopH))/2-INSET,v+PROG_BOX_HI);
-	
-	SetRect(&(*prbl)->rects[kpRemaining],(*prbl)->rects[kpSubTitle].right+INSET,v,win->contR.right-INSET,v+PROG_BOX_HI);
-	
-	v += PROG_BOX_HI+INSET;
-	SetRect(&(*prbl)->rects[kpMessage],win->contR.left,v,win->contR.right-INSET,v+PROG_BOX_HI);
-	
-	v += PROG_BOX_HI+INSET;
-	SetRect(&(*prbl)->rects[kpBar],win->contR.left,v,win->contR.right-ControlWi(stopH)-INSET,v+PROG_BAR_HI);
-	(*prbl)->bar = NewControlSmall(winWP,&(*prbl)->rects[kpBar], "", false, 0,0,100, kControlProgressBarProc, 0 );
+	SetRect(&(*prbl)->rects[kpSubTitle], win->contR.left, v,
+		win->contR.right - (3 * ControlWi(stopH)) / 2 - INSET,
+		v + PROG_BOX_HI);
+
+	SetRect(&(*prbl)->rects[kpRemaining],
+		(*prbl)->rects[kpSubTitle].right + INSET, v,
+		win->contR.right - INSET, v + PROG_BOX_HI);
+
+	v += PROG_BOX_HI + INSET;
+	SetRect(&(*prbl)->rects[kpMessage], win->contR.left, v,
+		win->contR.right - INSET, v + PROG_BOX_HI);
+
+	v += PROG_BOX_HI + INSET;
+	SetRect(&(*prbl)->rects[kpBar], win->contR.left, v,
+		win->contR.right - ControlWi(stopH) - INSET,
+		v + PROG_BAR_HI);
+	(*prbl)->bar =
+	    NewControlSmall(winWP, &(*prbl)->rects[kpBar], "", false, 0, 0,
+			    100, kControlProgressBarProc, 0);
 
 	UL(prbl);
-	
+
 	/*
 	 * move the stop button
 	 */
-	MoveMyCntl(stopH,(*prbl)->rects[kpBar].right+6,(*prbl)->rects[kpBar].top-(ControlHi(stopH)-12)/2,
-									 ControlWi(stopH),ControlHi(stopH));
-	
+	MoveMyCntl(stopH, (*prbl)->rects[kpBar].right + 6,
+		   (*prbl)->rects[kpBar].top - (ControlHi(stopH) - 12) / 2,
+		   ControlWi(stopH), ControlHi(stopH));
+
 	/*
 	 * and the rest
 	 */
 	TextFont(0);
 	TextSize(0);
-	SetMyWindowPrivateData (win, (long) prbl);
+	SetMyWindowPrivateData(win, (long) prbl);
 	win->update = ProgressUpdate;
 	win->button = ProgressButton;
 	win->position = ProgPosition;
@@ -299,22 +320,28 @@ int OpenProgress(void)
 	win->isRunt = True;
 	ShowMyWindow(winWP);
 	PushModalWindow(winWP);
-	EnableMenus(winWP,False);
-	return(noErr);
+	EnableMenus(winWP, False);
+	return (noErr);
 }
+
 #pragma segment Progress
 
 /**********************************************************************
  * ProgressButton - handle the stop button
  **********************************************************************/
-void ProgressButton(MyWindowPtr win,ControlHandle button,long modifiers,short part)
+void ProgressButton(MyWindowPtr win, ControlHandle button, long modifiers,
+		    short part)
 {
-	short	windowKind = GetWindowKind(GetMyWindowWindowPtr(win));
+	short windowKind = GetWindowKind(GetMyWindowWindowPtr(win));
 
-	if (part==kControlButtonPart) 
-	{
+	if (part == kControlButtonPart) {
 		CommandPeriod = True;
-		AuditHit((modifiers&shiftKey)!=0, (modifiers&controlKey)!=0, (modifiers&optionKey)!=0, (modifiers&cmdKey)!=0, false, windowKind, AUDITCONTROLID(windowKind,kControlButtonPart), mouseDown);
+		AuditHit((modifiers & shiftKey) != 0,
+			 (modifiers & controlKey) != 0,
+			 (modifiers & optionKey) != 0,
+			 (modifiers & cmdKey) != 0, false, windowKind,
+			 AUDITCONTROLID(windowKind, kControlButtonPart),
+			 mouseDown);
 	}
 }
 
@@ -324,9 +351,11 @@ void ProgressButton(MyWindowPtr win,ControlHandle button,long modifiers,short pa
 void CloseProgress(void)
 {
 #ifdef TASK_PROGRESS_ON
-	if (ProgWindow && (ProgWindow!=TaskProgressWindow)) CloseMyWindow(GetMyWindowWindowPtr(ProgWindow));
+	if (ProgWindow && (ProgWindow != TaskProgressWindow))
+		CloseMyWindow(GetMyWindowWindowPtr(ProgWindow));
 #else
-	if (ProgWindow) CloseMyWindow(GetMyWindowWindowPtr(ProgWindow));
+	if (ProgWindow)
+		CloseMyWindow(GetMyWindowWindowPtr(ProgWindow));
 #endif
 }
 
@@ -335,12 +364,12 @@ void CloseProgress(void)
  **********************************************************************/
 Boolean ProgClose(MyWindowPtr win)
 {
-	DisposProgress((ProgressBHandle)GetMyWindowPrivateData(win));
-	SetMyWindowPrivateData (win, nil);
+	DisposProgress((ProgressBHandle) GetMyWindowPrivateData(win));
+	SetMyWindowPrivateData(win, nil);
 	ProgWindow = nil;
-	if (!InBG) 
-		FlushEvents(keyDownMask,0);	
-	return(True);
+	if (!InBG)
+		FlushEvents(keyDownMask, 0);
+	return (True);
 }
 
 /************************************************************************
@@ -348,10 +377,10 @@ Boolean ProgClose(MyWindowPtr win)
  ************************************************************************/
 void DisposProgress(ProgressBHandle prbl)
 {
-	if (prbl==nil) return;
-	if ((*prbl)->bar)
-	{
-		SetControlVisibility((*prbl)->bar,false,false);
+	if (prbl == nil)
+		return;
+	if ((*prbl)->bar) {
+		SetControlVisibility((*prbl)->bar, false, false);
 		DisposeControl((*prbl)->bar);
 		(*prbl)->bar = nil;
 	}
@@ -364,76 +393,74 @@ void DisposProgress(ProgressBHandle prbl)
  * Progress - record progress in the progress window
  ************************************************************************/
  // thread-aware version
- 
- void Progress(short percent,short remaining,PStr title,PStr subTitle,PStr message)
+
+void Progress(short percent, short remaining, PStr title, PStr subTitle,
+	      PStr message)
 {
-	WindowPtr	ProgWindowWP = GetMyWindowWindowPtr(ProgWindow);
+	WindowPtr ProgWindowWP = GetMyWindowWindowPtr(ProgWindow);
 	ProgressBlock **prbl;
 	Str255 scratch;
-	
+
 	MiniEvents();
 
 #ifdef TASK_PROGRESS_ON
 	if (title)
-		InstallProgMessage(title,kpTitle);
+		InstallProgMessage(title, kpTitle);
 #endif
-	
-	if (!(prbl = (ProgressBlock **)GetPrbl(ProgWindow))) return;
-	if (percent!=NoChange && percent!=(*prbl)->percent)
-	{
+
+	if (!(prbl = (ProgressBlock **) GetPrbl(ProgWindow)))
+		return;
+	if (percent != NoChange && percent != (*prbl)->percent) {
 		(*prbl)->percent = percent;
-	  if (percent==NoBar)
-		{
+		if (percent == NoBar) {
 			if ((*prbl)->bar)
-				SetControlVisibility((*prbl)->bar,false,false);
-//				HideControl((*prbl)->bar);
-		}
-		else if ((*prbl)->bar)
-		{
-			SetControlVisibility((*prbl)->bar,false,false);
-			SetControlValue((*prbl)->bar,percent);
-			SetControlVisibility((*prbl)->bar,true,false);
+				SetControlVisibility((*prbl)->bar, false,
+						     false);
+//                              HideControl((*prbl)->bar);
+		} else if ((*prbl)->bar) {
+			SetControlVisibility((*prbl)->bar, false, false);
+			SetControlValue((*prbl)->bar, percent);
+			SetControlVisibility((*prbl)->bar, true, false);
 #ifdef TASK_PROGRESS_ON
-			if (ProgWindow==TaskProgressWindow)	
+			if (ProgWindow == TaskProgressWindow)
 				DrawTaskProgressBar((*prbl)->bar);
 			else
 #endif
 				ShowControl((*prbl)->bar);
 		}
 	}
-	
-	InstallProgMessage(message,kpMessage);
-	InstallProgMessage(subTitle,kpSubTitle);
-	if (remaining!=NoChange)
-	{
-		if (remaining>0) NumToString(remaining,scratch);
-		else *scratch = 0;
-		InstallProgMessage(scratch,kpRemaining);
-	}
-	
-	if (!ProgWindow) return;
 
-	if (title)
-	{
-#ifdef TASK_PROGRESS_ON
-		if (ProgWindow==TaskProgressWindow)
-			PSCopy((*prbl)->title,title);	
+	InstallProgMessage(message, kpMessage);
+	InstallProgMessage(subTitle, kpSubTitle);
+	if (remaining != NoChange) {
+		if (remaining > 0)
+			NumToString(remaining, scratch);
 		else
-		{
-#endif	
-		MyGetWTitle(ProgWindowWP,scratch);
-		if (!EqualString(title,scratch,True,True))
-			SetWTitle_(ProgWindowWP,title);
+			*scratch = 0;
+		InstallProgMessage(scratch, kpRemaining);
+	}
+
+	if (!ProgWindow)
+		return;
+
+	if (title) {
+#ifdef TASK_PROGRESS_ON
+		if (ProgWindow == TaskProgressWindow)
+			PSCopy((*prbl)->title, title);
+		else {
+#endif
+			MyGetWTitle(ProgWindowWP, scratch);
+			if (!EqualString(title, scratch, True, True))
+				SetWTitle_(ProgWindowWP, title);
 #ifdef TASK_PROGRESS_ON
 		}
-#endif	
-	}
-
-#ifdef THREADING_ON
-	if (!InAThread ())	
 #endif
-	  if (FrontWindow_()!=ProgWindowWP)
-		UserSelectWindow(ProgWindowWP);
+	}
+#ifdef THREADING_ON
+	if (!InAThread())
+#endif
+		if (FrontWindow_() != ProgWindowWP)
+			UserSelectWindow(ProgWindowWP);
 	UpdateMyWindow(ProgWindowWP);
 }
 
@@ -444,29 +471,30 @@ Boolean ProgPosition(Boolean save, MyWindowPtr win)
 {
 	Str31 progress;
 
-	SetWTitle_(GetMyWindowWindowPtr(win),GetRString(progress,PROGRESS));
-	return(PositionPrefsTitle(save,win));
+	SetWTitle_(GetMyWindowWindowPtr(win),
+		   GetRString(progress, PROGRESS));
+	return (PositionPrefsTitle(save, win));
 }
 
 /**********************************************************************
  * InstallProgressMessage - install a progress message
  **********************************************************************/
-void InstallProgMessage(PStr string,ProgressRectEnum which)
+void InstallProgMessage(PStr string, ProgressRectEnum which)
 {
 	Str255 scratch;
-	ProgressBlock **prbl;	
-	
-	if (!(prbl = (ProgressBlock **)GetPrbl(ProgWindow))) return;
-	
-	if (string)
-	{
-		PCopyTrim(scratch,string,sizeof(scratch));
+	ProgressBlock **prbl;
+
+	if (!(prbl = (ProgressBlock **) GetPrbl(ProgWindow)))
+		return;
+
+	if (string) {
+		PCopyTrim(scratch, string, sizeof(scratch));
 		LDRef(prbl);
-		if (!StringSame(scratch,(*prbl)->messages[which]))
-		{
-			PCopy((*prbl)->messages[which],scratch);
+		if (!StringSame(scratch, (*prbl)->messages[which])) {
+			PCopy((*prbl)->messages[which], scratch);
 			InvalProgress(which);
-			if (which==kpMessage) Log(LOG_PROG,scratch);
+			if (which == kpMessage)
+				Log(LOG_PROG, scratch);
 		}
 		UL(prbl);
 	}
@@ -477,29 +505,35 @@ void InstallProgMessage(PStr string,ProgressRectEnum which)
  ************************************************************************/
 void InvalProgress(ProgressRectEnum which)
 {
-	ProgressBlock **prbl;	
+	ProgressBlock **prbl;
 	short start, stop;
 
 #ifdef TASK_PROGRESS_ON
 	if (!ProgWindow)
 		return;
-	if (ProgWindow==TaskProgressWindow && GetWindowKind(GetMyWindowWindowPtr(TaskProgressWindow))!=TASKS_WIN)
+	if (ProgWindow == TaskProgressWindow
+	    && GetWindowKind(GetMyWindowWindowPtr(TaskProgressWindow)) !=
+	    TASKS_WIN)
 		return;
 #endif
-	if (!(prbl = (ProgressBlock **)GetPrbl(ProgWindow))) return;
+	if (!(prbl = (ProgressBlock **) GetPrbl(ProgWindow)))
+		return;
 	PushGWorld();
 	SetPort_(GetMyWindowCGrafPtr(ProgWindow));
-	if (which==kpTitle) {start=0;stop=kpTitle;}
-	else start=stop=which;
-	for (;start<=stop;start++)
-	{
-		Rect textRect=(*prbl)->rects[start];
+	if (which == kpTitle) {
+		start = 0;
+		stop = kpTitle;
+	} else
+		start = stop = which;
+	for (; start <= stop; start++) {
+		Rect textRect = (*prbl)->rects[start];
 #ifdef TASK_PROGRESS_ON
-		if (ProgWindow==TaskProgressWindow)
+		if (ProgWindow == TaskProgressWindow)
 			InvalTPRect(&textRect);
 		else
 #endif
-		InvalWindowRect(GetMyWindowWindowPtr(ProgWindow),&textRect);
+			InvalWindowRect(GetMyWindowWindowPtr(ProgWindow),
+					&textRect);
 	}
 	PopGWorld();
 }
@@ -510,28 +544,31 @@ void InvalProgress(ProgressRectEnum which)
  ************************************************************************/
 void ProgressUpdate(MyWindowPtr win)
 {
-	ProgressBlock **prbl;		
+	ProgressBlock **prbl;
 	ProgressRectEnum which;
-			
-	if (!(prbl = (ProgressBlock **)GetPrbl(win))) return;
-		
+
+	if (!(prbl = (ProgressBlock **) GetPrbl(win)))
+		return;
+
 	ClipRect(&win->contR);
 	EraseRect(&win->contR);
-	
-	SetThemeTextColor(win->isActive ? kThemeActiveModelessDialogTextColor : kThemeInactiveModelessDialogTextColor,
-		RectDepth(&win->contR),True);
-		
+
+	SetThemeTextColor(win->
+			  isActive ? kThemeActiveModelessDialogTextColor :
+			  kThemeInactiveModelessDialogTextColor,
+			  RectDepth(&win->contR), True);
+
 	LDRef(prbl);
-	for (which=0;which<kpTitle;which++)
-	{
-		MoveTo((*prbl)->rects[which].left,(*prbl)->rects[which].bottom-4);
-		if (which==kpMessage)
-		{
+	for (which = 0; which < kpTitle; which++) {
+		MoveTo((*prbl)->rects[which].left,
+		       (*prbl)->rects[which].bottom - 4);
+		if (which == kpMessage) {
 			SetSmallSysFont();
 		}
 		ClipRect(&(*prbl)->rects[which]);
 		DrawString((*prbl)->messages[which]);
-		TextFont(0);TextSize(0);
+		TextFont(0);
+		TextSize(0);
 	}
 	ClipRect(&win->contR);
 	UL(prbl);
@@ -544,16 +581,17 @@ void PushProgress(void)
 {
 	ProgressBHandle prbl;
 	ProgressBHandle pH;
-	
-	if (!ProgWindow) return;
 
-	if (!(prbl = (ProgressBlock **)GetPrbl(ProgWindow))) return;
+	if (!ProgWindow)
+		return;
+
+	if (!(prbl = (ProgressBlock **) GetPrbl(ProgWindow)))
+		return;
 
 	UL(prbl);
-	MyGetWTitle(GetMyWindowWindowPtr(ProgWindow),(*prbl)->title);
+	MyGetWTitle(GetMyWindowWindowPtr(ProgWindow), (*prbl)->title);
 	UL(prbl);
-	if (pH=NuHandle(sizeof(ProgressBlock)))
-	{
+	if (pH = NuHandle(sizeof(ProgressBlock))) {
 		**pH = **prbl;
 		(*pH)->next = prbl;
 		SetPrbl(ProgWindow, pH);
@@ -565,39 +603,41 @@ void PushProgress(void)
  ************************************************************************/
 void PopProgress(Boolean messageOnly)
 {
-	WindowPtr	ProgWindowWP = GetMyWindowWindowPtr (ProgWindow);
+	WindowPtr ProgWindowWP = GetMyWindowWindowPtr(ProgWindow);
 	ProgressBHandle prbl;
 	ProgressBHandle pNext;
-	
-	if (!ProgWindow) return;
 
-	if (!(prbl = (ProgressBlock **)GetPrbl(ProgWindow))) return;
+	if (!ProgWindow)
+		return;
 
-	if ((*prbl)->next)
-	{
+	if (!(prbl = (ProgressBlock **) GetPrbl(ProgWindow)))
+		return;
+
+	if ((*prbl)->next) {
 		pNext = (*prbl)->next;
 		(*pNext)->percent = (*prbl)->percent;
 		(*pNext)->on = (*prbl)->on;
 		(*pNext)->total = (*prbl)->total;
-	  SetWTitle_(ProgWindowWP,LDRef(pNext)->title); UL(pNext);
-	  if ((*prbl)->bar)
-	  {
-	  	SetControlValue((*prbl)->bar,(*prbl)->percent);
-	  	if ((*prbl)->percent==NoBar) 
-				SetControlVisibility((*prbl)->bar,false,true);
-//				HideControl((*prbl)->bar);
-	  	else 
-	  	{
-		  	SetControlVisibility((*prbl)->bar,true,false);
+		SetWTitle_(ProgWindowWP, LDRef(pNext)->title);
+		UL(pNext);
+		if ((*prbl)->bar) {
+			SetControlValue((*prbl)->bar, (*prbl)->percent);
+			if ((*prbl)->percent == NoBar)
+				SetControlVisibility((*prbl)->bar, false,
+						     true);
+//                              HideControl((*prbl)->bar);
+			else {
+				SetControlVisibility((*prbl)->bar, true,
+						     false);
 #ifdef TASK_PROGRESS_ON
-				if (ProgWindow==TaskProgressWindow)	
+				if (ProgWindow == TaskProgressWindow)
 					DrawTaskProgressBar((*prbl)->bar);
 				else
 #endif
-				 	ShowControl((*prbl)->bar);
-	  	}
-	  }
-			
+					ShowControl((*prbl)->bar);
+			}
+		}
+
 		SetPrbl(ProgWindow, pNext);
 		InvalProgress(kpTitle);
 		ZapHandle(prbl);
@@ -610,15 +650,14 @@ void PopProgress(Boolean messageOnly)
  **********************************************************************/
 void PressStop(void)
 {
-	WindowPtr	ProgWindowWP = GetMyWindowWindowPtr (ProgWindow);
-	ProgressBlock **prbl = (ProgressBlock **)GetPrbl(ProgWindow);
-	ControlRef	stopH;
+	WindowPtr ProgWindowWP = GetMyWindowWindowPtr(ProgWindow);
+	ProgressBlock **prbl = (ProgressBlock **) GetPrbl(ProgWindow);
+	ControlRef stopH;
 
-	if (ProgWindow && prbl && (stopH = (*prbl)->stop))
-	{
-		HiliteControl(stopH,1);
+	if (ProgWindow && prbl && (stopH = (*prbl)->stop)) {
+		HiliteControl(stopH, 1);
 		Pause(20L);
-		HiliteControl(stopH,0);
+		HiliteControl(stopH, 0);
 	}
 }
 
@@ -629,14 +668,14 @@ void PressStop(void)
  ************************************************************************/
 Boolean ProgressIsOpen(void)
 {
-	return(ProgWindow!=nil);
+	return (ProgWindow != nil);
 }
+
 /************************************************************************
  * ProgressIsTop - is the progress window topmost?
  ************************************************************************/
 Boolean ProgressIsTop(void)
 {
-	return(ProgWindow!=nil && GetMyWindowWindowPtr(ProgWindow)==FrontWindow_());
+	return (ProgWindow != nil
+		&& GetMyWindowWindowPtr(ProgWindow) == FrontWindow_());
 }
-
-

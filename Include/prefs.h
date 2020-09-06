@@ -33,24 +33,26 @@
 #define PREFS_H
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
-PStr PrefHelpString(short pref, PStr string,Boolean geeky);
+PStr PrefHelpString(short pref, PStr string, Boolean geeky);
 void DoAboutUIUCmail(void);
 Boolean PrefIsSet(short pref);
 Boolean PrefEnabled(short pref);
-short SettingsPtr(ResType type,UPtr name,short id,UPtr dataPtr, long dataSize);
-short SettingsHandle(ResType type,UPtr name,short id,UHandle	dataHandle);
+short SettingsPtr(ResType type, UPtr name, short id, UPtr dataPtr,
+		  long dataSize);
+short SettingsHandle(ResType type, UPtr name, short id,
+		     UHandle dataHandle);
 #define GetPOPInfo(u,h) GetPOPInfoLo(u,h,nil)
 #define GetSMTPInfo(h) GetSMTPInfoLo(h,nil)
-OSErr GetPOPInfoLo(UPtr user, UPtr host,long *port);
-UPtr GetSMTPInfoLo(UPtr host,long *port);
-UPtr GetReturnAddr(UPtr addr,Boolean comments);
+OSErr GetPOPInfoLo(UPtr user, UPtr host, long *port);
+UPtr GetSMTPInfoLo(UPtr host, long *port);
+UPtr GetReturnAddr(UPtr addr, Boolean comments);
 UPtr GetShortReturnAddr(UPtr addr);
-Boolean GetVolpath(UPtr volpath,UPtr volName,long *dirId);
+Boolean GetVolpath(UPtr volpath, UPtr volName, long *dirId);
 void SaveBoxLines(void);
 OSErr GetAttFoldSpec(FSSpecPtr spec);
-Boolean GetHexPath(UPtr folder,UPtr volpath);
-OSErr SetPref(short pref,PStr value);
-void SetPrefLong(short prefNum,long val);
+Boolean GetHexPath(UPtr folder, UPtr volpath);
+OSErr SetPref(short pref, PStr value);
+void SetPrefLong(short prefNum, long val);
 OSErr SetStrOverride(short pref, PStr value);
 OSType FetchOSType(short index);
 OSType DefaultCreator(void);
@@ -64,7 +66,7 @@ PStr GetDefPref(PStr string, short prefNum);
 long GetPrefLong(short prefNum);
 Boolean TogglePref(short pref);
 Boolean AutoCheckOK(void);
-Boolean Mom(short yesId,short noId,short prefId,short fmt,...);
+Boolean Mom(short yesId, short noId, short prefId, short fmt, ...);
 Boolean Wife(short buttonID, short prefId, short fmt, ...);
 PStr GetPrefNoDominant(PStr string, short prefNum);
 Boolean GetPrefBitNoDominant(short prefNum, long mask);
@@ -81,40 +83,38 @@ long SigValidate(long sigID);
 #define SetPrefBit(pref,mask)	SetPrefLong(pref,GetPrefLong(pref)|mask)
 #define ClearPrefBit(pref,mask)	SetPrefLong(pref,GetPrefLong(pref)&~mask)
 
-void 	     CheckForDefaultMailClient ();
+void CheckForDefaultMailClient();
 
 // (jp) Gee guys, thanks for changing the name of KCReleaseItemRef in Universal Headers 3.4...
 #define	KCReleaseItemRef	KCReleaseItem
 #ifdef HAVE_KEYCHAIN
 #define KeychainAvailable() (KeychainManagerAvailable() && KCAddInternetPassword && KCFindInternetPassword && KCDeleteItem && KCReleaseItemRef)
 OSErr UpdatePersKCPassword(PersHandle pers);
-OSErr FindPersKCPassword(PersHandle pers,PStr password,uLong passStringLen);
+OSErr FindPersKCPassword(PersHandle pers, PStr password,
+			 uLong passStringLen);
 OSErr DeletePersKCPassword(PersHandle pers);
-OSErr AddPersKCPassword(PersHandle pers,PStr password);
-#else //HAVE_KEYCHAIN
+OSErr AddPersKCPassword(PersHandle pers, PStr password);
+#else				//HAVE_KEYCHAIN
 #define KeychainAvailable() (false)
-#endif //HAVE_KEYCHAIN
+#endif				//HAVE_KEYCHAIN
 
-typedef enum
-{
+typedef enum {
 	setDITLBase = 2000,
 	setDITLBasic = 2001,
 	setDITLLimit = 3000,
 	setDITLProOnly = 3000,
 } SettingsDITLEnum;
 
-typedef enum
-{
-	popRUIDL=1,
+typedef enum {
+	popRUIDL = 1,
 	popRStatus,
 	popRLast
 } POPSettingEnum;
 
-typedef enum
-{
-	ssBloat,	// send multipart/alternative
-	ssStrip,	// send plaintext
-	ssStyle,	// send just style
+typedef enum {
+	ssBloat,		// send multipart/alternative
+	ssStrip,		// send plaintext
+	ssStyle,		// send just style
 	ssLimit
 } SendStyleEnum;
 
@@ -159,23 +159,23 @@ OSErr ZapSettingsResource(OSType type, short id);
 //MJD #define UseListColors (PrefIsSet(PREF_USE_LIST_COLORS))
 #define UseListColors (false)
 
-#define	kSpeakEmailRulesMask								1L		// Don't apply email specifc rules to speaking (trust the Speech Manager to mangle things)
-#define	kSpeakEliminateTheUnspeakableMask		2L		// Don't eliminate strings of unspeakable characters (like *****, -----, etc -- which the Speech Manager is very happy to speak)
-#define	kSpeakMixedCaseMask									4L		// Don't separate mixed case and alpha/numeric strings with a breaking space
-#define	kSpeakFindQuoteMask									8L		// Don't attempt to find and eliminate quoting prefixes (let the Speech Manager struggle through the >'s)
-#define	kSpeakQuotePhraseMask							 16L		// Don't speak a phrase at the start and end of quoted blocks
-#define	kSpeakNewMessagePhraseMask				 32L		// Don't speak a phrase between messages read from a mailbox
-#define	kSpeakTruncUrlMask								 64L		// Don't truncate spoken URL's to its minimal path
-#define	kSpeakAttemptUrlMask							128L		// Don't even attempt to recognize the presence of a URL
-#define	kSpeakDottyMask										256L		// Don't attempt to intelligently distinquish between period, "dot" and "point"
-#define	kSpeakJohnnyCantReadMask					512L		// Don't correct the Speech Manager's embarrassing attempt at pronouncing "email"
-#define	kSpeakQuotesMask								 1024L		// Don't bother reading quoted text at all
-#define	kSpeakModifyQuoteVoiceMask			 2048L		// Don't modify the pitch of the voice when speaking quoted passages
-#define	kSpeakEmphasisMask							 4096L		// Don't attempt to detect emphasis, either in styled text or creative use of ASCII
-#define	kSpeakAcronymsMask							 8192L		// Don't translate common acronyms to their spoken equivalents
-#define	kSpeakUpperToLowerWordBreakMask	16384L		// Break words at strict upper-to-lowercase transitions instead of assuming the last cap is the first character of a new word
-#define	kSpeakShorthandMask							32768L		// Don't attempt to translate specific forms of shorthand like "w/regards"
-#define	kSpeakShortLinesMask						65536L		// Don't place a pause (via an inserted period) at the end of short lines
+#define	kSpeakEmailRulesMask								1L	// Don't apply email specifc rules to speaking (trust the Speech Manager to mangle things)
+#define	kSpeakEliminateTheUnspeakableMask		2L	// Don't eliminate strings of unspeakable characters (like *****, -----, etc -- which the Speech Manager is very happy to speak)
+#define	kSpeakMixedCaseMask									4L	// Don't separate mixed case and alpha/numeric strings with a breaking space
+#define	kSpeakFindQuoteMask									8L	// Don't attempt to find and eliminate quoting prefixes (let the Speech Manager struggle through the >'s)
+#define	kSpeakQuotePhraseMask							 16L	// Don't speak a phrase at the start and end of quoted blocks
+#define	kSpeakNewMessagePhraseMask				 32L	// Don't speak a phrase between messages read from a mailbox
+#define	kSpeakTruncUrlMask								 64L	// Don't truncate spoken URL's to its minimal path
+#define	kSpeakAttemptUrlMask							128L	// Don't even attempt to recognize the presence of a URL
+#define	kSpeakDottyMask										256L	// Don't attempt to intelligently distinquish between period, "dot" and "point"
+#define	kSpeakJohnnyCantReadMask					512L	// Don't correct the Speech Manager's embarrassing attempt at pronouncing "email"
+#define	kSpeakQuotesMask								 1024L	// Don't bother reading quoted text at all
+#define	kSpeakModifyQuoteVoiceMask			 2048L	// Don't modify the pitch of the voice when speaking quoted passages
+#define	kSpeakEmphasisMask							 4096L	// Don't attempt to detect emphasis, either in styled text or creative use of ASCII
+#define	kSpeakAcronymsMask							 8192L	// Don't translate common acronyms to their spoken equivalents
+#define	kSpeakUpperToLowerWordBreakMask	16384L	// Break words at strict upper-to-lowercase transitions instead of assuming the last cap is the first character of a new word
+#define	kSpeakShorthandMask							32768L	// Don't attempt to translate specific forms of shorthand like "w/regards"
+#define	kSpeakShortLinesMask						65536L	// Don't place a pause (via an inserted period) at the end of short lines
 
 #define	UseSpeakEmailRules							(((M_T1=GetPrefLong(PREF_SPEAK_BODY_GYMNASTICS_BITS))&kSpeakEmailRulesMask)==0)
 #define UseSpeakEliminateTheUnspeakable	(UseSpeakEmailRules && (M_T1&kSpeakEliminateTheUnspeakableMask)==0)

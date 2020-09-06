@@ -47,10 +47,10 @@
 
 void AbortPGP(PGPCPtr pgp);
 void EndPGP(PGPCPtr pgp);
-void ClosePGP(PGPCPtr pgp,Boolean abort);
-PGPEnum PGPTypeOf(PGPCPtr pgpc,UPtr buf,long size);
+void ClosePGP(PGPCPtr pgp, Boolean abort);
+PGPEnum PGPTypeOf(PGPCPtr pgpc, UPtr buf, long size);
 OSType PGPCreator(void);
-OSErr PGPRecvInit(FSSpecPtr spec,PGPRecvContextPtr recv);
+OSErr PGPRecvInit(FSSpecPtr spec, PGPRecvContextPtr recv);
 OSErr PGPRecvClose(PGPRecvContextPtr recv);
 
 /**********************************************************************
@@ -60,90 +60,96 @@ OSType PGPCreator(void)
 {
 	OSType type;
 	Str15 text;
-	
-	GetRString(text,MAC_PGP_CREATOR);
-	BMD(text+1,&type,sizeof(OSType));
-	return(type);
+
+	GetRString(text, MAC_PGP_CREATOR);
+	BMD(text + 1, &type, sizeof(OSType));
+	return (type);
 }
 
 /**********************************************************************
  * ConvertPGP - write pgp stuff to a file
  **********************************************************************/
-Boolean ConvertPGP(short refN,UPtr buf,long *size,POPLineType lineType,long estSize,PGPCPtr pgpc)
+Boolean ConvertPGP(short refN, UPtr buf, long *size, POPLineType lineType,
+		   long estSize, PGPCPtr pgpc)
 {
 	Boolean isPGPLine;
 	OSErr err;
-	
-	isPGPLine = (*size > *pgpc->intro) && !(strncmp(pgpc->intro+1,buf,*pgpc->intro));
-	
-	if (pgpc->type == pgpNone)
-	{
-		if (!isPGPLine) return(False);	/* not pgp */
-		
+
+	isPGPLine = (*size > *pgpc->intro)
+	    && !(strncmp(pgpc->intro + 1, buf, *pgpc->intro));
+
+	if (pgpc->type == pgpNone) {
+		if (!isPGPLine)
+			return (False);	/* not pgp */
+
 		/*
 		 * we have begun to PGP
 		 */
-		pgpc->type = PGPTypeOf(pgpc,buf,*size);
-		
+		pgpc->type = PGPTypeOf(pgpc, buf, *size);
+
 		/*
 		 * open the file
 		 */
-		GetRString(pgpc->spec.name,PGPStrn+pgpc->type);
-		if (!(err=!AutoWantTheFile(&pgpc->spec,True,False)))
-		{
-			err = FSpCreate(&pgpc->spec,PGPCreator(),'TEXT',smSystemScript);
-			if (!err) err = FSpOpenDF(&pgpc->spec,fsRdWrPerm,&pgpc->refN);
-			if (err) FileSystemError(BINHEX_WRITE,&pgpc->spec.name,err);
+		GetRString(pgpc->spec.name, PGPStrn + pgpc->type);
+		if (!(err = !AutoWantTheFile(&pgpc->spec, True, False))) {
+			err =
+			    FSpCreate(&pgpc->spec, PGPCreator(), 'TEXT',
+				      smSystemScript);
+			if (!err)
+				err =
+				    FSpOpenDF(&pgpc->spec, fsRdWrPerm,
+					      &pgpc->refN);
+			if (err)
+				FileSystemError(BINHEX_WRITE,
+						&pgpc->spec.name, err);
 		}
-		if (err) AbortPGP(pgpc);
-		else
-		{
+		if (err)
+			AbortPGP(pgpc);
+		else {
 			/*
 			 * now we're looking for "END PGP"
 			 */
-			GetRString(pgpc->intro,PGPStrn+pgpEnd);
+			GetRString(pgpc->intro, PGPStrn + pgpEnd);
 			isPGPLine = False;	/* clear flag, because meaning has changed */
 		}
 	}
-	
-	if (pgpc->type != pgpNone)
-	{
-		err = AWrite(pgpc->refN,size,buf);
-		if (err)
-		{
-			FileSystemError(BINHEX_WRITE,pgpc->spec.name,err);
+
+	if (pgpc->type != pgpNone) {
+		err = AWrite(pgpc->refN, size, buf);
+		if (err) {
+			FileSystemError(BINHEX_WRITE, pgpc->spec.name,
+					err);
 			AbortPGP(pgpc);
-		}
-		else if (pgpc->type != pgpSigned) *size = 0;
-		
-		if (isPGPLine)
-		{
+		} else if (pgpc->type != pgpSigned)
+			*size = 0;
+
+		if (isPGPLine) {
 			pgpc->type = pgpNone;
-			ClosePGP(pgpc,False);
+			ClosePGP(pgpc, False);
 			EndPGP(pgpc);
-			if (*size)
-			{
-				AWrite(refN,size,buf);
+			if (*size) {
+				AWrite(refN, size, buf);
 				*size = 0;
 			}
 			WriteAttachNote(refN);
 		}
 	}
-	
-	return(pgpc->type != pgpNone);
+
+	return (pgpc->type != pgpNone);
 }
 
 /**********************************************************************
  * PGPTypeOf - get the PGP type of something
  **********************************************************************/
-PGPEnum PGPTypeOf(PGPCPtr pgpc,UPtr buf,long size)
+PGPEnum PGPTypeOf(PGPCPtr pgpc, UPtr buf, long size)
 {
 	Str255 scratch;
 	PGPEnum type;
-	
-	MakePStr(scratch,buf+*pgpc->intro+1,size-(*pgpc->intro+1)-6);
-	type = FindSTRNIndex(PGPStrn,scratch);
-	return(type ? type : pgpUnknown);
+
+	MakePStr(scratch, buf + *pgpc->intro + 1,
+		 size - (*pgpc->intro + 1) - 6);
+	type = FindSTRNIndex(PGPStrn, scratch);
+	return (type ? type : pgpUnknown);
 }
 
 /**********************************************************************
@@ -161,10 +167,9 @@ void AbortPGP(PGPCPtr pgpc)
  **********************************************************************/
 void EndPGP(PGPCPtr pgpc)
 {
-	if (pgpc->type != pgpNone)
-	{
+	if (pgpc->type != pgpNone) {
 		BadBinHex = True;
-		ClosePGP(pgpc,True);
+		ClosePGP(pgpc, True);
 	}
 	BeginPGP(pgpc);
 }
@@ -172,18 +177,19 @@ void EndPGP(PGPCPtr pgpc)
 /**********************************************************************
  * ClosePGP - close the open file
  **********************************************************************/
-void ClosePGP(PGPCPtr pgpc,Boolean abort)
+void ClosePGP(PGPCPtr pgpc, Boolean abort)
 {
 	OSErr err;
-	if (pgpc->refN)
-	{
-		if (!(err=MyFSClose(pgpc->refN)) && !abort)
-			err = RecordAttachment(&pgpc->spec,nil);
+	if (pgpc->refN) {
+		if (!(err = MyFSClose(pgpc->refN)) && !abort)
+			err = RecordAttachment(&pgpc->spec, nil);
 		if (err && !abort)
-			FileSystemError(BINHEX_WRITE,pgpc->spec.name,err);
+			FileSystemError(BINHEX_WRITE, pgpc->spec.name,
+					err);
 		pgpc->refN = 0;
 	}
-	if (abort) FSpDelete(&pgpc->spec);
+	if (abort)
+		FSpDelete(&pgpc->spec);
 }
 
 /**********************************************************************
@@ -192,118 +198,119 @@ void ClosePGP(PGPCPtr pgpc,Boolean abort)
 void BeginPGP(PGPCPtr pgpc)
 {
 	Zero(*pgpc);
-	GetRString(pgpc->intro,PGPStrn+pgpBegin);
+	GetRString(pgpc->intro, PGPStrn + pgpBegin);
 }
 
 /**********************************************************************
  * ReReadPGPClearText - read a cleartext message from a signed PGP file
  **********************************************************************/
-OSErr ReReadPGPClearText(TransStream stream,short refN,UPtr buf,long bSize,FSSpecPtr spec)
+OSErr ReReadPGPClearText(TransStream stream, short refN, UPtr buf,
+			 long bSize, FSSpecPtr spec)
 {
 	TransVector oldTrans = CurTrans;
 	OSErr err;
 	PGPRecvContextPtr oldRecv = PGPRContext;
 	PGPRecvContext recv;
-	
+
 	PGPRContext = &recv;
 	CurTrans = PGPTrans;
-	if (!(err = PGPRecvInit(spec,PGPRContext)))
-	{
-		err = ReadHeadAndBody(stream,refN,buf,bSize,False,nil);
+	if (!(err = PGPRecvInit(spec, PGPRContext))) {
+		err =
+		    ReadHeadAndBody(stream, refN, buf, bSize, False, nil);
 		PGPRecvClose(PGPRContext);
 	}
-	
+
 	CurTrans = oldTrans;
 	PGPRContext = oldRecv;
-	return(err);
+	return (err);
 }
 
 /**********************************************************************
  * ReadHeadAndBody - read the header and body of a message
  **********************************************************************/
-OSErr ReadHeadAndBody(TransStream stream,short refN,UPtr buf,long bSize,Boolean display,HeaderDHandle *headersFound)
+OSErr ReadHeadAndBody(TransStream stream, short refN, UPtr buf, long bSize,
+		      Boolean display, HeaderDHandle * headersFound)
 {
-	HeaderDHandle hdh=NewHeaderDesc(nil);
+	HeaderDHandle hdh = NewHeaderDesc(nil);
 	short lastHeaderTokenType;
-	
-	if (!hdh) Prr = MemError();
-	else
-	{
-reRead:
-		lastHeaderTokenType = ReadHeader(stream,hdh,0,refN,False);
-		if (lastHeaderTokenType==EndOfHeader)
-		{
-			if (headersFound)
-			{
+
+	if (!hdh)
+		Prr = MemError();
+	else {
+	      reRead:
+		lastHeaderTokenType =
+		    ReadHeader(stream, hdh, 0, refN, False);
+		if (lastHeaderTokenType == EndOfHeader) {
+			if (headersFound) {
 				*headersFound = hdh;
-				if (!display) return(noErr);
+				if (!display)
+					return (noErr);
 			}
-			if ((*hdh)->grokked)
-			{
-				TruncOpenFile(refN,(*hdh)->diskStart);
+			if ((*hdh)->grokked) {
+				TruncOpenFile(refN, (*hdh)->diskStart);
 				(*hdh)->diskEnd = (*hdh)->diskStart;
 			}
-			ReadEitherBody(stream,refN,hdh,buf,bSize,0,EMSF_ON_DISPLAY);
-		}
-		else
-		{
+			ReadEitherBody(stream, refN, hdh, buf, bSize, 0,
+				       EMSF_ON_DISPLAY);
+		} else {
 			EnsureNewline(refN);
-			FSWriteP(refN,Cr);
+			FSWriteP(refN, Cr);
 		}
-		
+
 		/*
 		 * encapsulated sxxt
 		 */
-		if (Prr == '82')
-		{
+		if (Prr == '82') {
 			ZapHeaderDesc(hdh);
 			hdh = NewHeaderDesc(nil);
 			Prr = noErr;
 			goto reRead;
 		}
 	}
-	return(Prr);
+	return (Prr);
 }
 
 /**********************************************************************
  * POGPRecvInit - initialize the PGP receiver
  **********************************************************************/
-OSErr PGPRecvInit(FSSpecPtr spec,PGPRecvContextPtr recv)
+OSErr PGPRecvInit(FSSpecPtr spec, PGPRecvContextPtr recv)
 {
 	OSErr err;
 	Str255 buf;
 	long len;
-	
+
 	Zero(*recv);
-	
-	if (err = FSpOpenLine(spec,fsRdWrPerm,&recv->lio))
-		FileSystemError(BINHEX_READ,spec->name,err);
-	
-	GetRString(recv->intro,PGPStrn+pgpBegin);
-	while (!(err=0>NLGetLine(buf,sizeof(buf),&len,&recv->lio)))
-	{
+
+	if (err = FSpOpenLine(spec, fsRdWrPerm, &recv->lio))
+		FileSystemError(BINHEX_READ, spec->name, err);
+
+	GetRString(recv->intro, PGPStrn + pgpBegin);
+	while (!(err = 0 > NLGetLine(buf, sizeof(buf), &len, &recv->lio))) {
 		/*
 		 * has it begun?
 		 */
-		if (len>*recv->intro && !strncmp(buf,recv->intro+1,*recv->intro)) break;
+		if (len > *recv->intro
+		    && !strncmp(buf, recv->intro + 1, *recv->intro))
+			break;
 	}
-	
+
 	/*
 	 * now, find the beginning of the headers
 	 */
-	if (!err)
-	{
-		while (!(err=0>NLGetLine(buf,sizeof(buf),&len,&recv->lio)))
-			if (len>1)
-			{
-			  SeekLine(TellLine(&recv->lio),&recv->lio);
-			  break;
+	if (!err) {
+		while (!
+		       (err =
+			0 > NLGetLine(buf, sizeof(buf), &len, &recv->lio)))
+			if (len > 1) {
+				SeekLine(TellLine(&recv->lio), &recv->lio);
+				break;
 			}
 	}
-	
-	if (err) PGPRecvClose(recv);
-	
-	return(err);
+
+	if (err)
+		PGPRecvClose(recv);
+
+	return (err);
 }
 
 /**********************************************************************
@@ -313,28 +320,30 @@ OSErr PGPRecvClose(PGPRecvContextPtr recv)
 {
 	CloseLine(&recv->lio);
 	Zero(*recv);
-	return(noErr);
+	return (noErr);
 }
 
 /**********************************************************************
  * PGPRecvLine - receive a line with PGP
  * stops at first --BEGIN PGP line
  **********************************************************************/
-OSErr PGPRecvLine(TransStream stream,UPtr line,long *size)
+OSErr PGPRecvLine(TransStream stream, UPtr line, long *size)
 {
-	OSErr err = 0>NLGetLine(line,*size,size,&PGPRContext->lio);
-	
-	if (!err)
-	{
-		if (*size>*PGPRContext->intro && !strncmp(line,PGPRContext->intro+1,*PGPRContext->intro))
-		{
+	OSErr err = 0 > NLGetLine(line, *size, size, &PGPRContext->lio);
+
+	if (!err) {
+		if (*size > *PGPRContext->intro
+		    && !strncmp(line, PGPRContext->intro + 1,
+				*PGPRContext->intro)) {
 			*size = 2;
-			line[0]='.'; line[1]='\015'; line[2] = 0;
+			line[0] = '.';
+			line[1] = '\015';
+			line[2] = 0;
 		}
 	}
-	return(err);
+	return (err);
 }
-	
+
 /**********************************************************************
  * PGPVerifyFile - see if the signature matches on a file
  **********************************************************************/
@@ -346,34 +355,42 @@ OSErr PGPVerifyFile(FSSpecPtr spec)
 	FSSpec tempSpec;
 	Str255 who;
 	AEDesc whoDesc;
-	
-	NullADList(&reply,&whoDesc,nil);
-	
+
+	NullADList(&reply, &whoDesc, nil);
+
 	if (!(err = StartPGP(&psn)))
 #ifdef NEVER
-	if (!(err = NewTempSpec(Root.vRef,nil,&tempSpec)))
+		if (!(err = NewTempSpec(Root.vRef, nil, &tempSpec)))
 #endif
-	{
-		err = SimpleAESend(&psn,kPGPClass,kPGPDecrypt,&reply,kEAEImmediate,
-						keyDirectObject,typeFSS,spec,sizeof(FSSpec),
-#ifdef NEVER
-						keyPGPToFile,typeFSS,&tempSpec,sizeof(FSSpec),
-#endif
-						nil,nil);
-		if (!err && !(err=GetAEError(&reply)) && !(err=PGPFetchResult(&reply,&tempSpec)))
 		{
-			FSpDelete(&tempSpec);
-			if (AEGetParamDesc(&reply,keyDirectObject,typeWildCard,&whoDesc) ||
-					!*GetAEPStr(who,&whoDesc))
-				GetRString(who,MR_PGP_BROKEN);
-			Aprintf(OK_ALRT,Note,PGP_SIG_MATCH,who);
+			err =
+			    SimpleAESend(&psn, kPGPClass, kPGPDecrypt,
+					 &reply, kEAEImmediate,
+					 keyDirectObject, typeFSS, spec,
+					 sizeof(FSSpec),
+#ifdef NEVER
+					 keyPGPToFile, typeFSS, &tempSpec,
+					 sizeof(FSSpec),
+#endif
+					 nil, nil);
+			if (!err && !(err = GetAEError(&reply))
+			    && !(err =
+				 PGPFetchResult(&reply, &tempSpec))) {
+				FSpDelete(&tempSpec);
+				if (AEGetParamDesc
+				    (&reply, keyDirectObject, typeWildCard,
+				     &whoDesc)
+				    || !*GetAEPStr(who, &whoDesc))
+					GetRString(who, MR_PGP_BROKEN);
+				Aprintf(OK_ALRT, Note, PGP_SIG_MATCH, who);
+			}
 		}
-	}
-	
-	if (err) WarnUser(PGP_CANT_VERIFY,err);
-	
-	DisposeADList(&reply,&whoDesc,nil);
-	return(err);
+
+	if (err)
+		WarnUser(PGP_CANT_VERIFY, err);
+
+	DisposeADList(&reply, &whoDesc, nil);
+	return (err);
 }
 
 /**********************************************************************
@@ -387,43 +404,61 @@ OSErr PGPOpenEncrypted(FSSpecPtr spec)
 	FSSpec tempSpec;
 	short howMany = 0;
 	TOCHandle tocH;
-	
-	NullADList(&reply,nil);
-	
+
+	NullADList(&reply, nil);
+
 	if (!(err = StartPGP(&psn)))
 #ifdef NEVER
-	if (!(err = NewTempExtSpec(Root.vRef,nil,PGP_PROTOCOL,&tempSpec)))
+		if (!
+		    (err =
+		     NewTempExtSpec(Root.vRef, nil, PGP_PROTOCOL,
+				    &tempSpec)))
 #endif
-	{
-		err = SimpleAESend(&psn,kPGPClass,kPGPDecrypt,&reply,kEAEImmediate,
-						keyDirectObject,typeFSS,spec,sizeof(FSSpec),
-#ifdef NEVER
-						keyPGPToFile,typeFSS,&tempSpec,sizeof(FSSpec),
-#endif
-						nil,nil);
-		if (!err && !(err=GetAEError(&reply)) && !(err=PGPFetchResult(&reply,&tempSpec)))
 		{
-			if (!( err = GetUUPCMailSpec(&tempSpec,False,&howMany)))
-			{
-				if (howMany)
-				{
-					if (tocH = GetInTOC())
-						while (howMany--)
-						{
-							(*tocH)->sums[(*tocH)->count-1-howMany].opts |= OPT_WIPE;
-							GetAMessage(tocH,(*tocH)->count-1-howMany,nil,nil,True);
-						}
+			err =
+			    SimpleAESend(&psn, kPGPClass, kPGPDecrypt,
+					 &reply, kEAEImmediate,
+					 keyDirectObject, typeFSS, spec,
+					 sizeof(FSSpec),
+#ifdef NEVER
+					 keyPGPToFile, typeFSS, &tempSpec,
+					 sizeof(FSSpec),
+#endif
+					 nil, nil);
+			if (!err && !(err = GetAEError(&reply))
+			    && !(err =
+				 PGPFetchResult(&reply, &tempSpec))) {
+				if (!
+				    (err =
+				     GetUUPCMailSpec(&tempSpec, False,
+						     &howMany))) {
+					if (howMany) {
+						if (tocH = GetInTOC())
+							while (howMany--) {
+								(*tocH)->
+								    sums[(*tocH)->count - 1 - howMany].opts |= OPT_WIPE;
+								GetAMessage
+								    (tocH,
+								     (*tocH)->
+								     count
+								     - 1 -
+								     howMany,
+								     nil,
+								     nil,
+								     True);
+							}
+					} else
+						WarnUser(PGP_NOT_MESSAGE,
+							 0);
 				}
-				else
-					WarnUser(PGP_NOT_MESSAGE,0);
 			}
+			FSpDelete(&tempSpec);
 		}
-		FSpDelete(&tempSpec);
-	}
-	
-	if (err) WarnUser(PGP_CANT_DECRYPT,err);
-	
-	DisposeADList(&reply,nil);
-	return(err);
+
+	if (err)
+		WarnUser(PGP_CANT_DECRYPT, err);
+
+	DisposeADList(&reply, nil);
+	return (err);
 }
 #endif

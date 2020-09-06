@@ -34,14 +34,17 @@
 
 #define	kPeteUserPaneTitleIDString	"\ppete"
 
-PETEHandle		CreatePeteUserPane (ControlHandle theControl, uLong flags, PETEDocInitInfoPtr initInfo, Boolean noWrap);
-void					DisposePeteUserPaneItem (MyWindowPtr dgPtr, short item);
-Boolean				IsPeteControl (ControlHandle theControl);
-PETEHandle		GetPeteDItem (MyWindowPtr dPtr, short itemNo);
-Handle				GetPeteDItemTextH (MyWindowPtr dPtr, int item);
-void					GetPeteDItemText (MyWindowPtr, int item, PStr text);
-void					SetPeteDItemText (MyWindowPtr dPtr, int item, PStr text);
-ControlHandle	GetControlFromPete (PETEHandle pte);
-Boolean				AllWeAreSayingIsGivePeteAChance (MyWindowPtr win, EventRecord *event, short *peteItemHit);
+PETEHandle CreatePeteUserPane(ControlHandle theControl, uLong flags,
+			      PETEDocInitInfoPtr initInfo, Boolean noWrap);
+void DisposePeteUserPaneItem(MyWindowPtr dgPtr, short item);
+Boolean IsPeteControl(ControlHandle theControl);
+PETEHandle GetPeteDItem(MyWindowPtr dPtr, short itemNo);
+Handle GetPeteDItemTextH(MyWindowPtr dPtr, int item);
+void GetPeteDItemText(MyWindowPtr, int item, PStr text);
+void SetPeteDItemText(MyWindowPtr dPtr, int item, PStr text);
+ControlHandle GetControlFromPete(PETEHandle pte);
+Boolean AllWeAreSayingIsGivePeteAChance(MyWindowPtr win,
+					EventRecord * event,
+					short *peteItemHit);
 
 #endif

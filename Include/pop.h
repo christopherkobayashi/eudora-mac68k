@@ -37,17 +37,16 @@
  * declarations for dealing with POP server
  ************************************************************************/
 
-typedef struct POPDesc
-{
-	uLong receivedGMT;/* timestamp on outermost Received: header */
+typedef struct POPDesc {
+	uLong receivedGMT;	/* timestamp on outermost Received: header */
 	uLong uidHash;		/* hash function of message-id */
-	long msgSize;			/* size of the message */
-	Boolean retr;			/* should we fetch this message? */
+	long msgSize;		/* size of the message */
+	Boolean retr;		/* should we fetch this message? */
 	Boolean retred;		/* fetched successfully */
 	Boolean delete;		/* should we delete it if we manage to fetch it? */
 	Boolean deleted;	/* did we delete it? */
 	Boolean stub:1;		/* should we download a stub? */
-	Boolean stubbed:1;/* do we have a stub? */
+	Boolean stubbed:1;	/* do we have a stub? */
 	Boolean skip:1;		/* are we stubbing this because of sbm? */
 	Boolean big2:1;		/* are we stubbing this because it's too big? */
 	Boolean head:1;		/* are we stubbing because of download headers? */
@@ -55,26 +54,34 @@ typedef struct POPDesc
 	Boolean spare:2;	/* rest of the bits */
 } POPDesc, *POPDPtr, **POPDHandle;
 
-Boolean GenKeyedDigest(UPtr banner,UPtr secret,UPtr digest);
-Boolean GenDigest(UPtr banner,UPtr secret,UPtr digest);
+Boolean GenKeyedDigest(UPtr banner, UPtr secret, UPtr digest);
+Boolean GenDigest(UPtr banner, UPtr secret, UPtr digest);
 void FixMessServerAreas(void);
 OSErr RoomForMessage(long msgsize);
-short ReadEitherBody(TransStream stream,short refN,HeaderDHandle hdh,char *buf,long bSize,long estSize,long context);
-POPLineType ReadPOPLine(TransStream stream,UPtr buf, long bSize, long *len);
-short GetMyMail(TransStream stream,Boolean quietly,short *gotSome,struct XferFlags *flags);
+short ReadEitherBody(TransStream stream, short refN, HeaderDHandle hdh,
+		     char *buf, long bSize, long estSize, long context);
+POPLineType ReadPOPLine(TransStream stream, UPtr buf, long bSize,
+			long *len);
+short GetMyMail(TransStream stream, Boolean quietly, short *gotSome,
+		struct XferFlags *flags);
 int POPError(void);
-OSErr RecordAttachment(FSSpecPtr spec,HeaderDHandle hdh);
+OSErr RecordAttachment(FSSpecPtr spec, HeaderDHandle hdh);
 void AddAttachInfo(short theIndex, long result);
 OSErr WriteAttachNote(short refN);
-int FetchMessageText(TransStream stream,long estSize,POPDPtr pd,short messageNumber,TOCHandle useTocH);
-int FetchMessageTextLo(TransStream stream,long estSize,POPDPtr pd,short messageNumber,TOCHandle useTocH,Boolean imap,Boolean import);
+int FetchMessageText(TransStream stream, long estSize, POPDPtr pd,
+		     short messageNumber, TOCHandle useTocH);
+int FetchMessageTextLo(TransStream stream, long estSize, POPDPtr pd,
+		       short messageNumber, TOCHandle useTocH,
+		       Boolean imap, Boolean import);
 int POPrror(void);
-int POPIntroductions(TransStream stream, PStr user,Boolean *capabilities);
-int POPCmdGetReply(TransStream stream,short cmd, UPtr args, UPtr buffer, long *size);
-int POPCmdError(short cmd,UPtr args,UPtr message);
+int POPIntroductions(TransStream stream, PStr user,
+		     Boolean * capabilities);
+int POPCmdGetReply(TransStream stream, short cmd, UPtr args, UPtr buffer,
+		   long *size);
+int POPCmdError(short cmd, UPtr args, UPtr message);
 int EndPOP(TransStream stream);
 int StartPOP(TransStream stream, UPtr serverName, long port);
-void AttachNoteLo(FSSpecPtr spec,PStr theMessage);
+void AttachNoteLo(FSSpecPtr spec, PStr theMessage);
 #ifdef BATCH_DELIVERY_ON
 TOCHandle RenameInTemp(TOCHandle tocH);
 #endif
@@ -82,9 +89,10 @@ TOCHandle RenameInTemp(TOCHandle tocH);
 /*
  * POPD manipulation stuff
  */
-OSErr AddIdToPOPD(OSType listType,short listId, uLong uidHash,Boolean dupOK);
-OSErr RemIdFromPOPD(OSType listType,short listId, uLong uidHash);
-Boolean IdIsOnPOPD(OSType listType,short listId, uLong uidHash);
+OSErr AddIdToPOPD(OSType listType, short listId, uLong uidHash,
+		  Boolean dupOK);
+OSErr RemIdFromPOPD(OSType listType, short listId, uLong uidHash);
+Boolean IdIsOnPOPD(OSType listType, short listId, uLong uidHash);
 // Convenience macros
 #define PERS_FORCE(x)	((M_T1=(long)(x)),(M_T1?(PersHandle)M_T1:PersList))
 
@@ -108,7 +116,7 @@ Boolean IdIsOnPOPD(OSType listType,short listId, uLong uidHash);
 
 OSErr KerbDestroy(void);
 OSErr KerbDestroyUser(void);
-int PutOutFromLine(short refN,long *fromLen);
+int PutOutFromLine(short refN, long *fromLen);
 OSErr KerbUsername(PStr name);
 
 #ifdef POPSECURE

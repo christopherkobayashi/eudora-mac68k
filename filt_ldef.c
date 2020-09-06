@@ -35,93 +35,102 @@
 #pragma segment FiltLdef
 #ifdef FANCY_FILT_LDEF
 
-void FiltListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
-void FiltListHilite(Rect *lRect,Cell lCell,ListHandle lHandle);
-void FiltListCalc(ListHandle lHandle,Handle suite,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn);
-pascal void FiltListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell,
-	short lDataOffset, short lDataLen, ListHandle lHandle)
+void FiltListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle);
+void FiltListHilite(Rect * lRect, Cell lCell, ListHandle lHandle);
+void FiltListCalc(ListHandle lHandle, Handle suite, Rect * lRect,
+		  PStr name, Rect * iconR, Point * textP, RgnHandle iRgn);
+pascal void FiltListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			Cell lCell, short lDataOffset, short lDataLen,
+			ListHandle lHandle)
 {
 #pragma unused(lDataOffset,lDataLen)
 	Rect fullRect;
-	if (lMessage==lDrawMsg || lMessage==lHiliteMsg)
-	{
+	if (lMessage == lDrawMsg || lMessage == lHiliteMsg) {
 		fullRect = *lRect;
 		fullRect.bottom = fullRect.top + (*lHandle)->cellSize.v;
 	}
-	switch (lMessage)
-	{
-		case lDrawMsg:
-			FiltListDraw(lSelect,&fullRect,lCell,lHandle);
-			break;
-		case lHiliteMsg:
-			MyListHilite(lSelect,&fullRect,lCell,lHandle);
-			break;
+	switch (lMessage) {
+	case lDrawMsg:
+		FiltListDraw(lSelect, &fullRect, lCell, lHandle);
+		break;
+	case lHiliteMsg:
+		MyListHilite(lSelect, &fullRect, lCell, lHandle);
+		break;
 	}
 }
 
-void FiltListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void FiltListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		  ListHandle lHandle)
 {
-	short junk=sizeof(short);
+	short junk = sizeof(short);
 	Str255 name;
 	short i;
 	FActionHandle fa;
 	uLong secs;
 	Rect oldRect = *lRect;
-	Point	portPen;
+	Point portPen;
 	SAVE_STUFF;
-	
+
 	SET_COLORS;
-	
+
 	/*
 	 * erase the rectangle first
 	 */
 	ClipRect(lRect);
 	EraseRect(lRect);
-	
+
 	/*
 	 * setup font and size
 	 */
 	SmallSysFontSize();
-	
+
 	/*
 	 * is the filter disabled?
 	 */
-	if (!(FR[lCell.v].incoming || FR[lCell.v].manual || FR[lCell.v].outgoing))
+	if (!
+	    (FR[lCell.v].incoming || FR[lCell.v].manual
+	     || FR[lCell.v].outgoing))
 		TextMode(grayishTextOr);
-	
+
 	/*
 	 * get there
 	 */
-	MoveTo(lRect->left+(*lHandle)->indent.h,lRect->bottom-3-(*lHandle)->indent.v);
-	
+	MoveTo(lRect->left + (*lHandle)->indent.h,
+	       lRect->bottom - 3 - (*lHandle)->indent.v);
+
 	/*
 	 * Is the filter old?
 	 */
-	if (secs = FilterLastMatchHi(lCell.v))
-	{
-		secs = GMTDateTime()-secs;
-		if (secs/(3600 * 24) > GetRLong(OLD_FILTER))
-			PlotTinyIconAtPenID(ttNone,OLD_FILTER_ICON);
+	if (secs = FilterLastMatchHi(lCell.v)) {
+		secs = GMTDateTime() - secs;
+		if (secs / (3600 * 24) > GetRLong(OLD_FILTER))
+			PlotTinyIconAtPenID(ttNone, OLD_FILTER_ICON);
 	}
-	
+
 	/*
 	 * call the actions
 	 */
-	i = sizeof(name)-1;
-	LGetCell(name+1,&i,lCell,lHandle);
+	i = sizeof(name) - 1;
+	LGetCell(name + 1, &i, lCell, lHandle);
 	*name = i;
-	for (i=0,fa=FR[lCell.v].actions;fa && i<MAX_ACTIONS;i++,fa=(*fa)->next)
-		(*(FActionProc*)FATable((*fa)->action))(faeListDraw,fa,lRect,name);
-	
+	for (i = 0, fa = FR[lCell.v].actions; fa && i < MAX_ACTIONS;
+	     i++, fa = (*fa)->next)
+		(*(FActionProc *) FATable((*fa)->action)) (faeListDraw, fa,
+							   lRect, name);
+
 	/*
 	 * draw the text
 	 */
-	GetPortPenLocation(GetQDGlobalsThePort(),&portPen);
-	if (portPen.h + StringWidth(name)>lRect->right) TextFace(GetPortTextFace(GetQDGlobalsThePort())|condense);
-	TruncString(lRect->right-portPen.h,name,truncMiddle);
+	GetPortPenLocation(GetQDGlobalsThePort(), &portPen);
+	if (portPen.h + StringWidth(name) > lRect->right)
+		TextFace(GetPortTextFace(GetQDGlobalsThePort()) |
+			 condense);
+	TruncString(lRect->right - portPen.h, name, truncMiddle);
 	DrawString(name);
 
-	if (lSelect) 	HiInvertRect(&oldRect);
+	if (lSelect)
+		HiInvertRect(&oldRect);
 
 	/*
 	 * restore font & size & clip
@@ -130,32 +139,35 @@ void FiltListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
 	InfiniteClip(GetQDGlobalsThePort());
 }
 
-void FiltListCalc(ListHandle lHandle,Handle suite,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn)
+void FiltListCalc(ListHandle lHandle, Handle suite, Rect * lRect,
+		  PStr name, Rect * iconR, Point * textP, RgnHandle iRgn)
 {
 	RgnHandle iconRgn = NewRgn();
 
-	NamedIconCalc(lRect,name,(*lHandle)->indent.h,(*lHandle)->indent.v,iconR,textP);
-	SetRect(iconR,lRect->left,lRect->top,lRect->left+32,lRect->top+32);
-	OffsetRect(iconR,(*lHandle)->indent.h,(*lHandle)->indent.v+(RectHi(*lRect)-32)/2);
-	textP->h = iconR->right+2;
-	textP->v = iconR->bottom-8;
-	if (iconRgn)
-	{
-		IconSuiteToRgn(iconRgn,iconR,atAbsoluteCenter,suite);
+	NamedIconCalc(lRect, name, (*lHandle)->indent.h,
+		      (*lHandle)->indent.v, iconR, textP);
+	SetRect(iconR, lRect->left, lRect->top, lRect->left + 32,
+		lRect->top + 32);
+	OffsetRect(iconR, (*lHandle)->indent.h,
+		   (*lHandle)->indent.v + (RectHi(*lRect) - 32) / 2);
+	textP->h = iconR->right + 2;
+	textP->v = iconR->bottom - 8;
+	if (iconRgn) {
+		IconSuiteToRgn(iconRgn, iconR, atAbsoluteCenter, suite);
 		/*
 		 * invert region begins as whole rectangle
 		 */
-		if (iRgn)
-		{
-			RectRgn(iRgn,lRect);
-		
+		if (iRgn) {
+			RectRgn(iRgn, lRect);
+
 			/*
 			 * punch icon mask out of invert region
 			 */
-			if (lRect->bottom-lRect->top>18 && (iconRgn = NewRgn()))
-			{
-				IconSuiteToRgn(iconRgn,iconR,atAbsoluteCenter,suite);
-				DiffRgn(iRgn,iconRgn,iRgn);
+			if (lRect->bottom - lRect->top > 18
+			    && (iconRgn = NewRgn())) {
+				IconSuiteToRgn(iconRgn, iconR,
+					       atAbsoluteCenter, suite);
+				DiffRgn(iRgn, iconRgn, iRgn);
 			}
 		}
 	}

@@ -34,8 +34,7 @@
 
 #include "filters.h"
 
-typedef struct XferFlags
-{
+typedef struct XferFlags {
 	Boolean check;
 	Boolean send;
 	Boolean servFetch;
@@ -50,30 +49,37 @@ typedef struct XferFlags
 typedef struct IMAPTransferRec_ IMAPTransferRec, *IMAPTransferPtr;
 #endif
 
-short XferMail(Boolean check, Boolean send, Boolean manual,Boolean ae,Boolean thread,short modifiers); 
-short XferMailSetup(Boolean *check, Boolean *send, Boolean manual,Boolean ae,XferFlags *flags,short modifiers);
+short XferMail(Boolean check, Boolean send, Boolean manual, Boolean ae,
+	       Boolean thread, short modifiers);
+short XferMailSetup(Boolean * check, Boolean * send, Boolean manual,
+		    Boolean ae, XferFlags * flags, short modifiers);
 #ifdef IMAP
-short XferMailRun(Boolean check, Boolean send, Boolean manual,Boolean ae, XferFlags flags, IMAPTransferPtr imapInfo);
+short XferMailRun(Boolean check, Boolean send, Boolean manual, Boolean ae,
+		  XferFlags flags, IMAPTransferPtr imapInfo);
 #else
-short XferMailRun(Boolean check, Boolean send, Boolean manual,Boolean ae, XferFlags flags);
+short XferMailRun(Boolean check, Boolean send, Boolean manual, Boolean ae,
+		  XferFlags flags);
 #endif
 void GrabSignature(uLong fid);
-OSErr SigSpec(FSSpecPtr spec,long id);
-OSErr TransmitMessageHi(TransStream stream,MessHandle messH,Boolean chatter,Boolean sendDataCmd);
-void ShowBoxAt(TOCHandle tocH,short selectMe,WindowPtr behindWin);
+OSErr SigSpec(FSSpecPtr spec, long id);
+OSErr TransmitMessageHi(TransStream stream, MessHandle messH,
+			Boolean chatter, Boolean sendDataCmd);
+void ShowBoxAt(TOCHandle tocH, short selectMe, WindowPtr behindWin);
 short FumLub(TOCHandle tocH);
 OSErr GoOnline(void);
 #ifdef THREADING_ON
-void FilterXferMessages (void);
-void ResetCheckTime(Boolean force); 
+void FilterXferMessages(void);
+void ResetCheckTime(Boolean force);
 #endif
 #ifdef BATCH_DELIVERY_ON
-void NotifyNewMail(short gotSome,Boolean noXfer,TOCHandle tocH, FilterPB *fpbDelivery);
-void NotifyNewMailLo(short gotSome,Boolean noXfer,TOCHandle tocH, FilterPB *fpbDelivery, Boolean OpenIn);
+void NotifyNewMail(short gotSome, Boolean noXfer, TOCHandle tocH,
+		   FilterPB * fpbDelivery);
+void NotifyNewMailLo(short gotSome, Boolean noXfer, TOCHandle tocH,
+		     FilterPB * fpbDelivery, Boolean OpenIn);
 #else
-void NotifyNewMail(short gotSome,Boolean noXfer,TOCHandle tocH);
+void NotifyNewMail(short gotSome, Boolean noXfer, TOCHandle tocH);
 #endif
-OSErr DoFcc(TOCHandle tocH,short sumNum,CSpecHandle list);	
+OSErr DoFcc(TOCHandle tocH, short sumNum, CSpecHandle list);
 void CompAttDel(MessHandle messH);
 WindowPtr OpenBehindMePlease(void);
 void ProcessReceivedRegFiles(void);

@@ -58,111 +58,174 @@ extern void *FAflkStop(void);
 #pragma segment FILTRUN
 void *FATable(FilterKeywordEnum fk)
 {
-	switch (fk)
-	{
-		case flkNone: return(FAflkNone);
-		case flkStatus: return(FAflkStatus);
-		case flkPriority: return(FAflkPriority);
-		case flkLabel: return(FAflkLabel);
-		case flkPersonality: return(FAflkPersonality);
-		case flkSubject: return(FAflkSubject);
-		case flkSound: return(FAflkSound);
-		case flkSpeak: return(FAflkSpeak);
-		case flkOpenMessage: return(FAflkOpenMessage);
-		case flkPrint: return(FAflkPrint);
-		case flkAddHistory: return(FAflkAddHistory);
-		case flkNotifyUser: return(FAflkNotifyUser);
-		case flkForward: return(FAflkForward);
-		case flkRedirect: return(FAflkRedirect);
-		case flkReply: return(FAflkReply);
-		case flkServerOpts: return(FAflkServerOpts);
-		case flkCopy: return(FAflkCopy);
-		case flkTransfer: return(FAflkTransfer);
-		case flkJunk: return(FAflkJunk);
-		case flkMoveAttach: return(FAflkMoveAttach);
-		case flkStop: return(FAflkStop);
-		default:
-			return(nil);
+	switch (fk) {
+	case flkNone:
+		return (FAflkNone);
+	case flkStatus:
+		return (FAflkStatus);
+	case flkPriority:
+		return (FAflkPriority);
+	case flkLabel:
+		return (FAflkLabel);
+	case flkPersonality:
+		return (FAflkPersonality);
+	case flkSubject:
+		return (FAflkSubject);
+	case flkSound:
+		return (FAflkSound);
+	case flkSpeak:
+		return (FAflkSpeak);
+	case flkOpenMessage:
+		return (FAflkOpenMessage);
+	case flkPrint:
+		return (FAflkPrint);
+	case flkAddHistory:
+		return (FAflkAddHistory);
+	case flkNotifyUser:
+		return (FAflkNotifyUser);
+	case flkForward:
+		return (FAflkForward);
+	case flkRedirect:
+		return (FAflkRedirect);
+	case flkReply:
+		return (FAflkReply);
+	case flkServerOpts:
+		return (FAflkServerOpts);
+	case flkCopy:
+		return (FAflkCopy);
+	case flkTransfer:
+		return (FAflkTransfer);
+	case flkJunk:
+		return (FAflkJunk);
+	case flkMoveAttach:
+		return (FAflkMoveAttach);
+	case flkStop:
+		return (FAflkStop);
+	default:
+		return (nil);
 	}
 }
 
 short FAPass(FilterKeywordEnum fk)
 {
-	switch (fk)
-	{
-		case flkNone: return(0);
-		case flkStatus: return(2);
-		case flkPriority: return(0);
-		case flkLabel: return(0);
-		case flkPersonality: return(0);
-		case flkSubject: return(1);
-		case flkSound: return(0);
-		case flkSpeak: return(0);
-		case flkOpenMessage: return(0);
-		case flkPrint: return(0);
-		case flkAddHistory: return(0);
-		case flkNotifyUser: return(0);
-		case flkForward: return(1);
-		case flkRedirect: return(1);
-		case flkReply: return(1);
-		case flkServerOpts: return(0);
-		case flkCopy: return(3);
-		case flkTransfer: return(4);
-		case flkJunk: return(4);
-		case flkMoveAttach: return(3);
-		case flkStop: return(9);
-		default: return(0);
+	switch (fk) {
+	case flkNone:
+		return (0);
+	case flkStatus:
+		return (2);
+	case flkPriority:
+		return (0);
+	case flkLabel:
+		return (0);
+	case flkPersonality:
+		return (0);
+	case flkSubject:
+		return (1);
+	case flkSound:
+		return (0);
+	case flkSpeak:
+		return (0);
+	case flkOpenMessage:
+		return (0);
+	case flkPrint:
+		return (0);
+	case flkAddHistory:
+		return (0);
+	case flkNotifyUser:
+		return (0);
+	case flkForward:
+		return (1);
+	case flkRedirect:
+		return (1);
+	case flkReply:
+		return (1);
+	case flkServerOpts:
+		return (0);
+	case flkCopy:
+		return (3);
+	case flkTransfer:
+		return (4);
+	case flkJunk:
+		return (4);
+	case flkMoveAttach:
+		return (3);
+	case flkStop:
+		return (9);
+	default:
+		return (0);
 	}
 }
 
 #pragma segment FilterWin
 short FAMultiple(FilterKeywordEnum fk)
 {
-	switch (fk)
-	{
-		case flkNone: return(1);
-		case flkStatus: return(0);
-		case flkPriority: return(0);
-		case flkLabel: return(0);
-		case flkPersonality: return(0);
-		case flkSubject: return(0);
-		case flkSound: return(0);
-		case flkSpeak: return(0);
-		case flkOpenMessage: return(0);
-		case flkPrint: return(0);
-		case flkAddHistory: return(0);
-		case flkNotifyUser: return(0);
-		case flkForward: return(1);
-		case flkRedirect: return(1);
-		case flkReply: return(0);
-		case flkServerOpts: return(0);
-		case flkCopy: return(1);
-		case flkTransfer: return(0);
-		case flkJunk: return(0);
-		case flkMoveAttach: return(0);
-		case flkStop: return(0);
-		default: return(0);
+	switch (fk) {
+	case flkNone:
+		return (1);
+	case flkStatus:
+		return (0);
+	case flkPriority:
+		return (0);
+	case flkLabel:
+		return (0);
+	case flkPersonality:
+		return (0);
+	case flkSubject:
+		return (0);
+	case flkSound:
+		return (0);
+	case flkSpeak:
+		return (0);
+	case flkOpenMessage:
+		return (0);
+	case flkPrint:
+		return (0);
+	case flkAddHistory:
+		return (0);
+	case flkNotifyUser:
+		return (0);
+	case flkForward:
+		return (1);
+	case flkRedirect:
+		return (1);
+	case flkReply:
+		return (0);
+	case flkServerOpts:
+		return (0);
+	case flkCopy:
+		return (1);
+	case flkTransfer:
+		return (0);
+	case flkJunk:
+		return (0);
+	case flkMoveAttach:
+		return (0);
+	case flkStop:
+		return (0);
+	default:
+		return (0);
 	}
 }
 
 Boolean FAProOnly(FilterKeywordEnum fk)
 {
-	switch (fk)
-	{
-		case flkLabel:
-		case flkPersonality:
-		case flkSound:
-		case flkSpeak:
-		case flkOpenMessage:
-		case flkPrint:
-		case flkAddHistory:
-		case flkForward:
-		case flkRedirect:
-		case flkReply:
-		case flkServerOpts:
-		case flkJunk:
-			return(1); break;
-		default:
-			return(0); break;
+	switch (fk) {
+	case flkLabel:
+	case flkPersonality:
+	case flkSound:
+	case flkSpeak:
+	case flkOpenMessage:
+	case flkPrint:
+	case flkAddHistory:
+	case flkForward:
+	case flkRedirect:
+	case flkReply:
+	case flkServerOpts:
+	case flkJunk:
+		return (1);
+		break;
+	default:
+		return (0);
+		break;
 	}
 }

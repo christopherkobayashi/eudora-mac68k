@@ -49,85 +49,96 @@ Change Log:
 #error	"This code only works for CFM Targets!"
 #endif
 
-OSStatus LoadFrameworkBundle ( CFStringRef framework, CFBundleRef *bundlePtr );
+OSStatus LoadFrameworkBundle(CFStringRef framework,
+			     CFBundleRef * bundlePtr);
 
-template <typename Proc>
-class MachOWrapper {
-private:
-	CFBundleRef 	fBundle;		//	The reference to the framework pointer
-	Proc			fProcPtr;		//	The actual procedure pointer
+template < typename Proc > class MachOWrapper {
+      private:
+	CFBundleRef fBundle;	//      The reference to the framework pointer
+	Proc fProcPtr;		//      The actual procedure pointer
 
-public:
-	MachOWrapper ( CFStringRef framework, CFStringRef routine ) : fBundle ( NULL ), fProcPtr ( NULL ) {
-	//	Get the framework bundle
-		OSStatus err = ::LoadFrameworkBundle ( framework, &fBundle );
-	//	Don't call "CFBundleGetFunctionPointerForName" with an invalid bundle - it will crash.
-		if ( err != noErr )
+      public:
+      MachOWrapper(CFStringRef framework, CFStringRef routine):fBundle(NULL),
+	    fProcPtr(NULL)
+	{
+		//      Get the framework bundle
+		OSStatus err =::LoadFrameworkBundle(framework, &fBundle);
+		//      Don't call "CFBundleGetFunctionPointerForName" with an invalid bundle - it will crash.
+		if (err != noErr)
 			fBundle = NULL;
 		else {
-			fProcPtr = (Proc) CFBundleGetFunctionPointerForName ( fBundle, routine );
-			if ( fProcPtr == nil )
+			fProcPtr =
+			    (Proc)
+			    CFBundleGetFunctionPointerForName(fBundle,
+							      routine);
+			if (fProcPtr == nil)
 				err = cfragNoSymbolErr;
-			}
-	//	Have to throw something if we don't link up!
 		}
+		//      Have to throw something if we don't link up!
+	}
 
-	MachOWrapper ( CFBundleRef 	aBundle, CFStringRef routine ) : fBundle ( aBundle ), fProcPtr ( NULL ) {
+      MachOWrapper(CFBundleRef aBundle, CFStringRef routine):fBundle(aBundle),
+	    fProcPtr(NULL)
+	{
 		OSStatus err = noErr;
-		CFRetain ( fBundle );
-		fProcPtr = (Proc) CFBundleGetFunctionPointerForName ( fBundle, routine );
-		if ( fProcPtr == nil )
+		CFRetain(fBundle);
+		fProcPtr =
+		    (Proc) CFBundleGetFunctionPointerForName(fBundle,
+							     routine);
+		if (fProcPtr == nil)
 			err = cfragNoSymbolErr;
-	//	Have to throw something if we don't link up!
-		}
+		//      Have to throw something if we don't link up!
+	}
 
-	~MachOWrapper () { if ( fBundle != NULL ) CFRelease ( fBundle ); }
+	~MachOWrapper() {
+		if (fBundle != NULL)
+			CFRelease(fBundle);
+	}
 
-	Boolean IsValid () const { return fProcPtr != NULL; }
-	
-//	Marshall dreams:
-//	A whole set of templates for different numbers of arguments
-//	The beauty of this is that only one will be instantiated by the compiler
-//	for each specialization of this template.
-
+	Boolean IsValid() const {
+		return fProcPtr != NULL;
+	}
+//      Marshall dreams://      A whole set of templates for different numbers of arguments//      The beauty of this is that only one will be instantiated by the compiler//      for each specialization of this template.
 #if 0
-	template <typename R>
-	R operator () () const
-		{ return fProcPtr (); }
-	
-	template <typename R, typename A1>
-	R operator () (A1 arg1) const
-		{ return fProcPtr (arg1); }
-
-	template <typename R, typename A1, typename A2>
-	R operator () (A1 arg1, A2 arg2) const
-		{ return fProcPtr (arg1, arg2); }
-
-	template <typename R, typename A1, typename A2, typename A3>
-	R operator () (A1 arg1, A2 arg2, A3 arg3) const
-		{ return fProcPtr (arg1, arg2, arg3); }
-
-	template <typename R, typename A1, typename A2, typename A3, typename A4>
-	R operator () (A1 arg1, A2 arg2, A3 arg3, A4 arg4) const
-		{ return fProcPtr (arg1, arg2, arg3, arg4); }
-
-	template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5>
-	R operator () (A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5) const
-		{ return fProcPtr (arg1, arg2, arg3, arg4, arg5); }
-
-	template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-	R operator () (A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5, A6 arg6) const
-		{ return fProcPtr (arg1, arg2, arg3, arg4, arg5, arg6); }
+	template < typename R > R operator () () const {
+		return fProcPtr();
+	} template < typename R, typename A1 > R operator () (A1 arg1) const {
+		return fProcPtr(arg1);
+	} template < typename R, typename A1, typename A2 >
+	    R operator () (A1 arg1, A2 arg2) const {
+		return fProcPtr(arg1, arg2);
+	} template < typename R, typename A1, typename A2, typename A3 >
+	    R operator () (A1 arg1, A2 arg2, A3 arg3) const {
+		return fProcPtr(arg1, arg2, arg3);
+	} template < typename R, typename A1, typename A2, typename A3,
+	    typename A4 > R operator () (A1 arg1, A2 arg2, A3 arg3,
+					 A4 arg4) const {
+		return fProcPtr(arg1, arg2, arg3, arg4);
+	} template < typename R, typename A1, typename A2, typename A3,
+	    typename A4, typename A5 > R operator () (A1 arg1, A2 arg2,
+						      A3 arg3, A4 arg4,
+						      A5 arg5) const {
+		return fProcPtr(arg1, arg2, arg3, arg4, arg5);
+	} template < typename R, typename A1, typename A2, typename A3,
+	    typename A4, typename A5, typename A6 > R operator () (A1 arg1,
+								   A2 arg2,
+								   A3 arg3,
+								   A4 arg4,
+								   A5 arg5,
+								   A6 arg6)
+	    const {
+		return fProcPtr(arg1, arg2, arg3, arg4, arg5, arg6);
+	}
 #else
-//	Non-template test of general idea
-	operator Proc () const { return fProcPtr; }
+//      Non-template test of general idea operator  Proc() const {
+		return fProcPtr;
+	}
 #endif
-
-private:
-//	Defined but not declared
-	MachOWrapper ();
-	MachOWrapper ( const MachOWrapper &rhs );
-	MachOWrapper & operator = ( const MachOWrapper &rhs );	
-	};
+      private:
+//      Defined but not declared
+	 MachOWrapper();
+	MachOWrapper(const MachOWrapper & rhs);
+	MachOWrapper & operator =(const MachOWrapper & rhs);
+};
 
 #endif

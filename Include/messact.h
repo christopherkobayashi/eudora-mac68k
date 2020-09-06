@@ -37,35 +37,37 @@
  * prototypes
  **********************************************************************/
 Boolean MessClose(MyWindowPtr win);
-Boolean MessMenu(MyWindowPtr win,int menu,int item,short modifiers);
-void MessZoomSize(MyWindowPtr win,Rect *zoom);
+Boolean MessMenu(MyWindowPtr win, int menu, int item, short modifiers);
+void MessZoomSize(MyWindowPtr win, Rect * zoom);
 void HiliteOddReply(MessHandle messH);
 //void AlignHeaders(MessHandle messH);
 void SaveMessageAs(MessHandle messH);
-Boolean MessKey(MyWindowPtr win, EventRecord *event);
-short SaveAsToOpenFile(short refN,MessHandle messH);
-pascal Boolean SaveAsFilter(DialogPtr dgPtr,EventRecord *event,short *item,Ptr userData);
-pascal short SaveAsHook(short item,DialogPtr dgPtr, Ptr userData);
-void NextMess(TOCHandle tocH,MessHandle messH,short whichWay,long modifiers,Boolean ezOpen);
-Boolean MessFind(MyWindowPtr win,PStr what);
-void MessClick(MyWindowPtr win,EventRecord *event);
-short NewPrior(short item,short prior);
+Boolean MessKey(MyWindowPtr win, EventRecord * event);
+short SaveAsToOpenFile(short refN, MessHandle messH);
+pascal Boolean SaveAsFilter(DialogPtr dgPtr, EventRecord * event,
+			    short *item, Ptr userData);
+pascal short SaveAsHook(short item, DialogPtr dgPtr, Ptr userData);
+void NextMess(TOCHandle tocH, MessHandle messH, short whichWay,
+	      long modifiers, Boolean ezOpen);
+Boolean MessFind(MyWindowPtr win, PStr what);
+void MessClick(MyWindowPtr win, EventRecord * event);
+short NewPrior(short item, short prior);
 OSErr MessGonnaShow(MyWindowPtr win);
 OSErr MessMakeEditable(MyWindowPtr win, Boolean value);
-void MessDidResize(MyWindowPtr win, Rect *oldContR);
-void MessFocus(MessHandle messH,PETEHandle pte);
+void MessDidResize(MyWindowPtr win, Rect * oldContR);
+void MessFocus(MessHandle messH, PETEHandle pte);
 void MessCursor(Point mouse);
-void PriorMenuHelp(MyWindowPtr win,Rect *priorRect);
-Boolean GetPriorityRect(MyWindowPtr win,Rect *pr);
-void DrawPriority(Rect *pr,short p);
+void PriorMenuHelp(MyWindowPtr win, Rect * priorRect);
+Boolean GetPriorityRect(MyWindowPtr win, Rect * pr);
+void DrawPriority(Rect * pr, short p);
 short PriorityMenu(MyWindowPtr win);
-void ShowMessageSeparator(PETEHandle pte,Boolean center);
+void ShowMessageSeparator(PETEHandle pte, Boolean center);
 int UnwrapSave(UPtr text, long length, long offset, short refN);
-Boolean MessApp1(MyWindowPtr win,EventRecord *event);
-void SetSubject(TOCHandle tocH,short sumNum,PStr sub);
-void SetSender(TOCHandle tocH,short sumNum,PStr sender);
-void SetFlag(TOCHandle tocH,short sumNum,long flag,Boolean on);
-void SetOpt(TOCHandle tocH,short sumNum,long flag,Boolean on);
+Boolean MessApp1(MyWindowPtr win, EventRecord * event);
+void SetSubject(TOCHandle tocH, short sumNum, PStr sub);
+void SetSender(TOCHandle tocH, short sumNum, PStr sender);
+void SetFlag(TOCHandle tocH, short sumNum, long flag, Boolean on);
+void SetOpt(TOCHandle tocH, short sumNum, long flag, Boolean on);
 void MessIBarUpdate(MessHandle messH);
 Boolean CheckAddNotifyControls(MyWindowPtr win, MessHandle messH);
 #define attColor	1
@@ -78,30 +80,37 @@ Boolean SaveMess(MyWindowPtr win);
 OSErr MessSaveSub(MessHandle messH);
 void AddMessErrNote(MessHandle messH);
 void PlaceMessErrNote(MessHandle messH);
-Boolean SaveMessHi(MyWindowPtr win,Boolean closing);
-Boolean AttIsSelected(MyWindowPtr win,PETEHandle pte,long startWith,long endWith,short what,long *start,long *stop);
-Boolean TransferMenuChoice(short menu,short item,TOCHandle tocH,short sumNum,long modifiers,Boolean fcc);
-OSErr AttLine2Spec(PStr line,FSSpecPtr spec,Boolean wantToOpen);
-OSErr RelLine2Spec(PStr line,FSSpecPtr spec,uLong *cid, uLong *relURL, uLong *absURL);
-short AddXlateTables(Boolean isOut,short nowId,Boolean ph,MenuHandle pmh);
+Boolean SaveMessHi(MyWindowPtr win, Boolean closing);
+Boolean AttIsSelected(MyWindowPtr win, PETEHandle pte, long startWith,
+		      long endWith, short what, long *start, long *stop);
+Boolean TransferMenuChoice(short menu, short item, TOCHandle tocH,
+			   short sumNum, long modifiers, Boolean fcc);
+OSErr AttLine2Spec(PStr line, FSSpecPtr spec, Boolean wantToOpen);
+OSErr RelLine2Spec(PStr line, FSSpecPtr spec, uLong * cid, uLong * relURL,
+		   uLong * absURL);
+short AddXlateTables(Boolean isOut, short nowId, Boolean ph,
+		     MenuHandle pmh);
 void SetMessTable(TOCHandle tocH, short sumNum, short tableId);
 RgnHandle MessBuildDragRgn(MessHandle messH);
-Boolean Menu2TableId(TOCHandle tocH,MenuHandle pmh,short item, short *tableId);
+Boolean Menu2TableId(TOCHandle tocH, MenuHandle pmh, short item,
+		     short *tableId);
 void SetMessTable(TOCHandle tocH, short sumNum, short newId);
-OSErr ExportHTMLSum(TOCHandle tocH,short sumNum);
+OSErr ExportHTMLSum(TOCHandle tocH, short sumNum);
 OSErr ExportHTML(MessHandle messH);
 #ifdef TWO
-Boolean GetServerRect(MyWindowPtr win, short which, Rect *r);
+Boolean GetServerRect(MyWindowPtr win, short which, Rect * r);
 #endif
 short EzOpenFind(TOCHandle tocH, short origSum);
-void EzOpen(TOCHandle tocH, short sumNum,uLong uidHash,long modifiers,Boolean hideFront,Boolean willDelete);
-void Fcc(MessHandle messH,FSSpecPtr box);
+void EzOpen(TOCHandle tocH, short sumNum, uLong uidHash, long modifiers,
+	    Boolean hideFront, Boolean willDelete);
+void Fcc(MessHandle messH, FSSpecPtr box);
 short MessWi(MyWindowPtr win);
 #define IsArrowSwitch(m)	(((m)&(shiftKey|optionKey|cmdKey|alphaLock|controlKey))==GetPrefLong(PREF_SWITCH_MODIFIERS))
 #endif
-Boolean GetMesgErrorsRect(MyWindowPtr win, Rect *r);
+Boolean GetMesgErrorsRect(MyWindowPtr win, Rect * r);
 short GetMesgErrorsHeight(MyWindowPtr win);
 #define MESG_ERR_WIDTH 32
-OSErr IncrementQuoteLevel(PETEHandle pte,long startSel,long endSel,short increment);
-pascal short SaveAsHook(short item,DialogPtr dgPtr, Ptr userData);
+OSErr IncrementQuoteLevel(PETEHandle pte, long startSel, long endSel,
+			  short increment);
+pascal short SaveAsHook(short item, DialogPtr dgPtr, Ptr userData);
 pascal void PetePaneDraw(ControlHandle cntl, SInt16 part);

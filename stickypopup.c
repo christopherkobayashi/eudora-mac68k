@@ -38,7 +38,7 @@
 #pragma segment StickyPopup
 
 
-/* MJN *//* new file */
+	 /* MJN *//* new file */
 /*
 
 		stickypopup.c
@@ -64,41 +64,41 @@
 
 #pragma mark Constants & defines
 
-#define STICKY_POPUP_MEM_TEST_SIZE 16384 /* 16 K */
-#define MAX_LIST_DATA_SIZE 32000 /* safely less than 32 K */
-#define CELL_WIDTH_EXTRA 4 /* number of extra pixels to leave on right hand side in list */
+#define STICKY_POPUP_MEM_TEST_SIZE 16384	/* 16 K */
+#define MAX_LIST_DATA_SIZE 32000	/* safely less than 32 K */
+#define CELL_WIDTH_EXTRA 4	/* number of extra pixels to leave on right hand side in list */
 #define STICKY_SELECT_EVENT_MASK (mDownMask + mUpMask + keyDownMask + autoKeyMask + keyUpMask)
 
-#define RETURN_CHAR_CODE 0x0D /* ASCII code for Carriage Return */
-#define ENTER_CHAR_CODE 0x03 /* ASCII code for Enter */
-#define PERIOD_CHAR_CODE 0x2E /* ASCII code for Period */
-#define ESCAPE_KEY_CODE 0x35 /* virtual key code for Escape */
-#define BACKSPACE_CHAR_CODE 0x08 /* ASCII code for Backspace/Delete */
-#define CLEAR_KEY_CODE 0x47 /* virtual key code for Clear key on numeric keypad */
-#define FWD_DEL_CHAR_CODE 0x7F /* ASCII code for Forward Delete key on extended keyboard */
-#define UP_ARROW_CHAR_CODE 0x1E /* ASCII code for Up Arrow */
-#define DOWN_ARROW_CHAR_CODE 0x1F /* ASCII code for Down Arrow */
-#define LEFT_ARROW_CHAR_CODE 0x1C /* ASCII code for Left Arrow */
-#define RIGHT_ARROW_CHAR_CODE 0x1D /* ASCII code for Right Arrow */
-#define HOME_CHAR_CODE 0x01 /* ASCII code for Home key on extended keyboard */
-#define END_CHAR_CODE 0x04 /* ASCII code for End key on extended keyboard */
-#define SPACE_CHAR_CODE 0x20 /* ASCII code for space character */
-#define DASH_CHAR_CODE 0x2D /* ASCII code for dash character */
-#define STICKY_SPACE_CHAR_CODE 0xCA /* ASCII code for sticky (non-breaking) space (em-space) character */
-#define STICKY_DASH_CHAR_CODE 0xD0 /* ASCII code for sticky (non-breaking) dash (en-dash) character */
+#define RETURN_CHAR_CODE 0x0D	/* ASCII code for Carriage Return */
+#define ENTER_CHAR_CODE 0x03	/* ASCII code for Enter */
+#define PERIOD_CHAR_CODE 0x2E	/* ASCII code for Period */
+#define ESCAPE_KEY_CODE 0x35	/* virtual key code for Escape */
+#define BACKSPACE_CHAR_CODE 0x08	/* ASCII code for Backspace/Delete */
+#define CLEAR_KEY_CODE 0x47	/* virtual key code for Clear key on numeric keypad */
+#define FWD_DEL_CHAR_CODE 0x7F	/* ASCII code for Forward Delete key on extended keyboard */
+#define UP_ARROW_CHAR_CODE 0x1E	/* ASCII code for Up Arrow */
+#define DOWN_ARROW_CHAR_CODE 0x1F	/* ASCII code for Down Arrow */
+#define LEFT_ARROW_CHAR_CODE 0x1C	/* ASCII code for Left Arrow */
+#define RIGHT_ARROW_CHAR_CODE 0x1D	/* ASCII code for Right Arrow */
+#define HOME_CHAR_CODE 0x01	/* ASCII code for Home key on extended keyboard */
+#define END_CHAR_CODE 0x04	/* ASCII code for End key on extended keyboard */
+#define SPACE_CHAR_CODE 0x20	/* ASCII code for space character */
+#define DASH_CHAR_CODE 0x2D	/* ASCII code for dash character */
+#define STICKY_SPACE_CHAR_CODE 0xCA	/* ASCII code for sticky (non-breaking) space (em-space) character */
+#define STICKY_DASH_CHAR_CODE 0xD0	/* ASCII code for sticky (non-breaking) dash (en-dash) character */
 
 
 
 #pragma mark Globals
 
-static StickyPopupHdl CurStickyPopup = nil; /* sticky popup currently being "run" by StickyPopupSelect */
-static long StickyPopupKeyUpdateDelay; /* time, in ticks, to wait after a key stroke before updating the list selection in response to typing */
-static Str255 StickyPopupTypingStr; /* string for accumulating the text that the user is typing for purpose of selection in list */
-static long StickyPopupLastKeyTicks; /* system ticks (TickCount) of last key stroke being used for purpose of selection in list */
+static StickyPopupHdl CurStickyPopup = nil;	/* sticky popup currently being "run" by StickyPopupSelect */
+static long StickyPopupKeyUpdateDelay;	/* time, in ticks, to wait after a key stroke before updating the list selection in response to typing */
+static Str255 StickyPopupTypingStr;	/* string for accumulating the text that the user is typing for purpose of selection in list */
+static long StickyPopupLastKeyTicks;	/* system ticks (TickCount) of last key stroke being used for purpose of selection in list */
 static pascal Boolean StickyPopupClickLoop(void);
 
 
-/* FINISH *//* move to stringutil.c (and its prototype, too) */
+	    /* FINISH *//* move to stringutil.c (and its prototype, too) */
 /*********************************************************************************************
  *	StripStickyCharacters - strips out sticky spaces and sticky dashes from the Pascal
  *	string passed in theString (sticky meaning non-breaking).
@@ -110,23 +110,21 @@ static pascal Boolean StickyPopupClickLoop(void);
  *********************************************************************************************/
 
 void StripStickyCharacters(Str255 theString)
-
 {
-	long							numChars;
-	long							i;
-	unsigned char*		curChar;
+	long numChars;
+	long i;
+	unsigned char *curChar;
 
 
 	numChars = theString[0];
 	for (i = 0, curChar = theString + 1; i < numChars; i++, curChar++)
-		switch (*curChar)
-		{
-			case STICKY_SPACE_CHAR_CODE:
-				*curChar = SPACE_CHAR_CODE;
-				break;
-			case STICKY_DASH_CHAR_CODE:
-				*curChar = DASH_CHAR_CODE;
-				break;
+		switch (*curChar) {
+		case STICKY_SPACE_CHAR_CODE:
+			*curChar = SPACE_CHAR_CODE;
+			break;
+		case STICKY_DASH_CHAR_CODE:
+			*curChar = DASH_CHAR_CODE;
+			break;
 		}
 }
 
@@ -147,11 +145,13 @@ void StripStickyCharacters(Str255 theString)
  *********************************************************************************************/
 
 void StickyPopupNormalizeString(Str255 theString)
-
 {
 	/* FINISH *//* support scripts other than smRoman */
-	if (FurrinSort) UppercaseStripDiacritics(theString + 1, theString[0], smRoman);
-	else MyUpperText(theString+1,theString[0]);
+	if (FurrinSort)
+		UppercaseStripDiacritics(theString + 1, theString[0],
+					 smRoman);
+	else
+		MyUpperText(theString + 1, theString[0]);
 	StripStickyCharacters(theString);
 }
 
@@ -180,16 +180,16 @@ void StickyPopupNormalizeString(Str255 theString)
  *	normalizing the strings.
  *********************************************************************************************/
 
-short StickyPopupCompareString(Str255 stringA, Str255 stringB, Boolean needNormalize)
-
+short StickyPopupCompareString(Str255 stringA, Str255 stringB,
+			       Boolean needNormalize)
 {
-	Str255		stringA_;
-	Str255		stringB_;
+	Str255 stringA_;
+	Str255 stringB_;
 
 
 	if (!needNormalize)
-		return StringComp(stringA,stringB);	// calls CompareString or RelString depending on FurrinSort SD
-		
+		return StringComp(stringA, stringB);	// calls CompareString or RelString depending on FurrinSort SD
+
 	BlockMoveData(stringA, stringA_, stringA[0] + 1);
 	BlockMoveData(stringB, stringB_, stringB[0] + 1);
 	StickyPopupNormalizeString(stringA_);
@@ -204,10 +204,12 @@ short StickyPopupCompareString(Str255 stringA, Str255 stringB, Boolean needNorma
  *	should be currently popped (isPopped = true).  curMouseLoc is in global coordinates.
  *********************************************************************************************/
 
-static Boolean MouseLocInList(Point curMouseLoc, StickyPopupHdl stickyPopup)
-
+static Boolean MouseLocInList(Point curMouseLoc,
+			      StickyPopupHdl stickyPopup)
 {
-	return PtInRgn(curMouseLoc,MyGetWindowContentRegion((**stickyPopup).theWindow));
+	return PtInRgn(curMouseLoc,
+		       MyGetWindowContentRegion((**stickyPopup).
+						theWindow));
 }
 
 
@@ -218,24 +220,21 @@ static Boolean MouseLocInList(Point curMouseLoc, StickyPopupHdl stickyPopup)
  *********************************************************************************************/
 
 static pascal Boolean StickyPopupClickLoop(void)
-
 {
-	ListHandle	theList;
-	Point				curMouseLoc;
-	Cell				curSel;
-	Boolean			selectionExists;
+	ListHandle theList;
+	Point curMouseLoc;
+	Cell curSel;
+	Boolean selectionExists;
 
 
 	theList = (**CurStickyPopup).theList;
 	GetMouse(&curMouseLoc);
 	LocalToGlobal(&curMouseLoc);
-	if (MouseLocInList(curMouseLoc, CurStickyPopup))
-	{
+	if (MouseLocInList(curMouseLoc, CurStickyPopup)) {
 		curSel.v = curSel.h = 0;
 		selectionExists = LGetSelect(true, &curSel, theList);
-		if (!selectionExists)
-		{
-			curSel.v = (**theList).mouseLoc.v / (**theList).cellSize.v; /* WARNING *//* assumes cellSize.v has already been set to a valid non-zero value */
+		if (!selectionExists) {
+			curSel.v = (**theList).mouseLoc.v / (**theList).cellSize.v;	/* WARNING *//* assumes cellSize.v has already been set to a valid non-zero value */
 			curSel.h = 0;
 			LSetDrawingMode(true, theList);
 			LSetSelect(true, curSel, theList);
@@ -244,8 +243,7 @@ static pascal Boolean StickyPopupClickLoop(void)
 	}
 	curSel.v = curSel.h = 0;
 	selectionExists = LGetSelect(true, &curSel, theList);
-	if (selectionExists)
-	{
+	if (selectionExists) {
 		LSetSelect(false, curSel, theList);
 		LSetDrawingMode(false, theList);
 	}
@@ -259,21 +257,21 @@ static pascal Boolean StickyPopupClickLoop(void)
  *	function returns noErr if it succeeds, or a non-zero error code if it fails.
  *********************************************************************************************/
 
-OSErr NewStickyPopup(short fontNum, short fontSize, StickyPopupHdl *stickyPopup)
-
+OSErr NewStickyPopup(short fontNum, short fontSize,
+		     StickyPopupHdl * stickyPopup)
 {
-	OSErr						err;
-	StickyPopupHdl	popupHdl;
-	StickyPopupPtr	popupPtr;
-	GrafPtr					origPort;
-	Ptr							p;
-	WindowPtr				win;
-	Rect						r;
-	ListBounds			listDataBounds;
-	Point						listCellSize;
-	ListHandle			listHdl;
-	Str255					scratchStr;
-	DECLARE_UPP(StickyPopupClickLoop,ListClickLoop);
+	OSErr err;
+	StickyPopupHdl popupHdl;
+	StickyPopupPtr popupPtr;
+	GrafPtr origPort;
+	Ptr p;
+	WindowPtr win;
+	Rect r;
+	ListBounds listDataBounds;
+	Point listCellSize;
+	ListHandle listHdl;
+	Str255 scratchStr;
+	DECLARE_UPP(StickyPopupClickLoop, ListClickLoop);
 
 	*stickyPopup = nil;
 
@@ -290,38 +288,42 @@ OSErr NewStickyPopup(short fontNum, short fontSize, StickyPopupHdl *stickyPopup)
 
 	GetPort(&origPort);
 
-	popupHdl = (StickyPopupHdl)NewHandleClear(sizeof(StickyPopupRec));
+	popupHdl = (StickyPopupHdl) NewHandleClear(sizeof(StickyPopupRec));
 	if (!popupHdl)
 		return memFullErr;
 
 	r.top = r.left = 0;
 	r.bottom = r.right = 1;
-	win = NewWindow(nil, &r, "\p", false, HaveOSX () ? dBoxProc : altDBoxProc, (WindowPtr)-1, false, 0);
-	if (!win)
-	{
+	win =
+	    NewWindow(nil, &r, "\p", false,
+		      HaveOSX()? dBoxProc : altDBoxProc, (WindowPtr) - 1,
+		      false, 0);
+	if (!win) {
 		err = memFullErr;
 		goto BadExit1;
 	}
-	SetWindowKind (win, dialogKind); /* extra precaution to prevent full-context switch-out */
+	SetWindowKind(win, dialogKind);	/* extra precaution to prevent full-context switch-out */
 
 	SetPort(GetWindowPort(win));
 	TextFont(fontNum);
 	TextSize(fontSize);
-	
-	listDataBounds.top = listDataBounds.left = listDataBounds.bottom = 0;
+
+	listDataBounds.top = listDataBounds.left = listDataBounds.bottom =
+	    0;
 	listDataBounds.right = 1;
 	listCellSize.v = listCellSize.h = 0;
-	listHdl = LNew(&r, &listDataBounds, listCellSize, 0, win, false, false, false, false);
+	listHdl =
+	    LNew(&r, &listDataBounds, listCellSize, 0, win, false, false,
+		 false, false);
 	SetPort(origPort);
-	if (!listHdl)
-	{
+	if (!listHdl) {
 		err = MemError();
 		if (!err)
 			err = memFullErr;
 		goto BadExit2;
 	}
 	(**listHdl).selFlags = lOnlyOne;
-	INIT_UPP(StickyPopupClickLoop,ListClickLoop);
+	INIT_UPP(StickyPopupClickLoop, ListClickLoop);
 	(**listHdl).lClickLoop = StickyPopupClickLoopUPP;
 
 	popupPtr = *popupHdl;
@@ -337,11 +339,11 @@ OSErr NewStickyPopup(short fontNum, short fontSize, StickyPopupHdl *stickyPopup)
 	return noErr;
 
 
-BadExit2:
+      BadExit2:
 	DisposeWindow_(win);
-BadExit1:
-	DisposeHandle((Handle)popupHdl);
-BadExit0:
+      BadExit1:
+	DisposeHandle((Handle) popupHdl);
+      BadExit0:
 	return err;
 }
 
@@ -351,22 +353,21 @@ BadExit0:
  *********************************************************************************************/
 
 void DisposeStickyPopup(StickyPopupHdl stickyPopup)
-
 {
-	StickyPopupPtr	popupPtr;
+	StickyPopupPtr popupPtr;
 
 
 	if (!stickyPopup)
 		return;
 
-	HLock((Handle)stickyPopup);
+	HLock((Handle) stickyPopup);
 	popupPtr = *stickyPopup;
 
 	if (popupPtr->theList)
 		LDispose(popupPtr->theList);
 	if (popupPtr->theWindow)
 		DisposeWindow_(popupPtr->theWindow);
-	DisposeHandle((Handle)stickyPopup);
+	DisposeHandle((Handle) stickyPopup);
 }
 
 
@@ -395,19 +396,20 @@ void DisposeStickyPopup(StickyPopupHdl stickyPopup)
  *	The function returns noErr if it succeeds, or a non-zero error code if it fails.
  *********************************************************************************************/
 
-OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup, StringPtr dataPtr, long entryOffset, short entryCount, short beforeIndex)
-
+OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup,
+			      StringPtr dataPtr, long entryOffset,
+			      short entryCount, short beforeIndex)
 {
-	OSErr				err;
-	ListHandle	theList;
-	ListBounds	listDataBounds;
-	Handle			listCellDataHdl;
-	Cell				curCell;
-	short				endIndex;
-	StringPtr		p;
-	short				origCount, newCount;
-	Size				origSize, newSize;
-	short				scratch;
+	OSErr err;
+	ListHandle theList;
+	ListBounds listDataBounds;
+	Handle listCellDataHdl;
+	Cell curCell;
+	short endIndex;
+	StringPtr p;
+	short origCount, newCount;
+	Size origSize, newSize;
+	short scratch;
 
 
 	if (!stickyPopup)
@@ -423,7 +425,7 @@ OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup, StringPtr dataPtr, lon
 	DisposePtr(p);
 
 	theList = (**stickyPopup).theList;
-	listCellDataHdl = (Handle)(**theList).cells;
+	listCellDataHdl = (Handle) (**theList).cells;
 	listDataBounds = (**theList).dataBounds;
 	if ((beforeIndex < 1) || (beforeIndex > listDataBounds.bottom))
 		beforeIndex = listDataBounds.bottom;
@@ -440,18 +442,17 @@ OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup, StringPtr dataPtr, lon
 	curCell.h = 0;
 	endIndex = beforeIndex + entryCount;
 	err = noErr;
-	for (p = dataPtr, curCell.v = beforeIndex; !err && (curCell.v < endIndex); p += entryOffset, curCell.v++)
-	{
+	for (p = dataPtr, curCell.v = beforeIndex;
+	     !err && (curCell.v < endIndex);
+	     p += entryOffset, curCell.v++) {
 		origSize = GetHandleSize(listCellDataHdl);
-		if ((origSize + p[0] + 1) > MAX_LIST_DATA_SIZE)
-		{
+		if ((origSize + p[0] + 1) > MAX_LIST_DATA_SIZE) {
 			err = memFullErr;
 			continue;
 		}
 		LSetCell(p + 1, p[0], curCell, theList);
 		newSize = GetHandleSize(listCellDataHdl);
-		if (newSize == origSize)
-		{
+		if (newSize == origSize) {
 			err = memFullErr;
 			continue;
 		}
@@ -472,8 +473,8 @@ OSErr AddEntriesToStickyPopup(StickyPopupHdl stickyPopup, StringPtr dataPtr, lon
  *	The function returns noErr if it succeeds, or a non-zero error code if it fails.
  *********************************************************************************************/
 
-OSErr RemoveEntriesFromStickyPopup(StickyPopupHdl stickyPopup, short index, short count)
-
+OSErr RemoveEntriesFromStickyPopup(StickyPopupHdl stickyPopup, short index,
+				   short count)
 {
 	if (!stickyPopup)
 		return paramErr;
@@ -492,18 +493,18 @@ OSErr RemoveEntriesFromStickyPopup(StickyPopupHdl stickyPopup, short index, shor
 
 
 static void ClearListSelection(ListHandle lHandle)
-
 {
-	ListBounds	dataBounds;
-	short				maxV, maxH;
-	Cell				theCell;
+	ListBounds dataBounds;
+	short maxV, maxH;
+	Cell theCell;
 
 
 	dataBounds = (**lHandle).dataBounds;
 	maxV = dataBounds.bottom;
 	maxH = dataBounds.right;
 	for (theCell.h = dataBounds.left; theCell.h < maxH; theCell.h++)
-		for (theCell.v = dataBounds.top; theCell.v < maxV; theCell.v++)
+		for (theCell.v = dataBounds.top; theCell.v < maxV;
+		     theCell.v++)
 			LSetSelect(false, theCell, lHandle);
 }
 
@@ -516,12 +517,11 @@ static void ClearListSelection(ListHandle lHandle)
  *********************************************************************************************/
 
 static void SelectListItem(StickyPopupHdl stickyPopup, short itemNo)
-
 {
-	ListHandle	theList;
-	Cell				theCell;
-	Boolean			selectionExists;
-	ListBounds	dataBounds;
+	ListHandle theList;
+	Cell theCell;
+	Boolean selectionExists;
+	ListBounds dataBounds;
 
 
 	theList = (**stickyPopup).theList;
@@ -554,14 +554,14 @@ static void SelectListItem(StickyPopupHdl stickyPopup, short itemNo)
  *	(isPopped = true).
  *********************************************************************************************/
 
-static void AdjustListSelection(StickyPopupHdl stickyPopup, long adjustFactor)
-
+static void AdjustListSelection(StickyPopupHdl stickyPopup,
+				long adjustFactor)
 {
-	ListHandle	theList;
-	Cell				theCell;
-	Boolean			selectionExists;
-	short				newCellV;
-	ListBounds	dataBounds;
+	ListHandle theList;
+	Cell theCell;
+	Boolean selectionExists;
+	short newCellV;
+	ListBounds dataBounds;
 
 
 	if (!adjustFactor)
@@ -599,18 +599,18 @@ static void AdjustListSelection(StickyPopupHdl stickyPopup, long adjustFactor)
  *	in HandleStickyPopupKeyDown and HandleStickyPopupIdle.
  *********************************************************************************************/
 
-static void SelectItemByString(StickyPopupHdl stickyPopup, Str255 searchStr)
-
+static void SelectItemByString(StickyPopupHdl stickyPopup,
+			       Str255 searchStr)
 {
-	ListHandle	theList;
-	Str255			typingStr;
-	Cell				theCell;
-	Cell				curSelected;
-	Boolean			selectionExists;
-	ListBounds	dataBounds;
-	Boolean			found;
-	Str255			cellStr;
-	short				cellDataLen;
+	ListHandle theList;
+	Str255 typingStr;
+	Cell theCell;
+	Cell curSelected;
+	Boolean selectionExists;
+	ListBounds dataBounds;
+	Boolean found;
+	Str255 cellStr;
+	short cellDataLen;
 
 
 	theList = (**stickyPopup).theList;
@@ -622,13 +622,13 @@ static void SelectItemByString(StickyPopupHdl stickyPopup, Str255 searchStr)
 
 	theCell.v = theCell.h = 0;
 	found = false;
-	while (!found && (theCell.v < dataBounds.bottom))
-	{
+	while (!found && (theCell.v < dataBounds.bottom)) {
 		cellDataLen = sizeof(cellStr) - 1;
 		LGetCell(cellStr + 1, &cellDataLen, theCell, theList);
 		cellStr[0] = cellDataLen;
 		StickyPopupNormalizeString(cellStr);
-		if (StickyPopupCompareString(typingStr, cellStr, false) <= 0)
+		if (StickyPopupCompareString(typingStr, cellStr, false) <=
+		    0)
 			found = true;
 		else
 			theCell.v++;
@@ -661,7 +661,6 @@ static void SelectItemByString(StickyPopupHdl stickyPopup, Str255 searchStr)
  *********************************************************************************************/
 
 static void ResetStickyPopupTyping(void)
-
 {
 	StickyPopupKeyUpdateDelay = LMGetKeyThresh();
 	StickyPopupTypingStr[0] = 0;
@@ -678,29 +677,29 @@ static void ResetStickyPopupTyping(void)
  *	is used to decide which monitor to target.
  *********************************************************************************************/
 
-static void GetStickyPopupMonitorRect(short top, short left, Rect *listMonitorRect)
-
+static void GetStickyPopupMonitorRect(short top, short left,
+				      Rect * listMonitorRect)
 {
-	Point			topLeft;
-	Rect			screenRect;
-	short			menuBarHeight;
-	Boolean		hasCQD;
-	GDHandle	gd;
-	Boolean		found;
-	long			response;
+	Point topLeft;
+	Rect screenRect;
+	short menuBarHeight;
+	Boolean hasCQD;
+	GDHandle gd;
+	Boolean found;
+	long response;
 
 
 	menuBarHeight = GetMBarHeight();
-	hasCQD = !Gestalt(gestaltQuickdrawVersion, &response) && (response >= gestalt8BitQD);
-	if (hasCQD)
-	{
+	hasCQD = !Gestalt(gestaltQuickdrawVersion, &response)
+	    && (response >= gestalt8BitQD);
+	if (hasCQD) {
 		topLeft.v = top;
 		topLeft.h = left;
 		gd = GetDeviceList();
 		found = false;
-		while (!found && gd)
-		{
-			if (TestDeviceAttribute(gd, screenDevice) && PtInRect(topLeft, &(**gd).gdRect))
+		while (!found && gd) {
+			if (TestDeviceAttribute(gd, screenDevice)
+			    && PtInRect(topLeft, &(**gd).gdRect))
 				found = true;
 			else
 				gd = GetNextDevice(gd);
@@ -710,9 +709,7 @@ static void GetStickyPopupMonitorRect(short top, short left, Rect *listMonitorRe
 		screenRect = (**gd).gdRect;
 		if (TestDeviceAttribute(gd, mainScreen))
 			screenRect.top += menuBarHeight;
-	}
-	else
-	{
+	} else {
 		GetQDGlobalsScreenBitsBounds(&screenRect);
 		screenRect.top += menuBarHeight;
 	}
@@ -737,26 +734,25 @@ static void GetStickyPopupMonitorRect(short top, short left, Rect *listMonitorRe
  *			 nickname during nickname completion.
  *********************************************************************************************/
 
-static void CalcStickyPopupSize(StickyPopupHdl stickyPopup, short curItem, Rect *teflonRect, short *top, short *left, short *popupHeight, short *popupWidth)
-
+static void CalcStickyPopupSize(StickyPopupHdl stickyPopup, short curItem,
+				Rect * teflonRect, short *top, short *left,
+				short *popupHeight, short *popupWidth)
 {
-	GrafPtr			origPort;
-	ListHandle	theList;
-	ListPtr			listPtr;
-	short				height;
-	short				width;
-	short				maxVisItems;
-	short				cellCount;
-	short				cellHeight;
-	short				cellIndent;
-	Cell				curCell;
-	short				curCellWidth, largestCellWidth;
-	Str255			cellStr;
-	short				cellDataLen;
-	Rect				listMonitorRect,
-							stickyPopupRect,
-							dstRect;
-	short				listBottom;
+	GrafPtr origPort;
+	ListHandle theList;
+	ListPtr listPtr;
+	short height;
+	short width;
+	short maxVisItems;
+	short cellCount;
+	short cellHeight;
+	short cellIndent;
+	Cell curCell;
+	short curCellWidth, largestCellWidth;
+	Str255 cellStr;
+	short cellDataLen;
+	Rect listMonitorRect, stickyPopupRect, dstRect;
+	short listBottom;
 
 
 	theList = (**stickyPopup).theList;
@@ -769,8 +765,7 @@ static void CalcStickyPopupSize(StickyPopupHdl stickyPopup, short curItem, Rect 
 	SetPort(GetWindowPort((**stickyPopup).theWindow));
 	largestCellWidth = 1;
 	curCell.h = 0;
-	for (curCell.v = 0; curCell.v < cellCount; curCell.v++)
-	{
+	for (curCell.v = 0; curCell.v < cellCount; curCell.v++) {
 		cellDataLen = sizeof(cellStr) - 1;
 		LGetCell(cellStr + 1, &cellDataLen, curCell, theList);
 		cellStr[0] = cellDataLen;
@@ -815,52 +810,61 @@ static void CalcStickyPopupSize(StickyPopupHdl stickyPopup, short curItem, Rect 
 */
 
 	// (jp) Here's the new stuff, featuring Teflon (tm).  All we're really doing is
-	//			"drifting" the popup in one direction or another if it intersects with
-	//			the teflon rect.  This is certainly not fool-proof and takes advantage
-	//			of the way _we_ use sticky popups (as opposed to the way they could
-	//			conceivably be used as a general UI element).
-	SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
+	//                      "drifting" the popup in one direction or another if it intersects with
+	//                      the teflon rect.  This is certainly not fool-proof and takes advantage
+	//                      of the way _we_ use sticky popups (as opposed to the way they could
+	//                      conceivably be used as a general UI element).
+	SetRect(&stickyPopupRect, *left, *top, *left + width,
+		*top + height);
 	if (*top < listMonitorRect.top) {
 		*top = listMonitorRect.top;
-		SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
-		if (SectRect (&stickyPopupRect, teflonRect, &dstRect)) {
+		SetRect(&stickyPopupRect, *left, *top, *left + width,
+			*top + height);
+		if (SectRect(&stickyPopupRect, teflonRect, &dstRect)) {
 			*top = teflonRect->bottom + 2;
-			SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
+			SetRect(&stickyPopupRect, *left, *top,
+				*left + width, *top + height);
 		}
 	}
 
 	if (*left < listMonitorRect.left) {
 		*left = listMonitorRect.left;
-		SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
-		if (SectRect (&stickyPopupRect, teflonRect, &dstRect)) {
+		SetRect(&stickyPopupRect, *left, *top, *left + width,
+			*top + height);
+		if (SectRect(&stickyPopupRect, teflonRect, &dstRect)) {
 			*left = teflonRect->right + 2;
-			SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
+			SetRect(&stickyPopupRect, *left, *top,
+				*left + width, *top + height);
 		}
 	}
 
 	if ((*left + width) > listMonitorRect.right) {
 		*left = listMonitorRect.right - width;
-		SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
-		if (SectRect (&stickyPopupRect, teflonRect, &dstRect)) {
+		SetRect(&stickyPopupRect, *left, *top, *left + width,
+			*top + height);
+		if (SectRect(&stickyPopupRect, teflonRect, &dstRect)) {
 			*left = teflonRect->left - 2 - width;
-			SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
+			SetRect(&stickyPopupRect, *left, *top,
+				*left + width, *top + height);
 		}
 	}
-	
+
 	listBottom = *top + height;
-	if (listBottom > listMonitorRect.bottom)
-	{
+	if (listBottom > listMonitorRect.bottom) {
 		*top -= (listBottom - listMonitorRect.bottom);
-		if (*top < listMonitorRect.top)
-		{
+		if (*top < listMonitorRect.top) {
 			*top = listMonitorRect.top;
-			maxVisItems = (listMonitorRect.bottom - listMonitorRect.top) / cellHeight;
+			maxVisItems =
+			    (listMonitorRect.bottom -
+			     listMonitorRect.top) / cellHeight;
 			height = maxVisItems * cellHeight;
 		}
-		SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
-		if (SectRect (&stickyPopupRect, teflonRect, &dstRect)) {
+		SetRect(&stickyPopupRect, *left, *top, *left + width,
+			*top + height);
+		if (SectRect(&stickyPopupRect, teflonRect, &dstRect)) {
 			*top = teflonRect->top - 2 - height;
-			SetRect (&stickyPopupRect, *left, *top, *left + width, *top + height);
+			SetRect(&stickyPopupRect, *left, *top,
+				*left + width, *top + height);
 		}
 	}
 	// (jp) End of replacement stuff
@@ -889,17 +893,18 @@ static void CalcStickyPopupSize(StickyPopupHdl stickyPopup, short curItem, Rect 
  *	to true, then the currently selected cell in the popup's list is the user's choice.
  *********************************************************************************************/
 
-static Boolean HandleStickyPopupMouseDown(StickyPopupHdl stickyPopup, EventRecord* popupEvent, Boolean *validSel)
-
+static Boolean HandleStickyPopupMouseDown(StickyPopupHdl stickyPopup,
+					  EventRecord * popupEvent,
+					  Boolean * validSel)
 {
-	GrafPtr			origPort;
-	ListHandle	theList;
-	Point				clickLoc;
-	Point				endMouseLoc;
-	WindowPtr		theWindow;
-	Cell				origSel;
-	Cell				newSel;
-	Boolean			selectionExists;
+	GrafPtr origPort;
+	ListHandle theList;
+	Point clickLoc;
+	Point endMouseLoc;
+	WindowPtr theWindow;
+	Cell origSel;
+	Cell newSel;
+	Boolean selectionExists;
 
 
 	*validSel = false;
@@ -922,8 +927,7 @@ static Boolean HandleStickyPopupMouseDown(StickyPopupHdl stickyPopup, EventRecor
 	LocalToGlobal(&endMouseLoc);
 	newSel.v = newSel.h = 0;
 	selectionExists = LGetSelect(true, &newSel, theList);
-	if (!MouseLocInList(endMouseLoc, stickyPopup))
-	{
+	if (!MouseLocInList(endMouseLoc, stickyPopup)) {
 		if (selectionExists)
 			LSetSelect(false, newSel, theList);
 		LSetSelect(true, origSel, theList);
@@ -957,12 +961,14 @@ static Boolean HandleStickyPopupMouseDown(StickyPopupHdl stickyPopup, EventRecor
  *	to true, then the currently selected cell in the popup's list is the user's choice.
  *********************************************************************************************/
 
-static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup, EventRecord* popupEvent, Boolean *validSel, Boolean allowTyping)
-
+static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup,
+					EventRecord * popupEvent,
+					Boolean * validSel,
+					Boolean allowTyping)
 {
-	unsigned char		keyChar; /* ASCII of keystroke */
-	unsigned char		keyCode; /* virtual key code of keystroke */
-	short						adjust;
+	unsigned char keyChar;	/* ASCII of keystroke */
+	unsigned char keyCode;	/* virtual key code of keystroke */
+	short adjust;
 
 
 	*validSel = false;
@@ -971,37 +977,35 @@ static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup, EventRecord*
 	keyCode = (popupEvent->message & keyCodeMask) >> 8;
 
 	/* if the user pressed Command-Period, Escape, Backspace/Delete, the Clear key on the numeric
-			keypad, or the Forward Delete key on the extended keyboard, then cancel the popup */
-	if (
-						((popupEvent->modifiers & cmdKey) && (keyChar == PERIOD_CHAR_CODE))
-				||	(keyCode == ESCAPE_KEY_CODE)
-				||	(keyChar == BACKSPACE_CHAR_CODE)
-				||	(keyCode == CLEAR_KEY_CODE)
-				||	(keyChar == FWD_DEL_CHAR_CODE)
-		)
-	{
+	   keypad, or the Forward Delete key on the extended keyboard, then cancel the popup */
+	if (((popupEvent->modifiers & cmdKey)
+	     && (keyChar == PERIOD_CHAR_CODE))
+	    || (keyCode == ESCAPE_KEY_CODE)
+	    || (keyChar == BACKSPACE_CHAR_CODE)
+	    || (keyCode == CLEAR_KEY_CODE)
+	    || (keyChar == FWD_DEL_CHAR_CODE)
+	    ) {
 		ResetStickyPopupTyping();
 		return true;
 	}
 
 	/* if the uesr pressed Return or Enter, then exit the popup with the current selection */
-	if ((keyChar == RETURN_CHAR_CODE) || (keyChar == ENTER_CHAR_CODE))
-	{
+	if ((keyChar == RETURN_CHAR_CODE) || (keyChar == ENTER_CHAR_CODE)) {
 		*validSel = true;
 		ResetStickyPopupTyping();
 		return true;
 	}
 
 	/* ignore Left Arrow and Right Arrow, and reset the typing globals */
-	if ((keyChar == LEFT_ARROW_CHAR_CODE) || (keyChar == RIGHT_ARROW_CHAR_CODE))
-	{
+	if ((keyChar == LEFT_ARROW_CHAR_CODE)
+	    || (keyChar == RIGHT_ARROW_CHAR_CODE)) {
 		ResetStickyPopupTyping();
 		return false;
 	}
 
 	/* if the user pressed Up Arrow or Down Arrow, use them to navigate up and down the list */
-	if ((keyChar == UP_ARROW_CHAR_CODE) || (keyChar == DOWN_ARROW_CHAR_CODE))
-	{
+	if ((keyChar == UP_ARROW_CHAR_CODE)
+	    || (keyChar == DOWN_ARROW_CHAR_CODE)) {
 		if (keyChar == UP_ARROW_CHAR_CODE)
 			adjust = -1;
 		else
@@ -1012,14 +1016,12 @@ static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup, EventRecord*
 	}
 
 	/* if the user pressed the Home or End keys, move the selection to the top or bottom of the list, respectively */
-	if (keyChar == HOME_CHAR_CODE)
-	{
+	if (keyChar == HOME_CHAR_CODE) {
 		SelectListItem(stickyPopup, 1);
 		ResetStickyPopupTyping();
 		return false;
 	}
-	if (keyChar == END_CHAR_CODE)
-	{
+	if (keyChar == END_CHAR_CODE) {
 		SelectListItem(stickyPopup, -1);
 		ResetStickyPopupTyping();
 		return false;
@@ -1029,15 +1031,14 @@ static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup, EventRecord*
 		return false;
 
 	/* if the user tried a Command key while the popup was running, beep and ignore it, and reset the typing globals */
-	if (popupEvent->modifiers & cmdKey)
-	{
+	if (popupEvent->modifiers & cmdKey) {
 		SysBeep(5);
 		ResetStickyPopupTyping();
 		return false;
 	}
 
 	/* Accumulate keystrokes for purposes of selecting an item in the popup via typing.  The actual selection
-			of the item is performed by HandleStickyPopupIdle. */
+	   of the item is performed by HandleStickyPopupIdle. */
 	StickyPopupLastKeyTicks = popupEvent->when;
 	if (StickyPopupTypingStr[0] < 255)
 		StickyPopupTypingStr[++StickyPopupTypingStr[0]] = keyChar;
@@ -1058,11 +1059,11 @@ static Boolean HandleStickyPopupKeyDown(StickyPopupHdl stickyPopup, EventRecord*
  *********************************************************************************************/
 
 static void HandleStickyPopupIdle(StickyPopupHdl stickyPopup)
-
 {
 	if (!StickyPopupTypingStr[0])
 		return;
-	if (TickCount() < (StickyPopupLastKeyTicks + StickyPopupKeyUpdateDelay))
+	if (TickCount() <
+	    (StickyPopupLastKeyTicks + StickyPopupKeyUpdateDelay))
 		return;
 	SelectItemByString(stickyPopup, StickyPopupTypingStr);
 	ResetStickyPopupTyping();
@@ -1102,19 +1103,20 @@ static void HandleStickyPopupIdle(StickyPopupHdl stickyPopup)
  *	If a MenuHook proc is present (ProcPtr at $A30), it does not get called.
  *********************************************************************************************/
 
-long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short curItem, Boolean allowTyping, Rect *teflonRect)
-
+long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left,
+		       short curItem, Boolean allowTyping,
+		       Rect * teflonRect)
 {
-	long						result;
-	StickyPopupPtr	popupPtr;
-	SignedByte			origState;
-	WindowPtr				popupWindow;
-	ListHandle			theList;
-	Point						cellSize;
-	Cell						theCell;
-	short						popupHeight, popupWidth;
-	Boolean					done, validSel;
-	EventRecord			popupEvent;
+	long result;
+	StickyPopupPtr popupPtr;
+	SignedByte origState;
+	WindowPtr popupWindow;
+	ListHandle theList;
+	Point cellSize;
+	Cell theCell;
+	short popupHeight, popupWidth;
+	Boolean done, validSel;
+	EventRecord popupEvent;
 
 
 	if (!stickyPopup)
@@ -1122,9 +1124,9 @@ long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short 
 	if ((**stickyPopup).isPopped || CurStickyPopup)
 		return 0;
 
-	origState = HGetState((Handle)stickyPopup);
-	MoveHHi((Handle)stickyPopup); /* ignore failure */
-	HLock((Handle)stickyPopup);
+	origState = HGetState((Handle) stickyPopup);
+	MoveHHi((Handle) stickyPopup);	/* ignore failure */
+	HLock((Handle) stickyPopup);
 	popupPtr = *stickyPopup;
 	popupWindow = popupPtr->theWindow;
 	theList = popupPtr->theList;
@@ -1133,7 +1135,8 @@ long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short 
 	CurStickyPopup = stickyPopup;
 	ResetStickyPopupTyping();
 
-	CalcStickyPopupSize(stickyPopup, curItem, teflonRect, &top, &left, &popupHeight, &popupWidth);
+	CalcStickyPopupSize(stickyPopup, curItem, teflonRect, &top, &left,
+			    &popupHeight, &popupWidth);
 	MoveWindow(popupWindow, left, top, false);
 	SizeWindow(popupWindow, popupWidth, popupHeight, false);
 	LSize(popupWidth, popupHeight, theList);
@@ -1147,34 +1150,35 @@ long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short 
 	BringToFront(popupWindow);
 	ShowHide(popupWindow, true);
 	LSetDrawingMode(true, theList);
-	LUpdate(MyGetPortVisibleRegion(GetWindowPort(popupWindow)), theList);
+	LUpdate(MyGetPortVisibleRegion(GetWindowPort(popupWindow)),
+		theList);
 
 	done = false;
 	validSel = false;
-	while (!done)
-	{
+	while (!done) {
 		if (!GetNextEvent(STICKY_SELECT_EVENT_MASK, &popupEvent))
 			HandleStickyPopupIdle(stickyPopup);
-		else switch (popupEvent.what)
-		{
+		else
+			switch (popupEvent.what) {
 			case mouseDown:
-				if (HandleStickyPopupMouseDown(stickyPopup, &popupEvent, &validSel))
+				if (HandleStickyPopupMouseDown
+				    (stickyPopup, &popupEvent, &validSel))
 					done = true;
 				break;
 			case keyDown:
 			case autoKey:
-				if (HandleStickyPopupKeyDown(stickyPopup, &popupEvent, &validSel, allowTyping))
+				if (HandleStickyPopupKeyDown
+				    (stickyPopup, &popupEvent, &validSel,
+				     allowTyping))
 					done = true;
 				break;
-		}
+			}
 	}
-	if (validSel)
-	{
+	if (validSel) {
 		theCell.v = theCell.h = 0;
 		LGetSelect(true, &theCell, theList);
 		result = theCell.v + 1;
-	}
-	else
+	} else
 		result = 0;
 
 	LSetDrawingMode(false, theList);
@@ -1183,7 +1187,7 @@ long StickyPopupSelect(StickyPopupHdl stickyPopup, short top, short left, short 
 	popupPtr->maxVisItems = 0;
 	popupPtr->isPopped = false;
 	CurStickyPopup = nil;
-	HSetState((Handle)stickyPopup, origState);
+	HSetState((Handle) stickyPopup, origState);
 
 	return result;
 }

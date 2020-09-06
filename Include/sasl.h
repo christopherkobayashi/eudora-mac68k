@@ -34,8 +34,10 @@
 /* Copyright (c) 2002 by QUALCOMM Incorporated */
 
 short SASLFind(PStr service, PStr mechStr, SASLEnum mech);
-OSErr SASLDo(PStr service, SASLEnum mech, short rounds, long *state, AccuPtr chalAcc, AccuPtr respAcc);
-void SASLDone(PStr service, SASLEnum mech, short rounds, long *state, short err);
+OSErr SASLDo(PStr service, SASLEnum mech, short rounds, long *state,
+	     AccuPtr chalAcc, AccuPtr respAcc);
+void SASLDone(PStr service, SASLEnum mech, short rounds, long *state,
+	      short err);
 
 #define HaveKerbV()	(gss_import_name != (Ptr) (kUnresolvedCFragSymbolAddress))
 #define HaveKerbIV()	(des_cbc_encrypt != (Ptr) (kUnresolvedCFragSymbolAddress))
@@ -44,4 +46,4 @@ void SASLDone(PStr service, SASLEnum mech, short rounds, long *state, short err)
 #define UsingOldKerbIV()	(PrefIsSet(PREF_KERBEROS) && HaveKerbIV() && !PrefIsSet(PREF_K5_POP))
 
 #define KerberosMech(mech)	(mech==saslGSSAPI || mech==saslKerbIV)
-#endif //SASL_H
+#endif				//SASL_H

@@ -32,117 +32,134 @@
 #include <conf.h>
 #include <mydefs.h>
 
-extern OSErr Audit(short auditType,...);
+extern OSErr Audit(short auditType, ...);
 extern OSErr AuditFlush(Boolean force);
 
 
-OSErr AuditShutdown(long faceTime, long rearTime, long connectTime, long totalTime)
+OSErr AuditShutdown(long faceTime, long rearTime, long connectTime,
+		    long totalTime)
 {
-	OSErr err = Audit(kAuditShutdown,faceTime,rearTime,connectTime,totalTime);
-	if (!err) err = AuditFlush(true);
+	OSErr err =
+	    Audit(kAuditShutdown, faceTime, rearTime, connectTime,
+		  totalTime);
+	if (!err)
+		err = AuditFlush(true);
 	return err;
 }
 
-OSErr AuditTimestamp(long faceTime, long rearTime, long connectTime, long totalTime)
+OSErr AuditTimestamp(long faceTime, long rearTime, long connectTime,
+		     long totalTime)
 {
-	OSErr err = Audit(kAuditTimestamp,faceTime,rearTime,connectTime,totalTime);
-	if (!err) err = AuditFlush(false);
+	OSErr err =
+	    Audit(kAuditTimestamp, faceTime, rearTime, connectTime,
+		  totalTime);
+	if (!err)
+		err = AuditFlush(false);
 	return err;
 }
 
 OSErr AuditCheckStart(uLong sessionID, uLong personalityID, Boolean isAuto)
 {
-	OSErr err = Audit(kAuditCheckStart,sessionID,personalityID,isAuto);
-	if (!err) err = AuditFlush(false);
+	OSErr err =
+	    Audit(kAuditCheckStart, sessionID, personalityID, isAuto);
+	if (!err)
+		err = AuditFlush(false);
 	return err;
 }
 
 OSErr AuditCheckDone(uLong sessionID, long messagesRcvd, long bytesRcvd)
 {
-	return Audit(kAuditCheckDone,sessionID,messagesRcvd,bytesRcvd);
+	return Audit(kAuditCheckDone, sessionID, messagesRcvd, bytesRcvd);
 }
 
-OSErr AuditHit(Boolean shift, Boolean control, Boolean option, Boolean command, Boolean alt, uLong windowID, long controlId, long eventType)
+OSErr AuditHit(Boolean shift, Boolean control, Boolean option,
+	       Boolean command, Boolean alt, uLong windowID,
+	       long controlId, long eventType)
 {
-	return Audit(kAuditHit,shift,control,option,command,alt,windowID,controlId,eventType);
+	return Audit(kAuditHit, shift, control, option, command, alt,
+		     windowID, controlId, eventType);
 }
 
 OSErr AuditWindowOpen(uLong windowID, uLong windowKind, long wazooState)
 {
-	return Audit(kAuditWindowOpen,windowID,windowKind,wazooState);
+	return Audit(kAuditWindowOpen, windowID, windowKind, wazooState);
 }
 
 OSErr AuditWindowClose(uLong windowID)
 {
-	return Audit(kAuditWindowClose,windowID);
+	return Audit(kAuditWindowClose, windowID);
 }
 
 OSErr AuditAdOpen(uLong serverID, uLong adID)
 {
-	return Audit(kAuditAdOpen,serverID,adID);
+	return Audit(kAuditAdOpen, serverID, adID);
 }
 
 OSErr AuditAdClose(uLong serverID, uLong adID)
 {
-	return Audit(kAuditAdClose,serverID,adID);
+	return Audit(kAuditAdClose, serverID, adID);
 }
 
 OSErr AuditAdHit(uLong serverID, uLong adID)
 {
-	return Audit(kAuditAdHit,serverID,adID);
+	return Audit(kAuditAdHit, serverID, adID);
 }
 
 OSErr AuditSendStart(uLong sessionID, uLong personalityID, Boolean isAuto)
 {
-	OSErr err = Audit(kAuditSendStart,sessionID,personalityID,isAuto);
-	if (!err) err = AuditFlush(false);
+	OSErr err =
+	    Audit(kAuditSendStart, sessionID, personalityID, isAuto);
+	if (!err)
+		err = AuditFlush(false);
 	return err;
 }
 
 OSErr AuditSendDone(uLong sessionID, long messagesSent, long bytesSent)
 {
-	return Audit(kAuditSendDone,sessionID,messagesSent,bytesSent);
+	return Audit(kAuditSendDone, sessionID, messagesSent, bytesSent);
 }
 
 OSErr AuditPersCreate(uLong personalityID)
 {
-	return Audit(kAuditPersCreate,personalityID);
+	return Audit(kAuditPersCreate, personalityID);
 }
 
 OSErr AuditPersDelete(uLong personalityID)
 {
-	return Audit(kAuditPersDelete,personalityID);
+	return Audit(kAuditPersDelete, personalityID);
 }
 
 OSErr AuditStartup(long platform, long version, long buildNumber)
 {
-	OSErr err = Audit(kAuditStartup,platform,version,buildNumber);
-	if (!err) err = AuditFlush(false);
+	OSErr err = Audit(kAuditStartup, platform, version, buildNumber);
+	if (!err)
+		err = AuditFlush(false);
 	return err;
 }
 
 OSErr AuditPersRename(uLong oldPersID, uLong newPersID)
 {
-	return Audit(kAuditPersRename,oldPersID,newPersID);
+	return Audit(kAuditPersRename, oldPersID, newPersID);
 }
 
 OSErr AuditConnect(Boolean connectionUp)
 {
-	return Audit(kAuditConnect,connectionUp);
+	return Audit(kAuditConnect, connectionUp);
 }
 
 OSErr AuditNonPersonalSettings(short prefId)
 {
-	return Audit(kAuditNonPersonalSettings,prefId);
+	return Audit(kAuditNonPersonalSettings, prefId);
 }
 
 OSErr AuditNonPersonalSysInfo(short prefId)
 {
-	return Audit(kAuditNonPersonalSysInfo,prefId);
+	return Audit(kAuditNonPersonalSysInfo, prefId);
 }
 
 OSErr AuditDemographicData(short prefId)
 {
-	return Audit(kAuditDemographicData,prefId);
+	return Audit(kAuditDemographicData, prefId);
 }
-short AuditCategories[] = {4,4,4,4,5,5,5,2,2,2,4,4,5,5,4,5,4,3,3,1};
+short AuditCategories[] =
+    { 4, 4, 4, 4, 5, 5, 5, 2, 2, 2, 4, 4, 5, 5, 4, 5, 4, 3, 3, 1 };

@@ -29,97 +29,77 @@
    ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-OSStatus
-MyConvertFromUnicodeToTextRun		(UnicodeToTextRunInfo 	iUnicodeToTextInfo,
-								 ByteCount 				iUnicodeLen,
-								 ConstUniCharArrayPtr 	iUnicodeStr,
-								 OptionBits 			iControlFlags,
-								 ItemCount 				iOffsetCount,
-								 ByteOffset 			iOffsetArray[], /* can be NULL */
-								 ItemCount *			oOffsetCount, /* can be NULL */
-								 ByteOffset 			oOffsetArray[], /* can be NULL */
-								 ByteCount 				iOutputBufLen,
-								 ByteCount *			oInputRead,
-								 ByteCount *			oOutputLen,
-								 LogicalAddress 		oOutputStr,
-								 ItemCount 				iEncodingRunBufLen,
-								 ItemCount *			oEncodingRunOutLen,
-								 TextEncodingRun 		oEncodingRuns[]);
+OSStatus MyConvertFromUnicodeToTextRun(UnicodeToTextRunInfo iUnicodeToTextInfo, ByteCount iUnicodeLen, ConstUniCharArrayPtr iUnicodeStr, OptionBits iControlFlags, ItemCount iOffsetCount, ByteOffset iOffsetArray[],	/* can be NULL */
+				       ItemCount * oOffsetCount,	/* can be NULL */
+				       ByteOffset oOffsetArray[],	/* can be NULL */
+				       ByteCount iOutputBufLen,
+				       ByteCount * oInputRead,
+				       ByteCount * oOutputLen,
+				       LogicalAddress oOutputStr,
+				       ItemCount iEncodingRunBufLen,
+				       ItemCount * oEncodingRunOutLen,
+				       TextEncodingRun oEncodingRuns[]);
 
 OSStatus
-MyTECFlushText					(TECObjectRef 			encodingConverter,
-								 TextPtr 				outputBuffer,
-								 ByteCount 				outputBufferLength,
-								 ByteCount *			actualOutputLength);
+MyTECFlushText(TECObjectRef encodingConverter,
+	       TextPtr outputBuffer,
+	       ByteCount outputBufferLength,
+	       ByteCount * actualOutputLength);
 
-OSStatus
-MyRevertTextEncodingToScriptInfo	(TextEncoding 			iEncoding,
-								 ScriptCode *			oTextScriptID,
-								 LangCode *				oTextLanguageID, /* can be NULL */
-								 Str255 				oTextFontname) /* can be NULL */;
+OSStatus MyRevertTextEncodingToScriptInfo(TextEncoding iEncoding, ScriptCode * oTextScriptID, LangCode * oTextLanguageID,	/* can be NULL */
+					  Str255 oTextFontname)
+    /* can be NULL */ ;
 
-short
-MyCharacterType					(Ptr 					textBuf,
-								 short 					textOffset,
-								 ScriptCode 			script);
+short MyCharacterType(Ptr textBuf, short textOffset, ScriptCode script);
 
-OSStatus
-MyConvertFromUnicodeToTextRun		(UnicodeToTextRunInfo 	iUnicodeToTextInfo,
-								 ByteCount 				iUnicodeLen,
-								 ConstUniCharArrayPtr 	iUnicodeStr,
-								 OptionBits 			iControlFlags,
-								 ItemCount 				iOffsetCount,
-								 ByteOffset 			iOffsetArray[], /* can be NULL */
-								 ItemCount *			oOffsetCount, /* can be NULL */
-								 ByteOffset 			oOffsetArray[], /* can be NULL */
-								 ByteCount 				iOutputBufLen,
-								 ByteCount *			oInputRead,
-								 ByteCount *			oOutputLen,
-								 LogicalAddress 		oOutputStr,
-								 ItemCount 				iEncodingRunBufLen,
-								 ItemCount *			oEncodingRunOutLen,
-								 TextEncodingRun 		oEncodingRuns[])
+OSStatus MyConvertFromUnicodeToTextRun(UnicodeToTextRunInfo iUnicodeToTextInfo, ByteCount iUnicodeLen, ConstUniCharArrayPtr iUnicodeStr, OptionBits iControlFlags, ItemCount iOffsetCount, ByteOffset iOffsetArray[],	/* can be NULL */
+				       ItemCount * oOffsetCount,	/* can be NULL */
+				       ByteOffset oOffsetArray[],	/* can be NULL */
+				       ByteCount iOutputBufLen,
+				       ByteCount * oInputRead,
+				       ByteCount * oOutputLen,
+				       LogicalAddress oOutputStr,
+				       ItemCount iEncodingRunBufLen,
+				       ItemCount * oEncodingRunOutLen,
+				       TextEncodingRun oEncodingRuns[])
 {
 	return ConvertFromUnicodeToTextRun(iUnicodeToTextInfo,
-								 iUnicodeLen,
-								 iUnicodeStr,
-								 iControlFlags,
-								 iOffsetCount,
-								 iOffsetArray,
-								 oOffsetCount,
-								 oOffsetArray,
-								 iOutputBufLen,
-								 oInputRead,
-								 oOutputLen,
-								 oOutputStr,
-								 iEncodingRunBufLen,
-								 oEncodingRunOutLen,
-								 oEncodingRuns);
-		
+					   iUnicodeLen,
+					   iUnicodeStr,
+					   iControlFlags,
+					   iOffsetCount,
+					   iOffsetArray,
+					   oOffsetCount,
+					   oOffsetArray,
+					   iOutputBufLen,
+					   oInputRead,
+					   oOutputLen,
+					   oOutputStr,
+					   iEncodingRunBufLen,
+					   oEncodingRunOutLen,
+					   oEncodingRuns);
+
 }
 
 OSStatus
-MyTECFlushText					(TECObjectRef 			encodingConverter,
-								 TextPtr 				outputBuffer,
-								 ByteCount 				outputBufferLength,
-								 ByteCount *			actualOutputLength)
+MyTECFlushText(TECObjectRef encodingConverter,
+	       TextPtr outputBuffer,
+	       ByteCount outputBufferLength,
+	       ByteCount * actualOutputLength)
 {
-	return TECFlushText(encodingConverter, outputBuffer, outputBufferLength, actualOutputLength);
+	return TECFlushText(encodingConverter, outputBuffer,
+			    outputBufferLength, actualOutputLength);
 }
 
-OSStatus
-MyRevertTextEncodingToScriptInfo	(TextEncoding 			iEncoding,
-								 ScriptCode *			oTextScriptID,
-								 LangCode *				oTextLanguageID, /* can be NULL */
-								 Str255 				oTextFontname) /* can be NULL */
-{
-	return RevertTextEncodingToScriptInfo(iEncoding, oTextScriptID, oTextLanguageID, oTextFontname);
+OSStatus MyRevertTextEncodingToScriptInfo(TextEncoding iEncoding, ScriptCode * oTextScriptID, LangCode * oTextLanguageID,	/* can be NULL */
+					  Str255 oTextFontname)
+{				/* can be NULL */
+	return RevertTextEncodingToScriptInfo(iEncoding, oTextScriptID,
+					      oTextLanguageID,
+					      oTextFontname);
 }
 
-short
-MyCharacterType					(Ptr 					textBuf,
-								 short 					textOffset,
-								 ScriptCode 			script)
+short MyCharacterType(Ptr textBuf, short textOffset, ScriptCode script)
 {
 	return CharacterType(textBuf, textOffset, script);
 }

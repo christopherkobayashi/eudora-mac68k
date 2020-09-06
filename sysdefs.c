@@ -80,11 +80,11 @@
 //#include <GXPrinting.h>
 //#include <GXTypes.h>
 #include <ImageCompression.h>
-#if TARGET_CPU_PPC	// No cfm-68K support for this!  :-(
+#if TARGET_CPU_PPC		// No cfm-68K support for this!  :-(
 #include <KeyChain.h>
-#else //TARGET_CPU_PPC
+#else				//TARGET_CPU_PPC
 #define KeychainManagerAvailable()	(false)
-#endif //TARGET_CPU_PPC
+#endif				//TARGET_CPU_PPC
 #include <limits.h>
 #include <Lists.h>
 #include <locale.h>
@@ -154,7 +154,7 @@
 #include "SpotLightAPI.h"
 #ifdef TWO
 #if TARGET_RT_MAC_CFM
-#include "hesiod.h"	// !!! Marshall sez - not now for MachO
+#include "hesiod.h"		// !!! Marshall sez - not now for MachO
 #endif
 #endif
 #include <InternetConfig.h>

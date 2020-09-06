@@ -33,13 +33,15 @@
 #define SORT_H
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
-void QuickSort(UPtr array, int size, int f, int l, int (*compare)(), void (*swap)());
-void VQuickSort(short **vector, short f, short l, void *data, int (*compare)());
+void QuickSort(UPtr array, int size, int f, int l, int (*compare)(),
+	       void(*swap)());
+void VQuickSort(short **vector, short f, short l, void *data,
+		int (*compare)());
 void StrSwap(UPtr s1, UPtr s2);
 int CStrCompar(UPtr s1, UPtr s2);
 void CStrSwap(UPtr s1, UPtr s2);
-void PtrSwap(Ptr *win1, Ptr *win2);
-int SortStrCompare(UPtr *s1, UPtr *s2);
+void PtrSwap(Ptr * win1, Ptr * win2);
+int SortStrCompare(UPtr * s1, UPtr * s2);
 
 
 #endif

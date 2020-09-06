@@ -35,22 +35,21 @@
 /*
  * states of the header converter
  */
-typedef enum
-{
-	ExpectHeaderName,		/* next token shd be a header name */
-	ExpectColon,				/* next token shd be a colon */
-	ExpectText,					/* we're looking for an unstructured field */
-	ExpectType,					/* content type */
-	ExpectSlash,				/* separator */
-	ExpectSubType,			/* content subtype */
-	ExpectSem,					/* expecting semicolon (or end) */
-	ExpectAttribute,		/* expecting attribute name */
-	ExpectEqual,				/* expecting equal sign */
-	ExpectValue,				/* expecting attribute value */
-	ExpectEnco,					/* expecting encoding */
-	ExpectVersion,			/* expecting MIME version number */
-	ExpectDisposition,		/* expecting content disposition */
-	ExpectStructuredValue		/* expecting a structured field value */
+typedef enum {
+	ExpectHeaderName,	/* next token shd be a header name */
+	ExpectColon,		/* next token shd be a colon */
+	ExpectText,		/* we're looking for an unstructured field */
+	ExpectType,		/* content type */
+	ExpectSlash,		/* separator */
+	ExpectSubType,		/* content subtype */
+	ExpectSem,		/* expecting semicolon (or end) */
+	ExpectAttribute,	/* expecting attribute name */
+	ExpectEqual,		/* expecting equal sign */
+	ExpectValue,		/* expecting attribute value */
+	ExpectEnco,		/* expecting encoding */
+	ExpectVersion,		/* expecting MIME version number */
+	ExpectDisposition,	/* expecting content disposition */
+	ExpectStructuredValue	/* expecting a structured field value */
 } HeaderStateEnum;
 
 
@@ -59,55 +58,58 @@ typedef enum
  */
 typedef struct AssocArray AssocArray, *AAPtr, **AAHandle;
 
-typedef struct HeaderDesc
-{
+typedef struct HeaderDesc {
 	HeaderStateEnum state;	/* state of header converter */
-	InterestHeadEnum hFound;/* header we're working on now */
-	Str31 contentType;			/* MIME content type */
-	Str31 contentSubType;		/* MIME content subtype */
-	Str31 contentEnco;			/* MIME content type */
-	Str15 status;						/* status header */
-	Str63 subj;							/* subject */
-	Str63 who;							/* sender */
-	Str31 attributeName;		/* name of attribute being collected */
-	Str15 mimeVersion;			/* mime version string */
+	InterestHeadEnum hFound;	/* header we're working on now */
+	Str31 contentType;	/* MIME content type */
+	Str31 contentSubType;	/* MIME content subtype */
+	Str31 contentEnco;	/* MIME content type */
+	Str15 status;		/* status header */
+	Str63 subj;		/* subject */
+	Str63 who;		/* sender */
+	Str31 attributeName;	/* name of attribute being collected */
+	Str15 mimeVersion;	/* mime version string */
 	AAHandle contentAttributes;	/* attributes from the content-type header */
-	AAHandle funFields;				/* fields we'd like to keep an eye on */
-	Accumulator fullHeaders;// all the headers for this message
-	emsMIMEHandle tlMIME;		// for translation api
-	long diskStart;					/* where header starts on disk */
-	long diskEnd;						/* where header ends on disk */
-	Boolean grokked;				/* did we find understand it all? */
-	Boolean isMIME;					/* is MIME */
-	Boolean hasRich;				/* has richtext */
-	Boolean hasHTML;				/* has richtext */
-	Boolean hasFlow;				/* has format=flow */
-	Boolean hasCharset;				/* has a non-ASCII charset */
-	Boolean hasMDN;				/* has MDN request */
-	short xlateResID;				/* resource id of translit table to use for display */
-	Boolean eightBit;				/* quoted-printable cte? */
-	Boolean isPartial;			/* is this a MIME-partial? */
-	Boolean isAttach;				/* is the content-disposition attachment? */
-	Boolean foundRecvd;			/* do we have Recvd already? */
-	Boolean foundMID;				/* do we have Message-id already? */
-	uLong msgIdHash;				/* hash of same */
-	Boolean relatedPart;		/* subpart of multipart/related */
-	uLong mhtmlID;			/* part number of the mhtml part */
-	uLong relURLHash;			/* hash of relative url for content-location */
-	uLong absURLHash;			/* hash of absolute url for content-location */
-	uLong cidHash;	/* hash of content-id */
+	AAHandle funFields;	/* fields we'd like to keep an eye on */
+	Accumulator fullHeaders;	// all the headers for this message
+	emsMIMEHandle tlMIME;	// for translation api
+	long diskStart;		/* where header starts on disk */
+	long diskEnd;		/* where header ends on disk */
+	Boolean grokked;	/* did we find understand it all? */
+	Boolean isMIME;		/* is MIME */
+	Boolean hasRich;	/* has richtext */
+	Boolean hasHTML;	/* has richtext */
+	Boolean hasFlow;	/* has format=flow */
+	Boolean hasCharset;	/* has a non-ASCII charset */
+	Boolean hasMDN;		/* has MDN request */
+	short xlateResID;	/* resource id of translit table to use for display */
+	Boolean eightBit;	/* quoted-printable cte? */
+	Boolean isPartial;	/* is this a MIME-partial? */
+	Boolean isAttach;	/* is the content-disposition attachment? */
+	Boolean foundRecvd;	/* do we have Recvd already? */
+	Boolean foundMID;	/* do we have Message-id already? */
+	uLong msgIdHash;	/* hash of same */
+	Boolean relatedPart;	/* subpart of multipart/related */
+	uLong mhtmlID;		/* part number of the mhtml part */
+	uLong relURLHash;	/* hash of relative url for content-location */
+	uLong absURLHash;	/* hash of absolute url for content-location */
+	uLong cidHash;		/* hash of content-id */
 	uLong gmtSecs;
-	Str127 summaryInfo;		// message summary information
-	short depth;					// depth of MIME structure
+	Str127 summaryInfo;	// message summary information
+	short depth;		// depth of MIME structure
 } HeaderDesc, *HeaderDPtr, **HeaderDHandle;
 
-OSErr ReadHeader(TransStream stream,HeaderDHandle hdh, long estSize, short refN, Boolean isDigest);
-OSErr ReadHeaderLo(TransStream stream,HeaderDHandle hdh, long estSize, short refN, Boolean isDigest, short funFieldsID, short funFieldsLimit);
+OSErr ReadHeader(TransStream stream, HeaderDHandle hdh, long estSize,
+		 short refN, Boolean isDigest);
+OSErr ReadHeaderLo(TransStream stream, HeaderDHandle hdh, long estSize,
+		   short refN, Boolean isDigest, short funFieldsID,
+		   short funFieldsLimit);
 HeaderDHandle NewHeaderDesc(HeaderDHandle parentHDH);
 void DisposeHeaderDesc(HeaderDHandle hdh);
 short ViewTable(HeaderDHandle hdh);
-OSErr ParseAHeader(StringHandle h, HeaderDHandle *hdhp);
-OSErr ParseAHeaderLo(StringHandle h, HeaderDHandle *hdhp, short funFieldsID, short funFieldsLimit);
+OSErr ParseAHeader(StringHandle h, HeaderDHandle * hdhp);
+OSErr ParseAHeaderLo(StringHandle h, HeaderDHandle * hdhp,
+		     short funFieldsID, short funFieldsLimit);
 #define ZapHeaderDesc(hdh) do{DisposeHeaderDesc(hdh);hdh=nil;}while(0)
 Boolean HeaderDescInAddrBook(HeaderDHandle hdh);
 

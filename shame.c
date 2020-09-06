@@ -39,7 +39,7 @@
  * functions of which I am not proud
  **********************************************************************/
 #pragma segment Util
-static Boolean AlertBeep=True;
+static Boolean AlertBeep = True;
 void DeepTrouble(UPtr);
 void SilenceAlert(int template);
 void TrashAlert(int template);
@@ -49,12 +49,12 @@ extern ModalFilterUPP DlgFilterUPP;
 /************************************************************************
  *
  ************************************************************************/
-void Dprintf(PStr fmt,...)
+void Dprintf(PStr fmt, ...)
 {
 	Str255 message;
 	va_list args;
-	va_start(args,fmt);
-	VaComposeString(message,fmt,args);
+	va_start(args, fmt);
+	VaComposeString(message, fmt, args);
 	va_end(args);
 	DebugStr(message);
 }
@@ -62,29 +62,29 @@ void Dprintf(PStr fmt,...)
 /************************************************************************
  *
  ************************************************************************/
-int Aprintf(short template,short which,short rFormat,...)
+int Aprintf(short template, short which, short rFormat, ...)
 {
 	Str255 message;
 	va_list args;
-	va_start(args,rFormat);
-	VaComposeRString(message,rFormat,args);
+	va_start(args, rFormat);
+	VaComposeRString(message, rFormat, args);
 	va_end(args);
-	return(AlertStr(template,which,message));
+	return (AlertStr(template, which, message));
 }
-	
+
 /************************************************************************
  *
  ************************************************************************/
 int AlertStr(int template, int which, UPtr str)
 {
-	MyParamText(str,"","","");
-	return(ReallyDoAnAlert(template,which));
+	MyParamText(str, "", "", "");
+	return (ReallyDoAnAlert(template, which));
 }
 
 /**********************************************************************
  * print an alert
  **********************************************************************/
-int ReallyDoAnAlert(int template,int which)
+int ReallyDoAnAlert(int template, int which)
 {
 	int item;
 	Boolean commandPeriodWas = CommandPeriod;
@@ -92,60 +92,71 @@ int ReallyDoAnAlert(int template,int which)
 	short profilerWas = ProfilerGetStatus();
 	//ProfilerSetStatus(False);
 #endif
-	
+
 	CommandPeriod = False;
 
 	// use ComposeStdAlert when we can
-	if ((template>ALRTStringsStrn) && (template<ALRTStringsOnlyStrn+LIMIT_ASTR_ONLY))
-	{
+	if ((template > ALRTStringsStrn)
+	    && (template < ALRTStringsOnlyStrn + LIMIT_ASTR_ONLY)) {
 		AlertType type;
-		switch(which)
-		{
-			case Note: type = kAlertNoteAlert;	break;
-			case Caution:	type = kAlertCautionAlert;break;
-			case Stop:type = kAlertStopAlert;break;
-			case Normal:
-			default: type = kAlertPlainAlert;break;
+		switch (which) {
+		case Note:
+			type = kAlertNoteAlert;
+			break;
+		case Caution:
+			type = kAlertCautionAlert;
+			break;
+		case Stop:
+			type = kAlertStopAlert;
+			break;
+		case Normal:
+		default:
+			type = kAlertPlainAlert;
+			break;
 		}
-		return(ComposeStdAlert(type,template,P1,P2,P3,P4));
+		return (ComposeStdAlert(type, template, P1, P2, P3, P4));
 	}
-	
-	LogAlert(template);
-	
-	if (!MommyMommy(ATTENTION,nil))
-	  item = 1;	//	default item
-	else
-	{
-		TBDisable();
-		WNE(nil,nil,0); 							/* make sure InBG is right */
-		PushCursor(arrowCursor);
-		if (!AlertBeep) SilenceAlert(template);
 
-		item = MovableAlert(template,which,DlgFilterUPP);
-		if (!AlertBeep) TrashAlert(template);
+	LogAlert(template);
+
+	if (!MommyMommy(ATTENTION, nil))
+		item = 1;	//      default item
+	else {
+		TBDisable();
+		WNE(nil, nil, 0);	/* make sure InBG is right */
+		PushCursor(arrowCursor);
+		if (!AlertBeep)
+			SilenceAlert(template);
+
+		item = MovableAlert(template, which, DlgFilterUPP);
+		if (!AlertBeep)
+			TrashAlert(template);
 	}
-	ComposeLogR(LOG_ALRT,nil,ALERT_DISMISSED_ITEM,item);
+	ComposeLogR(LOG_ALRT, nil, ALERT_DISMISSED_ITEM, item);
 	PopCursor();
 #if __profile__
 	//ProfilerSetStatus(profilerWas);
 #endif
-	if (!CommandPeriod) CommandPeriod = commandPeriodWas;
-	return(item);
+	if (!CommandPeriod)
+		CommandPeriod = commandPeriodWas;
+	return (item);
 }
 
 /**********************************************************************
  * ReallyStandardAlert - call standard alert
  *
  **********************************************************************/
-short ReallyStandardAlert(AlertType alertType, StringPtr error, StringPtr explanation, AlertStdAlertParamPtr alertParam)
+short ReallyStandardAlert(AlertType alertType, StringPtr error,
+			  StringPtr explanation,
+			  AlertStdAlertParamPtr alertParam)
 {
-	Str255	logString;
-	short 	item;
+	Str255 logString;
+	short item;
 	Boolean commandPeriodWas = CommandPeriod;
-	UPtr		text;
-	Byte 		meta[2];
-	Boolean	spokenWarning = false;
-	
+	UPtr text;
+	Byte meta[2];
+	Boolean spokenWarning = false;
+
 	alertParam->helpButton = true;
 
 #if __profile__
@@ -157,7 +168,7 @@ short ReallyStandardAlert(AlertType alertType, StringPtr error, StringPtr explan
 // and skip over this character
 	text = error;
 	if (*text && text[1] == 0xA7) {
-		spokenWarning = !PrefIsSet (PREF_NO_SPOKEN_WARNINGS);
+		spokenWarning = !PrefIsSet(PREF_NO_SPOKEN_WARNINGS);
 		text[1] = text[0] - 1;
 		error = text + 1;
 	}
@@ -169,72 +180,76 @@ short ReallyStandardAlert(AlertType alertType, StringPtr error, StringPtr explan
 	meta[1] = 0;
 	if (*error) {
 		text = error + (error[1] == 0xC2 ? 2 : 1);
-		PToken (error, logString, &text, meta);
-		ComposeLogS (LOG_ALRT, nil, "\p%p", logString);
+		PToken(error, logString, &text, meta);
+		ComposeLogS(LOG_ALRT, nil, "\p%p", logString);
 	}
 	if (*explanation) {
 		text = explanation + (explanation[1] == 0xC2 ? 2 : 1);
-		PToken (explanation, logString, &text, meta);
-		ComposeLogS (LOG_ALRT, nil, "\p%p", logString);
+		PToken(explanation, logString, &text, meta);
+		ComposeLogS(LOG_ALRT, nil, "\p%p", logString);
 	}
-
 #ifdef THREADING_ON
-	if (InAThread())
-	{
-		AddTaskErrorsS(error,explanation,GetCurrentTaskKind(),(*CurPersSafe)->persId);
+	if (InAThread()) {
+		AddTaskErrorsS(error, explanation, GetCurrentTaskKind(),
+			       (*CurPersSafe)->persId);
 		return 1;
- 	}
+	}
 #endif
 
 	// Are we exporting?
-	if (ExportErrors)
-	{
-		AccuAddStr(ExportErrors,error);
-		AccuAddStr(ExportErrors,explanation);
-		AccuAddStr(ExportErrors,Cr);
+	if (ExportErrors) {
+		AccuAddStr(ExportErrors, error);
+		AccuAddStr(ExportErrors, explanation);
+		AccuAddStr(ExportErrors, Cr);
 		return 1;
 	}
-	
-	if (!MommyMommy(ATTENTION,nil))
-	  item = alertParam->defaultButton;
-	else
-	{
+
+	if (!MommyMommy(ATTENTION, nil))
+		item = alertParam->defaultButton;
+	else {
 		TBDisable();
-		WNE(nil,nil,0); 							/* make sure InBG is right */
+		WNE(nil, nil, 0);	/* make sure InBG is right */
 		PushCursor(arrowCursor);
 
 #ifdef SPEECH_ENABLED
-		TalkingAlert (spokenWarning, alertType, error, explanation, alertParam, &item);
+		TalkingAlert(spokenWarning, alertType, error, explanation,
+			     alertParam, &item);
 #else
-		MyStandardAlert(alertType,error,explanation,alertParam,&item);
+		MyStandardAlert(alertType, error, explanation, alertParam,
+				&item);
 #endif
 
 		ActiveTicks = TickCount();	/* Set ActiveTicks */
 	}
-	ComposeLogR(LOG_ALRT,nil,ALERT_DISMISSED_ITEM,item);
+	ComposeLogR(LOG_ALRT, nil, ALERT_DISMISSED_ITEM, item);
 	PopCursor();
 #if __profile__
 	//ProfilerSetStatus(profilerWas);
 #endif
-	if (!CommandPeriod) CommandPeriod = commandPeriodWas;
-	return(item);
+	if (!CommandPeriod)
+		CommandPeriod = commandPeriodWas;
+	return (item);
 }
 
 /**********************************************************************
  * MyStandardAlert - yet another wrapper around StandardAlert.  How many
  * levels deep are we going to go, huh?
  **********************************************************************/
-OSErr MyStandardAlert(AlertType inAlertType,PStr inError,PStr inExplanation, AlertStdAlertParamRec *  inAlertParam,short *outItemHit)
+OSErr MyStandardAlert(AlertType inAlertType, PStr inError,
+		      PStr inExplanation,
+		      AlertStdAlertParamRec * inAlertParam,
+		      short *outItemHit)
 {
 	OSErr err;
-	
+
 	inAlertParam->helpButton = true;
-	
-	do
-	{
-		err = StandardAlert (inAlertType,inError,inExplanation,inAlertParam,outItemHit);
+
+	do {
+		err =
+		    StandardAlert(inAlertType, inError, inExplanation,
+				  inAlertParam, outItemHit);
 		if (!err && *outItemHit == kAlertStdAlertHelpButton)
-			GoGetHelp(inError,inExplanation);
+			GoGetHelp(inError, inExplanation);
 	}
 	while (!err && *outItemHit == kAlertStdAlertHelpButton);
 
@@ -246,40 +261,46 @@ OSErr MyStandardAlert(AlertType inAlertType,PStr inError,PStr inExplanation, Ale
  **********************************************************************/
 OSErr GoGetHelp(PStr error, PStr explanation)
 {
-	Handle url = GenerateAdwareURL(GetNagState (), TECH_SUPPORT_SITE, actionSupport, helpQuery, topicQuery);
+	Handle url =
+	    GenerateAdwareURL(GetNagState(), TECH_SUPPORT_SITE,
+			      actionSupport, helpQuery, topicQuery);
 	Accumulator a;
 	Str31 keyword;
-	
-	if (url)
-	{
+
+	if (url) {
 		a.data = url;
 		a.size = a.offset = GetHandleSize(url);
 		a.offset--;	// get rid of null added by GenerateAdwareURL
-		
-		if (*error)
-		{
-			AccuAddChar(&a,'&');
-			TrLo(error+1,*error," ","+");
-			AccuAttributeValuePair(&a,GetRString(keyword,ERROR_KEYWORD),error);
-			TrLo(error+1,*error,"+"," ");
+
+		if (*error) {
+			AccuAddChar(&a, '&');
+			TrLo(error + 1, *error, " ", "+");
+			AccuAttributeValuePair(&a,
+					       GetRString(keyword,
+							  ERROR_KEYWORD),
+					       error);
+			TrLo(error + 1, *error, "+", " ");
 			a.offset--;	// aavp adds one at the end
 		}
-		
-		if (*explanation)
-		{
-			AccuAddChar(&a,'&');
-			TrLo(explanation+1,*explanation," ","+");
-			AccuAttributeValuePair(&a,GetRString(keyword,EXPLANATION_KEYWORD),explanation);
-			TrLo(explanation+1,*explanation,"+"," ");
+
+		if (*explanation) {
+			AccuAddChar(&a, '&');
+			TrLo(explanation + 1, *explanation, " ", "+");
+			AccuAttributeValuePair(&a,
+					       GetRString(keyword,
+							  EXPLANATION_KEYWORD),
+					       explanation);
+			TrLo(explanation + 1, *explanation, "+", " ");
 			a.offset--;	// aavp adds one at the end
 		}
-		
+
 		AccuTrim(&a);
-		if (!ParseProtocolFromURLPtr (LDRef (url), a.offset, keyword))
-			OpenOtherURLPtr (keyword, *url, a.offset);
+		if (!ParseProtocolFromURLPtr
+		    (LDRef(url), a.offset, keyword))
+			OpenOtherURLPtr(keyword, *url, a.offset);
 		ZapHandle(url);
 	}
-	
+
 	return noErr;
 }
 
@@ -289,17 +310,16 @@ OSErr GoGetHelp(PStr error, PStr explanation)
 OSErr MemoryPreflight(long size)
 {
 	long total, contig;
-	
-	if (!NoPreflight)
-	{
-		PurgeSpace(&total,&contig);
-		if (size>total)
-		{
-			Aprintf(BIG_OK_ALRT,Stop,TOO_MUCH_MEMORY,(size-total)/(1 K));
-			return(-108);
+
+	if (!NoPreflight) {
+		PurgeSpace(&total, &contig);
+		if (size > total) {
+			Aprintf(BIG_OK_ALRT, Stop, TOO_MUCH_MEMORY,
+				(size - total) / (1 K));
+			return (-108);
 		}
 	}
-	return(0);
+	return (0);
 }
 
 /**********************************************************************
@@ -307,10 +327,11 @@ OSErr MemoryPreflight(long size)
  **********************************************************************/
 void DeepTrouble(UPtr str)
 {
-	MyParamText(str,"","","");
+	MyParamText(str, "", "", "");
 	InitCursor();
-//	(void) StopAlert(OK_ALRT,nil);
-	ComposeStdAlert(kAlertStopAlert,OK_ASTR+ALRTStringsStrn,P1,P2,P3,P4);
+//      (void) StopAlert(OK_ALRT,nil);
+	ComposeStdAlert(kAlertStopAlert, OK_ASTR + ALRTStringsStrn, P1, P2,
+			P3, P4);
 	ExitToShell();
 }
 
@@ -329,7 +350,7 @@ void SilenceAlert(int template)
 {
 	AlertTHndl aTempl;
 
-	if (aTempl=(AlertTHndl)GetResource_('ALRT',template))
+	if (aTempl = (AlertTHndl) GetResource_('ALRT', template))
 		(*aTempl)->stages &= ~0x3333;
 }
 
@@ -340,52 +361,63 @@ void TrashAlert(int template)
 {
 	AlertTHndl aTempl;
 
-	if (aTempl=(AlertTHndl)GetResource_('ALRT',template))
+	if (aTempl = (AlertTHndl) GetResource_('ALRT', template))
 		ReleaseResource_(aTempl);
 }
 
 /************************************************************************
  * MommyMommy - get the user's attention
  ************************************************************************/
-Boolean MommyMommy(short sId,UPtr string)
+Boolean MommyMommy(short sId, UPtr string)
 {
 	NMRec nm;
 	Str255 scratch;
 	short pend;
 	short nmResult;
-	DECLARE_UPP(OkWhatIsIt,NM);
-	
-	if (!InBG) return(True);
-	if (Dragging) return(False);	// darn drag mangler
-	
+	DECLARE_UPP(OkWhatIsIt, NM);
+
+	if (!InBG)
+		return (True);
+	if (Dragging)
+		return (False);	// darn drag mangler
+
 	AttentionNeeded = true;
 
 	Zero(nm);
-	
-	if (PrefIsSet(PREF_NEW_SOUND))
-	{
+
+	if (PrefIsSet(PREF_NEW_SOUND)) {
 		nm.nmSound =
 #ifndef ONE
-		 	*GetPref(scratch,PREF_ERROR_SOUND) ? GetNamedResource('snd ',scratch) :
+		    *GetPref(scratch,
+			     PREF_ERROR_SOUND) ? GetNamedResource('snd ',
+								  scratch)
+		    :
 #endif
-			GetResource_('snd ',ATTENTION_SND);
-		if (nm.nmSound) HNoPurge_(nm.nmSound);
+		    GetResource_('snd ', ATTENTION_SND);
+		if (nm.nmSound)
+			HNoPurge_(nm.nmSound);
 	}
-	INIT_UPP(OkWhatIsIt,NM);
-	nm.nmResp = (void*)OkWhatIsItUPP;
-	nm.nmStr = PrefIsSet(PREF_NEW_ALERT) ? (string ? string : (sId ? GetRString(scratch,sId) : nil)) : nil;
+	INIT_UPP(OkWhatIsIt, NM);
+	nm.nmResp = (void *) OkWhatIsItUPP;
+	nm.nmStr =
+	    PrefIsSet(PREF_NEW_ALERT) ? (string ? string
+					 : (sId ? GetRString(scratch, sId)
+					    : nil)) : nil;
 	nm.nmRefCon = (long) &pend;
 	nm.nmMark = 1;
 	if (!PrefIsSet(PREF_NO_APPLE_FLASH))
-		GetIconSuite(&nm.nmIcon,EUDORA_SICN,svAllSmallData);
+		GetIconSuite(&nm.nmIcon, EUDORA_SICN, svAllSmallData);
 	nm.qType = nmType;
 	nmResult = NMInstall(&nm);
-	if (pend!=inProgress)
-		pend=SpinOnLo(&InBG,0,True,False,true,true);
-	if (!nmResult) NMRemove(&nm);
-	if (nm.nmIcon) DisposeIconSuite(nm.nmIcon,True);
-	if (nm.nmSound) HPurge(nm.nmSound);
-	return(pend==0);
+	if (pend != inProgress)
+		pend = SpinOnLo(&InBG, 0, True, False, true, true);
+	if (!nmResult)
+		NMRemove(&nm);
+	if (nm.nmIcon)
+		DisposeIconSuite(nm.nmIcon, True);
+	if (nm.nmSound)
+		HPurge(nm.nmSound);
+	return (pend == 0);
 }
 
 #pragma segment Main
@@ -395,9 +427,10 @@ Boolean MommyMommy(short sId,UPtr string)
 pascal void OkWhatIsIt(QElemPtr nmReqPtr)
 {
 	SLDisable();
-	*(short *)((NMRec *)nmReqPtr)->nmRefCon = 0;
+	*(short *) ((NMRec *) nmReqPtr)->nmRefCon = 0;
 	SLEnable();
 }
+
 #pragma segment Util
 
 /**********************************************************************
@@ -406,15 +439,15 @@ pascal void OkWhatIsIt(QElemPtr nmReqPtr)
 OSErr PtrPlusHand(const void *pointer, Handle hand, long size)
 {
 	long newSize;
-	
-	if (size)
-	{
-		newSize = GetHandleSize(hand)+size;
-		SetHandleBig(hand,newSize);
-		if (MemError()) return(MemError());
-		BMD(pointer,*hand+(newSize-size),size);
+
+	if (size) {
+		newSize = GetHandleSize(hand) + size;
+		SetHandleBig(hand, newSize);
+		if (MemError())
+			return (MemError());
+		BMD(pointer, *hand + (newSize - size), size);
 	}
-	return(noErr);
+	return (noErr);
 }
 
 /**********************************************************************
@@ -424,14 +457,14 @@ OSErr HandPlusHand(Handle h1, Handle h2)
 {
 	long h1Size = GetHandleSize(h1);
 	long h2Size = GetHandleSize(h2);
-	
-	if (h1Size)
-	{
-		SetHandleBig(h2,h1Size+h2Size);
-		if (MemError()) return(MemError());
-		BMD(*h1,*h2+h2Size,h1Size);
+
+	if (h1Size) {
+		SetHandleBig(h2, h1Size + h2Size);
+		if (MemError())
+			return (MemError());
+		BMD(*h1, *h2 + h2Size, h1Size);
 	}
-	return(noErr);
+	return (noErr);
 }
 
 /**********************************************************************
@@ -441,62 +474,60 @@ OSErr HandPlusHand(Handle h1, Handle h2)
 Handle DupHandle(Handle inHandle)
 {
 	long len = GetHandleSize(inHandle);
-	char flags = HGetState (inHandle);
+	char flags = HGetState(inHandle);
 	Handle outHandle;
-	
-	HNoPurge (inHandle);
+
+	HNoPurge(inHandle);
 	outHandle = NuHTempBetter(len);
-	if (outHandle) BMD(*inHandle,*outHandle,len);
-	HSetState (inHandle, flags);
-	return(outHandle);
+	if (outHandle)
+		BMD(*inHandle, *outHandle, len);
+	HSetState(inHandle, flags);
+	return (outHandle);
 }
 
 /**********************************************************************
  * MyHandToHand - handtohand using my allocation routines
  **********************************************************************/
-OSErr MyHandToHand(Handle *inHandle)
+OSErr MyHandToHand(Handle * inHandle)
 {
 	Handle result = DupHandle(*inHandle);
-	if (!result) return(MemError());
+	if (!result)
+		return (MemError());
 	*inHandle = result;
-	return(noErr);
+	return (noErr);
 }
 
 /************************************************************************
  * SetHandleBig - set the size of a handle, carefully
  ************************************************************************/
-void SetHandleBig(Handle h,long size)
+void SetHandleBig(Handle h, long size)
 {
 	long grow;
-	ASSERT(!(HGetState(h)&0xC0) || size<=GetHandleSize_(h));
-	
+	ASSERT(!(HGetState(h) & 0xC0) || size <= GetHandleSize_(h));
+
 	RANDOM_FAILURE_PROC;
 	MemCanFail = True;
-	
+
 	/*
 	 * are we running low on memory?
 	 */
-	if (size>GetHandleSize(h) && MonitorGrow(False))
-	{
+	if (size > GetHandleSize(h) && MonitorGrow(False)) {
 		{
 			LMSetMemErr(-108);
 			return;
 		}
 	}
-	
-	SetHandleSize(h,size);
-	if (MemError())
-	{
+
+	SetHandleSize(h, size);
+	if (MemError()) {
 		MoveHHi(h);
 		CompactMem(size);
-		SetHandleSize(h,size);
-		if (MemError())
-		{
+		SetHandleSize(h, size);
+		if (MemError()) {
 			MoveHHi(h);
 			MaxMem(&grow);
-			SetHandleSize(h,size);
+			SetHandleSize(h, size);
 		}
 	}
 	MemCanFail = False;
 }
-

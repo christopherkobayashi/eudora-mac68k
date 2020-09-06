@@ -33,36 +33,34 @@
 #define MAKEFILTER_H
 
 /* Items of interest in the MakeFilter dialog */
-enum
-{
-	OK_BUTTON=1,
-	MF_CANCEL_BUTTON=2,
-	MF_DETAILS_BUTTON=3,
-	MF_MATCH=4,
-	MF_INCOMING_CHECKBOX=5,
-	MF_OUTGOING_CHECKBOX=6,
-	MF_MANUAL_CHECKBOX=7,
-	MF_FROM_RADIO=8,
-	MF_ANYR_RADIO=9,
-	MF_SUBJECT_RADIO=10,
-	MF_FROM_EDIT=11,
-	MF_ANYR_EDIT=12,
-	MF_SUBJECT_EDIT=13,
-	MF_ACTION=14,
-	MF_DELETE_RADIO=15,
-	MF_TRANSFERNEW_RADIO=16,
-	MF_TRANSFEREXISTING_RADIO=17,
-	MF_TRANSFERNEW_EDIT=18,
-	MF_IN=19,
-	MF_DEFAULT=20,
-	MF_TRANSFEREXISTING_BUTTON=21,
-	MF_ANYR_POPUP=22
+enum {
+	OK_BUTTON = 1,
+	MF_CANCEL_BUTTON = 2,
+	MF_DETAILS_BUTTON = 3,
+	MF_MATCH = 4,
+	MF_INCOMING_CHECKBOX = 5,
+	MF_OUTGOING_CHECKBOX = 6,
+	MF_MANUAL_CHECKBOX = 7,
+	MF_FROM_RADIO = 8,
+	MF_ANYR_RADIO = 9,
+	MF_SUBJECT_RADIO = 10,
+	MF_FROM_EDIT = 11,
+	MF_ANYR_EDIT = 12,
+	MF_SUBJECT_EDIT = 13,
+	MF_ACTION = 14,
+	MF_DELETE_RADIO = 15,
+	MF_TRANSFERNEW_RADIO = 16,
+	MF_TRANSFEREXISTING_RADIO = 17,
+	MF_TRANSFERNEW_EDIT = 18,
+	MF_IN = 19,
+	MF_DEFAULT = 20,
+	MF_TRANSFEREXISTING_BUTTON = 21,
+	MF_ANYR_POPUP = 22
 };
 
 /* errors we could see during Make Filter */
-enum
-{
-	errMakeFilterOpen=1,
+enum {
+	errMakeFilterOpen = 1,
 	errScanningMbox,
 	errNoCommonAddresses,
 	errNoCommonElements,
@@ -70,8 +68,7 @@ enum
 };
 
 /* Values we want to put in and take out of the MakeFilter dialog */
-typedef struct MakeFilterRec
-{
+typedef struct MakeFilterRec {
 	Boolean incoming;
 	Boolean outgoing;
 	Boolean manual;
@@ -90,9 +87,9 @@ typedef struct MakeFilterRec
 /* Interface to MakeFilter */
 
 //Do everything involved in Make Filter.
-void DoMakeFilter(MyWindowPtr win);	
+void DoMakeFilter(MyWindowPtr win);
 
 //Like chooseMailbox, but allow the user to select a folder.
 Boolean ChooseMailboxFolder(short menu, short msg, UPtr name);
 
-#endif	//MAKEFILTER_H
+#endif				//MAKEFILTER_H

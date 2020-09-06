@@ -40,22 +40,22 @@
 
 #pragma segment Main
 
-typedef long CdefFunc(short varCode, ControlHandle theControl, short message, long param);
+typedef long CdefFunc(short varCode, ControlHandle theControl,
+		      short message, long param);
 
 CdefFunc ColCdefDraw, ColCdefCalc, ColCdefTest, ColCdefInit;
 
-CdefFunc *ColCdefFuncs[] =
-{
+CdefFunc *ColCdefFuncs[] = {
 	ColCdefDraw,
 	ColCdefTest,
 	ColCdefCalc,
 	ColCdefInit,
 	nil,
-	nil, /* pos */
-	nil, /* thumb */
-	nil, /* drag */
-	nil, /* track */
-	nil, /* mystery */
+	nil,			/* pos */
+	nil,			/* thumb */
+	nil,			/* drag */
+	nil,			/* track */
+	nil,			/* mystery */
 	ColCdefCalc,
 	ColCdefCalc
 };
@@ -65,11 +65,15 @@ CdefFunc *ColCdefFuncs[] =
  *
  *	Data - handle to AppData
  **********************************************************************/
-pascal long ColCdef(short varCode, ControlHandle theControl, short message, long param)
+pascal long ColCdef(short varCode, ControlHandle theControl, short message,
+		    long param)
 {
-	if (message<(sizeof(ColCdefFuncs)/sizeof(CdefFunc*)) && ColCdefFuncs[message])
-		return((*ColCdefFuncs[message])(varCode,theControl,message,param));
-	else return(0);
+	if (message < (sizeof(ColCdefFuncs) / sizeof(CdefFunc *))
+	    && ColCdefFuncs[message])
+		return ((*ColCdefFuncs[message])
+			(varCode, theControl, message, param));
+	else
+		return (0);
 }
 
 #pragma segment ColorCdef
@@ -77,74 +81,80 @@ pascal long ColCdef(short varCode, ControlHandle theControl, short message, long
 /**********************************************************************
  * ColCdefDraw - draw the control
  **********************************************************************/
-long ColCdefDraw(short varCode, ControlHandle theControl, short message, long param)
+long ColCdefDraw(short varCode, ControlHandle theControl, short message,
+		 long param)
 {
-	Rect r = *GetControlBounds(theControl,&r);
+	Rect r = *GetControlBounds(theControl, &r);
 	RGBColor color, oldColor;
 	short hilite = GetControlHilite(theControl);
-	Pattern	thePattern;
-	
+	Pattern thePattern;
+
 	FrameRect(&r);
 
 
-	if (hilite && hilite!=255) PenPat(GetQDGlobalsBlack(&thePattern));
-	else PenPat(GetQDGlobalsWhite(&thePattern));
-	
-	InsetRect(&r,1,1);
+	if (hilite && hilite != 255)
+		PenPat(GetQDGlobalsBlack(&thePattern));
+	else
+		PenPat(GetQDGlobalsWhite(&thePattern));
+
+	InsetRect(&r, 1, 1);
 	FrameRect(&r);
-	InsetRect(&r,2,2);
-	
+	InsetRect(&r, 2, 2);
+
 	PenNormal();
-	
-	ColCtlGet(theControl,&color);
-		
-	if (ThereIsColor)
-	{
+
+	ColCtlGet(theControl, &color);
+
+	if (ThereIsColor) {
 		GetForeColor(&oldColor);
 		RGBForeColor(&color);
 	}
-	
-	PaintRect(&r);
-	
-	if (ThereIsColor) RGBForeColor(&oldColor);
 
-	return(0);
+	PaintRect(&r);
+
+	if (ThereIsColor)
+		RGBForeColor(&oldColor);
+
+	return (0);
 }
 
 /**********************************************************************
  * ColCdefTest - did the mouse come down in the control?
  **********************************************************************/
-long ColCdefTest(short varCode, ControlHandle theControl, short message, long param)
+long ColCdefTest(short varCode, ControlHandle theControl, short message,
+		 long param)
 {
 	Point mouse;
 	Rect r;
-	
-	mouse.v = (param>>16)&0xffff;
-	mouse.h = param&0xffff;
 
-	r = *GetControlBounds(theControl,&r);
-	return(PtInRect(mouse,&r));
+	mouse.v = (param >> 16) & 0xffff;
+	mouse.h = param & 0xffff;
+
+	r = *GetControlBounds(theControl, &r);
+	return (PtInRect(mouse, &r));
 }
 
 
 /**********************************************************************
  * ColCdefCalc - calculate control regions
  **********************************************************************/
-long ColCdefCalc(short varCode, ControlHandle theControl, short message, long param)
+long ColCdefCalc(short varCode, ControlHandle theControl, short message,
+		 long param)
 {
-	Rect r = *GetControlBounds(theControl,&r);
-	
-	if (message==calcCRgns) param &= 0x00ffffff;
-	RectRgn((RgnHandle)param,&r);
-	return(0);
+	Rect r = *GetControlBounds(theControl, &r);
+
+	if (message == calcCRgns)
+		param &= 0x00ffffff;
+	RectRgn((RgnHandle) param, &r);
+	return (0);
 }
 
 /**********************************************************************
  * ColCdefInit - initialize stuff for the CDEF
  **********************************************************************/
-long ColCdefInit(short varCode, ControlHandle theControl, short message, long param)
+long ColCdefInit(short varCode, ControlHandle theControl, short message,
+		 long param)
 {
-	SetControlAction(theControl,(void*)-1);
-	return(0);
+	SetControlAction(theControl, (void *) -1);
+	return (0);
 }
-

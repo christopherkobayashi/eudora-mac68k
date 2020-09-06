@@ -68,8 +68,7 @@ typedef unsigned char Str47[48];
 /************************************************************************
  * File types 
  ************************************************************************/
-typedef enum
-{
+typedef enum {
 	kMStoreMailDBMagic = 'MlDb',
 	kMStoreMailDBTerm = 'bDlM',
 	kMStoreMailFileType = 'EuMB',
@@ -82,8 +81,7 @@ typedef enum
 /************************************************************************
  * Version number
  ************************************************************************/
-struct MStoreVersion
-{
+struct MStoreVersion {
 	short majorVersion;
 	short minorVersion;
 };
@@ -91,19 +89,17 @@ struct MStoreVersion
 /************************************************************************
  * MailDB header
  ************************************************************************/
-struct MStoreMailDBHeader
-{
-	unsigned long magic;				// magic number for MailDB file
+struct MStoreMailDBHeader {
+	unsigned long magic;	// magic number for MailDB file
 	MStoreVersion highVersion;	// highest version # of file ever written
 	MStoreVersion lastVersion;	// last version # of file written
-	unsigned long modSeconds;		// mod seconds of last time written
+	unsigned long modSeconds;	// mod seconds of last time written
 };
 
 /************************************************************************
  * MStoreBlockHeader - block header in MailDB file
  ************************************************************************/
-struct MStoreBlockHeader
-{
+struct MStoreBlockHeader {
 	long magic;
 	long type;
 	long id;
@@ -115,45 +111,43 @@ struct MStoreBlockHeader
 /************************************************************************
  * Types for blocks
  ************************************************************************/
-typedef enum
-{
-	kMStoreFreeType = 'Free',					// Free block
-	kMStoreMessageType = 'Mess',			// Message descriptor
-	kMStoreContHeaderType = 'Hdrs',		// Headers of a content
-	kMStoreContBodyType = 'Body',			// Body of a content
-	kMStoreContentType = 'Cont',			// Headers and body of content in one piece
-	kMStoreStubType = 'Stub',					// POP3 message stub
-	kMStoreI4EnvelopeType = 'I4Ev',		// IMAP4 message envelope
+typedef enum {
+	kMStoreFreeType = 'Free',	// Free block
+	kMStoreMessageType = 'Mess',	// Message descriptor
+	kMStoreContHeaderType = 'Hdrs',	// Headers of a content
+	kMStoreContBodyType = 'Body',	// Body of a content
+	kMStoreContentType = 'Cont',	// Headers and body of content in one piece
+	kMStoreStubType = 'Stub',	// POP3 message stub
+	kMStoreI4EnvelopeType = 'I4Ev',	// IMAP4 message envelope
 	kMStoreI4Structuretype = 'I4St',	// IMAP4 bodystructure
-	kMStoreTerminator	= 'tErM',				// block terminator; not really a block type...
+	kMStoreTerminator = 'tErM',	// block terminator; not really a block type...
 	kMStoreDummyType = 0
 } MStoreBlockTypeEnum;
 
 /************************************************************************
  * Types for attributes
  ************************************************************************/
-typedef enum
-{
+typedef enum {
 	// ID's
-	kMStorePOP3IIDAttr = 'POP3',				// POP3 message instance id
-	kMStoreMessageIIDAttr = 'MIID',			// mailstore message instance id
-	kMStoreMessageIDAttr = 'MsID',			// Hash of message-id field
+	kMStorePOP3IIDAttr = 'POP3',	// POP3 message instance id
+	kMStoreMessageIIDAttr = 'MIID',	// mailstore message instance id
+	kMStoreMessageIDAttr = 'MsID',	// Hash of message-id field
 	kMStoreI4MailMessIIDAttr = 'I4MM',	// IMAP4 Mailbox-message instance id
-	kMStoreI4MessIIDAttr = 'I4ID',			// IMAP4 Message instance id
-	kMStoreI4MessINameAttr = 'I4MN',		// IMAP4 Message instance name
-	kMStoreI4ContINameAttr = 'I4CN',		// IMAP4 Content instance name
+	kMStoreI4MessIIDAttr = 'I4ID',	// IMAP4 Message instance id
+	kMStoreI4MessINameAttr = 'I4MN',	// IMAP4 Message instance name
+	kMStoreI4ContINameAttr = 'I4CN',	// IMAP4 Content instance name
 	// MIME Stuff
-	kMStoreMIMECTAttr	= 'MICT',					// Content-Type parameter
-	kMStoreMIMESTAttr	= 'MIST',					// Content-Subtype parameter
-	kMStoreMIMECTParamAttr = 'MICP',		// Content-type parameter (name=value)
-	kMStoreMIMECDispAttr = 'MICD',			// Content-Disposition
+	kMStoreMIMECTAttr = 'MICT',	// Content-Type parameter
+	kMStoreMIMESTAttr = 'MIST',	// Content-Subtype parameter
+	kMStoreMIMECTParamAttr = 'MICP',	// Content-type parameter (name=value)
+	kMStoreMIMECDispAttr = 'MICD',	// Content-Disposition
 	kMStoreMIMECDispParamAttr = 'MIDP',	// Content-Disposition parameter (name=value)
 	// Internal DB stuff
-	kMStoreReferencedAttr = 'Refr',			// Block that references this one
-	kMStoreFlagsAttr = 'Flag',					// Flags
+	kMStoreReferencedAttr = 'Refr',	// Block that references this one
+	kMStoreFlagsAttr = 'Flag',	// Flags
 	// Misc
-	kMStoreComputedHashAttr = 'CHsh',		// Hash algorithm & value computed by us
-	kMStoreContentSizeAttr = 'CSiz',		// Size of content
+	kMStoreComputedHashAttr = 'CHsh',	// Hash algorithm & value computed by us
+	kMStoreContentSizeAttr = 'CSiz',	// Size of content
 	kMStoreDummyAttr = 0
 } MStoreAttributeEnum;
 #define kMStoreContentID kMStoreMessageID	// same as message-id, only content-id
@@ -163,24 +157,22 @@ typedef enum
 /************************************************************************
  * Content flags
  ************************************************************************/
-typedef enum
-{
-	kMStoreFlagOriginal,		// content has not been transformed in any way
-	kMStoreFlagNotUTF8,			// content is not in UTF-8
-	kMStoreFlagMacintosh,		// message came from Mac Eudora <4.0
-	kMStoreFlagWindows,		// message came from Win Eudora <4.0
-	kMStoreFlagNotMIME,		// message is non-MIME
-	kMStoreFlagStub,			// partially downloaded
-	kMStoreFlagErrors,		// content had errors during download
-	kMStoreFlagWipe,			// content should be wiped after being freed
+typedef enum {
+	kMStoreFlagOriginal,	// content has not been transformed in any way
+	kMStoreFlagNotUTF8,	// content is not in UTF-8
+	kMStoreFlagMacintosh,	// message came from Mac Eudora <4.0
+	kMStoreFlagWindows,	// message came from Win Eudora <4.0
+	kMStoreFlagNotMIME,	// message is non-MIME
+	kMStoreFlagStub,	// partially downloaded
+	kMStoreFlagErrors,	// content had errors during download
+	kMStoreFlagWipe,	// content should be wiped after being freed
 	kMStoreFlagDummy
 } MStoreTextFlagsEnum;
 
 /************************************************************************
  * Morsels
  ************************************************************************/
-typedef enum
-{
+typedef enum {
 	kMStorePartMorsel = 'Part',	// alternate forms of a single content
 	kMStoreMultiMorsel = 'Mult',	// a multipart content
 	kMStoreDummyMorsel = 0
@@ -189,20 +181,18 @@ typedef enum
 /************************************************************************
  * TOC File Header
  ************************************************************************/
-struct MStoreTOCFileHeader
-{
+struct MStoreTOCFileHeader {
 	MStoreVersion highVersion;	// highest version # of file ever written
 	MStoreVersion lastVersion;	// last version # of file written
-	unsigned long modSeconds;		// mod seconds of last time written
-	unsigned long sumSize;			// size of summaries
-	unsigned long sumCount;			// # of summaries
+	unsigned long modSeconds;	// mod seconds of last time written
+	unsigned long sumSize;	// size of summaries
+	unsigned long sumCount;	// # of summaries
 };
 
 /************************************************************************
  * Message instance id
  ************************************************************************/
-struct EudoraMessInstanceID
-{
+struct EudoraMessInstanceID {
 	unsigned long mailboxID;
 	unsigned long messageID;
 };
@@ -210,8 +200,7 @@ struct EudoraMessInstanceID
 /************************************************************************
  * I4UIDPlus - IMAP4 uid+; uidvalidity+uid
  ************************************************************************/
-struct I4UIDPlus
-{
+struct I4UIDPlus {
 	unsigned long i4UIDValidity;
 	unsigned long i4UID;
 };
@@ -219,77 +208,73 @@ struct I4UIDPlus
 /************************************************************************
  * Message Summary
  ************************************************************************/
-struct MStoreSummary
-{
+struct MStoreSummary {
 	EudoraMessInstanceID mIID;	// Where is it stored?
-	uLong mid;									// Hash of message-id header
-	uLong size;									// Content size, for user's benefit
-	uLong seconds;							// Message date, in seconds since 12am 1 Jan 1970 GMT
-	short zone;									// Message original timezone, in seconds
-	short pad;									// unused
-	Byte state;									// unread, read, etc
-	Byte priority;							// current user-assigned priority
-	Byte origPriority;					// priority message came in with
-	Byte label;									// user-assigned message label
-	uLong flags[2];							// message flags; see below
-	Rect position;							// position of window
-	uLong personality;					// personality id
-	I4UIDPlus i4UIDPlus;				// IMAP4 UID+; interesting only if in synced mailbox
-	Str31 from;									// Human string for sender of message
-	Str47 subject;							// Human string for subject of message
+	uLong mid;		// Hash of message-id header
+	uLong size;		// Content size, for user's benefit
+	uLong seconds;		// Message date, in seconds since 12am 1 Jan 1970 GMT
+	short zone;		// Message original timezone, in seconds
+	short pad;		// unused
+	Byte state;		// unread, read, etc
+	Byte priority;		// current user-assigned priority
+	Byte origPriority;	// priority message came in with
+	Byte label;		// user-assigned message label
+	uLong flags[2];		// message flags; see below
+	Rect position;		// position of window
+	uLong personality;	// personality id
+	I4UIDPlus i4UIDPlus;	// IMAP4 UID+; interesting only if in synced mailbox
+	Str31 from;		// Human string for sender of message
+	Str47 subject;		// Human string for subject of message
 };
 
 /************************************************************************
  * summary flags
  *   number is bit count from lowest bit of mFlags[1] up to high bit of mFlags[1]
  ************************************************************************/
-typedef enum
-{
-	kSumFlagMDN,						// user has requested an MDN for this message (outgoing)
-	kSumFlagDSN,						// user has requested a DSN for this message (outgoing)
-	kSumFlagPartial,				// only part of the message has been downloaded
-	kSumFlagOnServer,				// this message still exists on a server
+typedef enum {
+	kSumFlagMDN,		// user has requested an MDN for this message (outgoing)
+	kSumFlagDSN,		// user has requested a DSN for this message (outgoing)
+	kSumFlagPartial,	// only part of the message has been downloaded
+	kSumFlagOnServer,	// this message still exists on a server
 	kSumFlagEncodingErrors,	// encoding errors were found while transferring
-	kSumFlagOutgoing,				// this is an outgoing message
-	kSumFlagZoomed,					// window was in zoomed state when closed
-	kSumFlagReport,					// message is an MDN or DSN report
-	kSumFlagWipe,						// bits should be wiped when message moved or deleted
-	kSumFlagEdited,					// user has changed this message
-	kSumFlagWeirdReply,			// message has reply-to different from from:
-	kSumFlagFormatBar,			// message has format bar (outgoing)
-	kSumFlagWordWrap,				// word wrap when sending (outgoing)
-	kSumFlagKeepCopy,				// keep a copy after sending (outgoing)
-	kSumFlagLocked,					// user has locked the message in this mailbox
+	kSumFlagOutgoing,	// this is an outgoing message
+	kSumFlagZoomed,		// window was in zoomed state when closed
+	kSumFlagReport,		// message is an MDN or DSN report
+	kSumFlagWipe,		// bits should be wiped when message moved or deleted
+	kSumFlagEdited,		// user has changed this message
+	kSumFlagWeirdReply,	// message has reply-to different from from:
+	kSumFlagFormatBar,	// message has format bar (outgoing)
+	kSumFlagWordWrap,	// word wrap when sending (outgoing)
+	kSumFlagKeepCopy,	// keep a copy after sending (outgoing)
+	kSumFlagLocked,		// user has locked the message in this mailbox
 	kSumFlagSpooledAttachments,	// message has spool folder associated with it
 	kSumFlagBodyAllowEncoding,	// user says ok to encode this message body
 	kSumFlagBodyForceEncoding,	// user says body of message must be encoded
-	kSumFlagBodyWordWrap,				// user says word wrap body of message
+	kSumFlagBodyWordWrap,	// user says word wrap body of message
 	kSumFlagTextAllowEncoding,	// user says ok to encode text attachments
 	kSumFlagTextForceEncoding,	// user says text attachments must be encoded
-	kSumFlagTextWordWrap,				// user says word wrap text attachments
-	kSumFlagAttach1,						// low bit of attachment type
-	kSumFlagAttach2,						// middle bit of attachment type
-	kSumFlagAttach3,						// high bit of attachment type
-	kSumFlagResourceFork,				// include resource fork with attachments
+	kSumFlagTextWordWrap,	// user says word wrap text attachments
+	kSumFlagAttach1,	// low bit of attachment type
+	kSumFlagAttach2,	// middle bit of attachment type
+	kSumFlagAttach3,	// high bit of attachment type
+	kSumFlagResourceFork,	// include resource fork with attachments
 	kSumDummy
 } MStoreSummaryFlagEnum;
 
 /************************************************************************
  * IDDB File header
  ************************************************************************/
-struct MStoreIDDBHeader
-{
-	OSType iddbMagic;						// magic number
+struct MStoreIDDBHeader {
+	OSType iddbMagic;	// magic number
 	MStoreVersion highVersion;	// highest version # of file ever written
 	MStoreVersion lastVersion;	// last version # of file written
-	unsigned long modSeconds;		// mod seconds of last time written
+	unsigned long modSeconds;	// mod seconds of last time written
 };
 
 /************************************************************************
  * IDDB Blocks
  ************************************************************************/
-struct MStoreIDDBBlock
-{
+struct MStoreIDDBBlock {
 	unsigned long blockID;
 	unsigned long offset;
 	unsigned long size;
@@ -298,8 +283,7 @@ struct MStoreIDDBBlock
 /************************************************************************
  * Info file
  ************************************************************************/
-struct MStoreInfo
-{
+struct MStoreInfo {
 	Str255 name;
 };
 
@@ -310,8 +294,7 @@ struct MStoreInfo
 /************************************************************************
  * IDDB in-memory version
  ************************************************************************/
-struct MStoreMemIDDB
-{
+struct MStoreMemIDDB {
 	MStoreIDDBBlock block;
 	long dirty:1;
 	long locked:1;
@@ -320,13 +303,13 @@ struct MStoreMemIDDB
 /************************************************************************
  * SubFile - manage the aspects of a subfile of a mailbox
  ************************************************************************/
-typedef enum {msfcCreate,msfcOpen,msfcFlush,msfcClose,msfcCloseHard,msfcDestroy} MSSubCallEnum;
-struct MStoreSubFile
-{
+typedef enum { msfcCreate, msfcOpen, msfcFlush, msfcClose, msfcCloseHard,
+	    msfcDestroy } MSSubCallEnum;
+struct MStoreSubFile {
 	short refN;
 	short fileNameID;
 	OSType fileType;
-	OSErr (*func)(MSSubCallEnum selector,MStoreBoxHandle boxH);
+	 OSErr(*func) (MSSubCallEnum selector, MStoreBoxHandle boxH);
 	long dirty:1;
 };
 
@@ -334,36 +317,35 @@ struct MStoreSubFile
 /************************************************************************
  * Mailbox
  ************************************************************************/
-struct MStoreBox
-{
-	short type;					// In/Out/Trash or regular
-	short refCount;			// number of references
-	short locked;				// somebody is using it
-	FSSpec spec;				// Spec (could be alias) of the folder
-	VDId dir;						// Volume and directory containing the mailbox
-	MStoreSubFile subs[4];		// subfile info
-	StackHandle iddb;		// The IDDB for this mailbox
+struct MStoreBox {
+	short type;		// In/Out/Trash or regular
+	short refCount;		// number of references
+	short locked;		// somebody is using it
+	FSSpec spec;		// Spec (could be alias) of the folder
+	VDId dir;		// Volume and directory containing the mailbox
+	MStoreSubFile subs[4];	// subfile info
+	StackHandle iddb;	// The IDDB for this mailbox
 	StackHandle summaries;	// message summaries
-	MStoreInfo info;		// The info file
+	MStoreInfo info;	// The info file
 	MStoreMailDBHeader mailDBHeader;	// Header for maildb file
 	uLong mailDBModTime;
 };
 
-typedef enum {mssfMailDB,mssfIDDB,mssfTOC,mssfInfo,mssfLimit} MSSubFileEnum;  // indices into subfile array
+typedef enum { mssfMailDB, mssfIDDB, mssfTOC, mssfInfo, mssfLimit } MSSubFileEnum;	// indices into subfile array
 
 /************************************************************************
  * Functions
  ************************************************************************/
-OSErr MSCreateMailbox(FSSpecPtr spec,MStoreBoxHandle *boxH);
-OSErr MSOpenMailbox(FSSpecPtr spec,MStoreBoxHandle *boxH);
+OSErr MSCreateMailbox(FSSpecPtr spec, MStoreBoxHandle * boxH);
+OSErr MSOpenMailbox(FSSpecPtr spec, MStoreBoxHandle * boxH);
 OSErr MSFlushMailbox(MStoreBoxHandle boxH);
-OSErr MSCloseMailbox(MStoreBoxHandle boxH,Boolean force);
+OSErr MSCloseMailbox(MStoreBoxHandle boxH, Boolean force);
 
 // utilities for other mime store stuff
-OSErr MSCreateSubFile(MStoreBoxHandle boxH,MSSubFileEnum file);
-OSErr MSOpenSubFile(MStoreBoxHandle boxH,MSSubFileEnum file);
-OSErr MSCloseSubFile(MStoreBoxHandle boxH,MSSubFileEnum file);
-OSErr MSDestroySubFile(MStoreBoxHandle boxH,MSSubFileEnum file);
+OSErr MSCreateSubFile(MStoreBoxHandle boxH, MSSubFileEnum file);
+OSErr MSOpenSubFile(MStoreBoxHandle boxH, MSSubFileEnum file);
+OSErr MSCloseSubFile(MStoreBoxHandle boxH, MSSubFileEnum file);
+OSErr MSDestroySubFile(MStoreBoxHandle boxH, MSSubFileEnum file);
 
 #define JAN11970 2082844800
 #define MStoreDateTime()	(GMTDateTime()-JAN11970)
@@ -377,4 +359,3 @@ OSErr MSDestroySubFile(MStoreBoxHandle boxH,MSSubFileEnum file);
 void DebugMimeStore(void);
 #endif
 #endif
-

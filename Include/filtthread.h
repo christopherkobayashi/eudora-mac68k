@@ -46,6 +46,6 @@ short GetDeliveryCount(void);
 #define kNotEnoughTime -1
 #endif
 
-void SetNeedToFilterOut (void);
-void FilterXferMessages (void);
+void SetNeedToFilterOut(void);
+void FilterXferMessages(void);
 #endif

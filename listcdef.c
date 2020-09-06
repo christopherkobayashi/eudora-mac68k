@@ -38,23 +38,23 @@
 
 #pragma segment ListCdef
 
-typedef long CdefFunc(short varCode, ControlHandle theControl, short message, long param);
+typedef long CdefFunc(short varCode, ControlHandle theControl,
+		      short message, long param);
 
 CdefFunc ListCdefDraw, ListCdefTest, ListCdefCalc, ListCdefInit,
-				 ListCdefDisp, ListCdefTrack;
+    ListCdefDisp, ListCdefTrack;
 
-CdefFunc *ListCdefFuncs[] =
-{
+CdefFunc *ListCdefFuncs[] = {
 	ListCdefDraw,
 	ListCdefTest,
 	ListCdefCalc,
 	ListCdefInit,
 	ListCdefDisp,
-	nil, /* pos */
-	nil, /* thumb */
-	nil, /* drag */
-	ListCdefTrack, /* track */
-	nil, /* mystery */
+	nil,			/* pos */
+	nil,			/* thumb */
+	nil,			/* drag */
+	ListCdefTrack,		/* track */
+	nil,			/* mystery */
 	ListCdefCalc,
 	ListCdefCalc
 };
@@ -66,131 +66,149 @@ static callingLClick;
  **********************************************************************/
 ListHandle LCGetList(ControlHandle cntl)
 {
-	return((ListHandle)GetControlDataHandle(cntl));
+	return ((ListHandle) GetControlDataHandle(cntl));
 }
 
 /**********************************************************************
  * LCSetList - set the list for a control
  **********************************************************************/
-void LCSetList(ControlHandle cntl,ListHandle list)
+void LCSetList(ControlHandle cntl, ListHandle list)
 {
-	if (LCGetList(cntl)) LDispose(LCGetList(cntl));
-	SetControlDataHandle(cntl,(void*)list);
+	if (LCGetList(cntl))
+		LDispose(LCGetList(cntl));
+	SetControlDataHandle(cntl, (void *) list);
 }
 
 /**********************************************************************
  * ListCdef - CDEF for a control that gives a list manager box
  **********************************************************************/
-pascal long ListCdef(short varCode, ControlHandle theControl, short message, long param)
+pascal long ListCdef(short varCode, ControlHandle theControl,
+		     short message, long param)
 {
-	if (message<(sizeof(ListCdefFuncs)/sizeof(CdefFunc*)) && ListCdefFuncs[message])
-		return((*ListCdefFuncs[message])(varCode,theControl,message,param));
-	else return(0);
+	if (message < (sizeof(ListCdefFuncs) / sizeof(CdefFunc *))
+	    && ListCdefFuncs[message])
+		return ((*ListCdefFuncs[message])
+			(varCode, theControl, message, param));
+	else
+		return (0);
 }
 
 /**********************************************************************
  * ListCdefDraw - draw the list cdef
  **********************************************************************/
-long ListCdefDraw(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefDraw(short varCode, ControlHandle theControl, short message,
+		  long param)
 {
 	Rect r;
 	ListHandle list = LCGetList(theControl);
 
-	GetControlBounds(theControl,&r);
-	if (list) LUpdate(MyGetPortVisibleRegion(GetWindowPort(GetControlOwner(theControl))),list);
+	GetControlBounds(theControl, &r);
+	if (list)
+		LUpdate(MyGetPortVisibleRegion
+			(GetWindowPort(GetControlOwner(theControl))),
+			list);
 	FrameRect(&r);
-	return(0);
+	return (0);
 }
 
 /**********************************************************************
  * ListCdefTest - test a point to see if it's in the CDEF
  **********************************************************************/
-long ListCdefTest(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefTest(short varCode, ControlHandle theControl, short message,
+		  long param)
 {
 	Point mouse;
 	Rect r;
-	
-	GetControlBounds(theControl,&r);
-	mouse.v = (param>>16)&0xffff;
-	mouse.h = param&0xffff;
+
+	GetControlBounds(theControl, &r);
+	mouse.v = (param >> 16) & 0xffff;
+	mouse.h = param & 0xffff;
 
 	/*
 	 * make sure that LClick sees its scroll bar rather
 	 * than this control
 	 */
-	if (callingLClick) r.right -= GROW_SIZE;
-	
-	return(PtInRect(mouse,&r));
+	if (callingLClick)
+		r.right -= GROW_SIZE;
+
+	return (PtInRect(mouse, &r));
 }
 
 /**********************************************************************
  * ListCdefCalc - calculate region for cdef
  **********************************************************************/
-long ListCdefCalc(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefCalc(short varCode, ControlHandle theControl, short message,
+		  long param)
 {
 	Rect r;
-	
-	GetControlBounds(theControl,&r);
-	if (message==calcCRgns) param &= 0x00ffffff;
-	RectRgn((RgnHandle)param,&r);
-	return(0);
+
+	GetControlBounds(theControl, &r);
+	if (message == calcCRgns)
+		param &= 0x00ffffff;
+	RectRgn((RgnHandle) param, &r);
+	return (0);
 }
 
 /**********************************************************************
  * ListCdefInit - initialize
  **********************************************************************/
-long ListCdefInit(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefInit(short varCode, ControlHandle theControl, short message,
+		  long param)
 {
-	MyWindowPtr	win = GetWindowMyWindowPtr (GetControlOwner(theControl));
+	MyWindowPtr win =
+	    GetWindowMyWindowPtr(GetControlOwner(theControl));
 	ListHandle list;
 	Point cSize;
 	Rect bounds;
 	Rect r;
 	OSErr err = noErr;
-	
+
 	// Calculate sizes
-	GetControlBounds(theControl,&r);
-	InsetRect(&r,1,1);
+	GetControlBounds(theControl, &r);
+	InsetRect(&r, 1, 1);
 	r.right -= GROW_SIZE;
-	SetRect(&bounds,0,0,1,0);
+	SetRect(&bounds, 0, 0, 1, 0);
 	cSize.h = RectWi(r);
 	cSize.v = win ? win->vPitch + 2 : 0;
-	if (list = LNew(&r,&bounds,cSize,nil,GetControlOwner(theControl),True,False,False,True))
-	{
-		LCSetList(theControl,list);
-		if (win) (*list)->indent.v = win->vPitch-2;
-	}
-	else err = MemError();
-	SetControlAction(theControl,(void*)-1);
-	
-	return(err);
+	if (list =
+	    LNew(&r, &bounds, cSize, nil, GetControlOwner(theControl),
+		 True, False, False, True)) {
+		LCSetList(theControl, list);
+		if (win)
+			(*list)->indent.v = win->vPitch - 2;
+	} else
+		err = MemError();
+	SetControlAction(theControl, (void *) -1);
+
+	return (err);
 }
 
 /**********************************************************************
  * ListCdefDisp - dispose of the list cdef
  **********************************************************************/
-long ListCdefDisp(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefDisp(short varCode, ControlHandle theControl, short message,
+		  long param)
 {
 	ListHandle list = LCGetList(theControl);
-	if (list)
-	{
+	if (list) {
 		(*list)->hScroll = (*list)->vScroll = nil;
 		LDispose(list);
 	}
-	return(0);
+	return (0);
 }
 
 /**********************************************************************
  * ListCdefTrack - track the mouse
  **********************************************************************/
-long ListCdefTrack(short varCode, ControlHandle theControl, short message, long param)
+long ListCdefTrack(short varCode, ControlHandle theControl, short message,
+		   long param)
 {
 	Point pt = MainEvent.where;
 	ListHandle list = LCGetList(theControl);
 	callingLClick = True;	// make sure that LClick sees its scroll bar rather
-										// than this control
+	// than this control
 	GlobalToLocal(&pt);
 	LClick(pt, MainEvent.modifiers, list);
 	callingLClick = False;
-	return(1);
+	return (1);
 }

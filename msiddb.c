@@ -45,16 +45,23 @@ OSErr MSDestroyIDDB(MStoreBoxHandle boxH);
 /************************************************************************
  * MSIDDBFunc - dispatcher function
  ************************************************************************/
-OSErr MSIDDBFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
+OSErr MSIDDBFunc(MSSubCallEnum call, MStoreBoxHandle boxH)
 {
-	switch (call)
-	{
-		case msfcCreate: return(MSCreateIDDB(boxH));
-		case msfcOpen: return(MSOpenIDDB(boxH));
-		case msfcClose: case msfcCloseHard: return(MSCloseIDDB(boxH));
-		case msfcDestroy: return(MSDestroyIDDB(boxH));
-		case msfcFlush: return(noErr);
-		default: ASSERT(0); return(fnfErr);
+	switch (call) {
+	case msfcCreate:
+		return (MSCreateIDDB(boxH));
+	case msfcOpen:
+		return (MSOpenIDDB(boxH));
+	case msfcClose:
+	case msfcCloseHard:
+		return (MSCloseIDDB(boxH));
+	case msfcDestroy:
+		return (MSDestroyIDDB(boxH));
+	case msfcFlush:
+		return (noErr);
+	default:
+		ASSERT(0);
+		return (fnfErr);
 	}
 }
 
@@ -63,8 +70,8 @@ OSErr MSIDDBFunc(MSSubCallEnum call,MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSCreateIDDB(MStoreBoxHandle boxH)
 {
-	OSErr err = MSCreateSubFile(boxH,mssfIDDB);
-	return(err);
+	OSErr err = MSCreateSubFile(boxH, mssfIDDB);
+	return (err);
 }
 
 /************************************************************************
@@ -72,9 +79,9 @@ OSErr MSCreateIDDB(MStoreBoxHandle boxH)
  ************************************************************************/
 OSErr MSOpenIDDB(MStoreBoxHandle boxH)
 {
-	OSErr err = MSOpenSubFile(boxH,mssfIDDB);
+	OSErr err = MSOpenSubFile(boxH, mssfIDDB);
 
-	return(err);
+	return (err);
 }
 
 /************************************************************************
@@ -83,10 +90,10 @@ OSErr MSOpenIDDB(MStoreBoxHandle boxH)
 OSErr MSCloseIDDB(MStoreBoxHandle boxH)
 {
 	OSErr err = noErr;
-	
-	err = MSCloseSubFile(boxH,mssfIDDB);
-	
-	return(err);
+
+	err = MSCloseSubFile(boxH, mssfIDDB);
+
+	return (err);
 }
 
 /************************************************************************
@@ -95,8 +102,8 @@ OSErr MSCloseIDDB(MStoreBoxHandle boxH)
 OSErr MSDestroyIDDB(MStoreBoxHandle boxH)
 {
 	OSErr err;
-	
+
 	if (!(err = MSCloseIDDB(boxH)))
-		err = MSDestroySubFile(boxH,mssfIDDB);
-	return(err);
+		err = MSDestroySubFile(boxH, mssfIDDB);
+	return (err);
 }

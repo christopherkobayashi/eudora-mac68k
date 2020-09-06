@@ -32,8 +32,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-typedef enum
-{
+typedef enum {
 	kDefaultGraph,
 	kLineGraph,
 	kAreaGraph,
@@ -44,18 +43,16 @@ typedef enum
 	kPieGraph
 } GraphType;
 
-typedef struct
-{
-	GraphType type;	// graph type, use default if zero
-	uLong *data;	// pointer to data series
-	RGBColor color;	// color for data points
-	short dataCount; // number of valid points for this series
-	StringPtr label; // legend label
-	short divider;	// divide all values by this, 0 if don't modify
+typedef struct {
+	GraphType type;		// graph type, use default if zero
+	uLong *data;		// pointer to data series
+	RGBColor color;		// color for data points
+	short dataCount;	// number of valid points for this series
+	StringPtr label;	// legend label
+	short divider;		// divide all values by this, 0 if don't modify
 } SeriesInfo;
 
-typedef struct
-{
+typedef struct {
 	Rect bounds;		// where to draw
 	GraphType type;		// default graph type
 	Handle xLabels;		// optional x-axis labels
@@ -70,6 +67,6 @@ typedef struct
 } GraphData;
 
 
-void DrawGraph(GraphData *data);
+void DrawGraph(GraphData * data);
 
-#endif //GRAPH_H
+#endif				//GRAPH_H

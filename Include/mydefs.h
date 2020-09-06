@@ -72,13 +72,13 @@
 #define U_STATE(h)	do{HSetState((Handle)h,h##_state);}while(0)
 
 // (jp) Lots of casting will be evil under Carbon, for now we'll concern ourselves
-//			with Window/Dialog/etc types of casts that won't work in a world without
-//			extended WindowRecords
+//                      with Window/Dialog/etc types of casts that won't work in a world without
+//                      extended WindowRecords
 #ifdef	FLOAT_WIN
-	#define FrontWindow_ MyFrontNonFloatingWindow
-#else	//FLOAT_WIN
-	#define FrontWindow_ FrontWindow
-#endif	//FLOAT_WIN
+#define FrontWindow_ MyFrontNonFloatingWindow
+#else				//FLOAT_WIN
+#define FrontWindow_ FrontWindow
+#endif				//FLOAT_WIN
 #define HandToHand_(h)	MyHandToHand((void *)(h))
 #define AddResource_(h,t,i,n)	AddResource((void *)(h),(ResType)(t),i,(ConstStr255Param)(n))
 #define AddMyResource_(h,t,i,n)	AddMyResource((void *)(h),(ResType)(t),i,(ConstStr255Param)(n))
@@ -99,15 +99,15 @@
 #define FindWindow_(p,w)	FindWindow(p,w)
 #define GetDItem_(d,i,t,h,r) GetDialogItem(d,i,t,(void*)h,r)
 #ifdef	FLOAT_WIN
-	#define SelectWindow_(w) MySelectWindow(w)
-#else	//FLOAT_WIN
-	#define SelectWindow_(w) SelectWindow(w)
-#endif	//FLOAT_WIN
+#define SelectWindow_(w) MySelectWindow(w)
+#else				//FLOAT_WIN
+#define SelectWindow_(w) SelectWindow(w)
+#endif				//FLOAT_WIN
 #ifdef	FLOAT_WIN
-	#define HideWindow_(w) MyHideWindow(w)
-#else	//FLOAT_WIN
-	#define HideWindow_(w) HideWindow(w)
-#endif	//FLOAT_WIN
+#define HideWindow_(w) MyHideWindow(w)
+#else				//FLOAT_WIN
+#define HideWindow_(w) HideWindow(w)
+#endif				//FLOAT_WIN
 
 #define	DisposeWindow_(aWindowPtr)	MyDisposeWindow(aWindowPtr)
 #define	DisposeDialog_(aDialogPtr)	MyDisposeDialog(aDialogPtr)
@@ -191,14 +191,14 @@
  **********************************************************************/
 #define INSET 6
 // (jp) already defined in Universal Headers 3.4
-//#define TRUE	true
+//#define TRUE  true
 //#define FALSE false
 #define True	true
 #define False false
 #define IsSpace(c) ((c)=='\t' || (c)==' ' || (c)=='\f' || (c)=='\r' || (c)=='\n')
 #define ENVIRONS_VERSION 2	/* the version of SysEnvirons we expect */
-#define InFront ((void *)-1) /* for window creation */
-#define BehindModal (ModalWindow?ModalWindow:InFront) /* for window creation */
+#define InFront ((void *)-1)	/* for window creation */
+#define BehindModal (ModalWindow?ModalWindow:InFront)	/* for window creation */
 #define REAL_BIG 32766		/* REAL_BIG, more or less */
 #define TABKEY 9
 #define CANCEL_ITEM 		(-1)
@@ -207,8 +207,8 @@
 #define ABS(x)					((x)<0 ? -(x) : (x))
 #define GROW_SIZE 15
 #define MAX_DEPTH 12		/* max depth for alias tree */
-#define fInited (1<<8)	/* why doesn't apple define this? */
-#define userCancelled 	-29999 /* user cancelled tcp operations */
+#define fInited (1<<8)		/* why doesn't apple define this? */
+#define userCancelled 	-29999	/* user cancelled tcp operations */
 #define IsWhite(c)			(c==' ' || c=='\t')
 #define IsLWSP(c)				(c==' ' || c=='\t' || c=='\r')
 #define IsAnySP(c)				(c==optSpace || c==' ' || c=='\t' || c=='\r')
@@ -236,7 +236,7 @@
 
 #define A822_FLAVOR	'a822'
 
-enum	{ kMyIntl0=1000 };
+enum { kMyIntl0 = 1000 };
 
 #ifdef EXP_YEAR
 #define CHECK_EXPIRE do																					\
@@ -254,13 +254,13 @@ enum	{ kMyIntl0=1000 };
 #define CHECK_EXPIRE
 #endif
 
-#ifdef	DEMO 
+#ifdef	DEMO
 Boolean DemoExpired(void);
 #ifndef LIGHT
 #define	CHECK_DEMO DemoExpired()
-#else		//LIGHT
+#else				//LIGHT
 #define	CHECK_DEMO false
-#endif	//LIGHT
+#endif				//LIGHT
 #else
 #define	CHECK_DEMO
 #endif
@@ -311,10 +311,10 @@ typedef struct TransStreamStruct *TransStream;
 /**********************************************************************
  * some handy types
  **********************************************************************/
-typedef enum {Single, Double, Triple} ClickEnum;
+typedef enum { Single, Double, Triple } ClickEnum;
 typedef enum {
-	OUR_WIN=0x20,						// The first window kind we recognize as our own
-	MBOX_WIN=OUR_WIN,
+	OUR_WIN = 0x20,		// The first window kind we recognize as our own
+	MBOX_WIN = OUR_WIN,
 	CBOX_WIN,
 	COMP_WIN,
 	TEXT_WIN,
@@ -344,7 +344,7 @@ typedef enum {
 	TOOLBAR_POPUP_WIN,
 	DRAWER_WIN,
 	LIMIT_WIN
-}WKindEnum;
+} WKindEnum;
 
 #define CONFIG_KIND(k)\
 	(k==PH_WIN || k==TBAR_WIN || k==FILT_WIN || k==PREF_WIN || k==FIND_WIN || k==MB_WIN || k==ALIAS_WIN || k==PERS_WIN || k==SIG_WIN || k==STA_WIN || k==LINK_WIN || k==PAY_WIN)
@@ -353,55 +353,61 @@ typedef unsigned char *UPtr, **UHandle, *PStr, *CStr;
 #define Uhandle UHandle
 typedef unsigned short uShort;
 typedef unsigned long uLong;
-typedef enum {Production, Debugging, Steve} RunTypeEnum;
+typedef enum { Production, Debugging, Steve } RunTypeEnum;
 typedef unsigned char Str127[128];
 typedef EventRecord *EventPtr;
 typedef AEDesc *AEDescPtr;
 typedef AEAddressDesc *AEAddressDescPtr;
 typedef AppleEvent *AppleEventPtr;
 typedef struct MIMEMapStruct **MIMEMapHandle;
-typedef enum
-{
+typedef enum {
 	plComplete,
 	plPartial,
 	plEndOfMessage,
 	plError
 } POPLineType;
-typedef POPLineType LineReader(TransStream stream, UPtr buf, long bSize, long *len);
+typedef POPLineType LineReader(TransStream stream, UPtr buf, long bSize,
+			       long *len);
 typedef UHandle TextAddrHandle;
 typedef UPtr TextAddrPtr;
 typedef UHandle BinAddrHandle;
 typedef UPtr BinAddrPtr;
 typedef UHandle NickHandle;
 typedef UPtr NickPtr;
-typedef	UHandle	TabFieldHandle;
-typedef	UPtr TabFieldPtr;
+typedef UHandle TabFieldHandle;
+typedef UPtr TabFieldPtr;
 #endif
 
 #ifndef MYDEFS_C_2
 #define MYDEFS_C_2
-typedef struct {short flags;uLong prefSize;uLong minSize;} SizeRec,*SizePtr,**SizeHandle;
+typedef struct {
+	short flags;
+	uLong prefSize;
+	uLong minSize;
+} SizeRec, *SizePtr, **SizeHandle;
 
 /************************************************************************
  * transport mechanisms
  ************************************************************************/
-typedef struct
-{
-	OSErr (*vConnectTrans)(TransStream stream, UPtr serverName , long port, Boolean silently,uLong timeout);
-	OSErr (*vSendTrans)(TransStream stream, UPtr text,long size, ...);
-	OSErr (*vRecvTrans)(TransStream stream, UPtr line,long *size);
-	OSErr (*vDisTrans)(TransStream stream);
-	OSErr (*vDestroyTrans)(TransStream stream);
-	OSErr (*vTransError)(TransStream stream);
+typedef struct {
+	OSErr(*vConnectTrans) (TransStream stream, UPtr serverName,
+			       long port, Boolean silently, uLong timeout);
+	OSErr(*vSendTrans) (TransStream stream, UPtr text, long size, ...);
+	 OSErr(*vRecvTrans) (TransStream stream, UPtr line, long *size);
+	 OSErr(*vDisTrans) (TransStream stream);
+	 OSErr(*vDestroyTrans) (TransStream stream);
+	 OSErr(*vTransError) (TransStream stream);
 	void (*vSilenceTrans)(TransStream stream, Boolean silence);
-	OSErr (*vSendWDS)(TransStream stream, wdsEntry *theWDS);
-	unsigned char * (*vWhoAmI)(TransStream stream, Uptr who);
-	OSErr (*vRecvLine)(TransStream stream, UPtr line,long *size);
-	OSErr (*vAsyncSendTrans)(TransStream stream,UPtr buffer, long size);
+	 OSErr(*vSendWDS) (TransStream stream, wdsEntry * theWDS);
+	unsigned char *(*vWhoAmI)(TransStream stream, Uptr who);
+	 OSErr(*vRecvLine) (TransStream stream, UPtr line, long *size);
+	 OSErr(*vAsyncSendTrans) (TransStream stream, UPtr buffer,
+				  long size);
 } TransVector;
 
-OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silently,uLong timeout);
- 
+OSErr ConnectTrans(TransStream stream, UPtr serverName, long port,
+		   Boolean silently, uLong timeout);
+
 #define ConnectTransLo (*CurTrans.vConnectTrans)
 #define SendTrans (*CurTrans.vSendTrans)
 #define RecvTrans (*CurTrans.vRecvTrans)
@@ -424,7 +430,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "GSS.h"		// !!! Marshall sez - not yet for MachO
 #endif
 #include "regexp.h"
-#include "OpenSSL.h"	// needed for TransStream
+#include "OpenSSL.h"		// needed for TransStream
 #include "trans.h"
 #include "color.h"
 #include "macslip.h"
@@ -607,14 +613,14 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "osxabsync.h"
 
 
-//	SSLCerts.h includes SSL.h, which requires a bunch of #defines
-//	before you include it.
-//	in SSLCerts.h
-Boolean	CanDoSSL ( void );	
+//      SSLCerts.h includes SSL.h, which requires a bunch of #defines
+//      before you include it.
+//      in SSLCerts.h
+Boolean CanDoSSL(void);
 
 #ifdef	DEMO
 #include "timebomb.h"
-#endif	
+#endif
 
 // #include "regcode_eudora.h" CK
 
@@ -630,4 +636,4 @@ static void MoreAssetQ(void)
 	/* NOOP for now */
 }
 
-#endif // MYDEFS_C
+#endif				// MYDEFS_C

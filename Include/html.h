@@ -32,19 +32,28 @@
 #ifndef HTML_H
 #define HTML_H
 
-enum { 	kDontEnsureCR = 1<<0,
-				kNoMargins = 1<<1 };
+enum { kDontEnsureCR = 1 << 0,
+	kNoMargins = 1 << 1
+};
 
-OSErr InsertHTML(UHandle text, long *htmlOffset, long textLen, long *inOffset, PETEHandle pte, long flags);
-OSErr InsertHTMLLo(UHandle text, long *htmlOffset, long textLen, long *inOffset, PETEHandle pte, TextEncoding encoding, long flags, StackHandle partRefStack);
-OSErr BuildHTML(AccuPtr html,PETEHandle pte,Handle text,long len,long offset,PETEStyleListHandle pslh,PETEParaScrapHandle paraScrap,long partID,PStr mid,StackHandle vfidStack,FSSpecPtr errSpec);
+OSErr InsertHTML(UHandle text, long *htmlOffset, long textLen,
+		 long *inOffset, PETEHandle pte, long flags);
+OSErr InsertHTMLLo(UHandle text, long *htmlOffset, long textLen,
+		   long *inOffset, PETEHandle pte, TextEncoding encoding,
+		   long flags, StackHandle partRefStack);
+OSErr BuildHTML(AccuPtr html, PETEHandle pte, Handle text, long len,
+		long offset, PETEStyleListHandle pslh,
+		PETEParaScrapHandle paraScrap, long partID, PStr mid,
+		StackHandle vfidStack, FSSpecPtr errSpec);
 OSErr HTMLPreamble(AccuPtr html, StringPtr title, long id, Boolean local);
 OSErr HTMLPostamble(AccuPtr html, Boolean local);
-OSErr HTMLWriteForBrowser(UHandle text, long htmlOffset, long textLen, short refNum);
+OSErr HTMLWriteForBrowser(UHandle text, long htmlOffset, long textLen,
+			  short refNum);
 
 #ifdef OLDHTML
-OSErr PeteHTML(PETEHandle pte,long start,long stop,Boolean unwrap);
-OSErr HTMLToken(UHandle html,short *cmdId,Boolean *neg,long *tStart,long *tStop, unsigned char *literal);
+OSErr PeteHTML(PETEHandle pte, long start, long stop, Boolean unwrap);
+OSErr HTMLToken(UHandle html, short *cmdId, Boolean * neg, long *tStart,
+		long *tStop, unsigned char *literal);
 #endif
 
 #endif

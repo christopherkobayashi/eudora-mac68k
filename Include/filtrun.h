@@ -33,25 +33,30 @@
 #define FILTRUN_H
 
 #ifdef TWO
-OSErr FilterSelectedMessages(FilterKeywordEnum fType,TOCHandle tocH,FilterPBPtr fpb);
-OSErr FilterMessagesFrom(FilterKeywordEnum fType,TOCHandle tocH,short startWith,FilterPBPtr fpb,Boolean noXfer);
-OSErr FilterFlaggedMessages(FilterKeywordEnum fType,TOCHandle tocH,FilterPBPtr fpb);
-OSErr FilterIMAPTocIncrementally(TOCHandle tocH,FilterPBPtr fpb,Boolean noXfer);
-OSErr FilterMessage(FilterKeywordEnum fType,TOCHandle tocH,short sumNum);
+OSErr FilterSelectedMessages(FilterKeywordEnum fType, TOCHandle tocH,
+			     FilterPBPtr fpb);
+OSErr FilterMessagesFrom(FilterKeywordEnum fType, TOCHandle tocH,
+			 short startWith, FilterPBPtr fpb, Boolean noXfer);
+OSErr FilterFlaggedMessages(FilterKeywordEnum fType, TOCHandle tocH,
+			    FilterPBPtr fpb);
+OSErr FilterIMAPTocIncrementally(TOCHandle tocH, FilterPBPtr fpb,
+				 Boolean noXfer);
+OSErr FilterMessage(FilterKeywordEnum fType, TOCHandle tocH, short sumNum);
 void GenSpecWindow(CSpecHandle specList);
-OSErr FilterNoteMatch(short filter,long secs);
+OSErr FilterNoteMatch(short filter, long secs);
 uLong FilterLastMatchHi(short filter);
 void NonSequitur(PStr subject, TOCHandle tocH, short sumNum);
-void FilterPostprocess(FilterKeywordEnum fType,FilterPBPtr fpb);
-void AddSpecToList(FSSpecPtr spec,CSpecHandle specList);
-Boolean FilterMatchHi(short f,TOCHandle tocH,short sumNum);
+void FilterPostprocess(FilterKeywordEnum fType, FilterPBPtr fpb);
+void AddSpecToList(FSSpecPtr spec, CSpecHandle specList);
+Boolean FilterMatchHi(short f, TOCHandle tocH, short sumNum);
 #define FU_TYPE 'FU  '
 #define FU_ID	1001
 Boolean HaveManualFilters(void);
 
 #ifdef BATCH_DELIVERY_ON
-OSErr InitFPB(FilterPBPtr fpb,Boolean zapAddrs,Boolean listsToo);		
-OSErr FilterMessageLo(FilterKeywordEnum fType,TOCHandle tocH,short sumNum,FilterPBPtr fpb,Boolean noXfer);	
+OSErr InitFPB(FilterPBPtr fpb, Boolean zapAddrs, Boolean listsToo);
+OSErr FilterMessageLo(FilterKeywordEnum fType, TOCHandle tocH,
+		      short sumNum, FilterPBPtr fpb, Boolean noXfer);
 #endif
 
 #endif

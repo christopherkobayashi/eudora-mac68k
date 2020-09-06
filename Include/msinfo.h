@@ -31,5 +31,5 @@
 
 #ifndef MSINFO_H
 #define MSINFO_H
-OSErr MSInfoFunc(MSSubCallEnum selector,MStoreBoxHandle boxH);
+OSErr MSInfoFunc(MSSubCallEnum selector, MStoreBoxHandle boxH);
 #endif

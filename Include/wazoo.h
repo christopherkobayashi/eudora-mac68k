@@ -42,12 +42,14 @@
 #define kWazooDragType 'Wzoo'
 enum { kWazooRes1 = 1001, kWazooRes2 = 1002 };
 
-Boolean ClickWazoo(MyWindowPtr win,EventRecord *event,Point pt,Boolean *dontActivate);
+Boolean ClickWazoo(MyWindowPtr win, EventRecord * event, Point pt,
+		   Boolean * dontActivate);
 Boolean CloseWazoo(MyWindowPtr win);
 void DemoteWazoo(MyWindowPtr win);
-void DidResizeWazoo(MyWindowPtr win,Rect *oldCont);
-Boolean DraggingWazoo(MyWindowPtr win,DragTrackingMessage message,DragReference drag,OSErr *err);
-MyWindowPtr GetNewWazoo(short windowKind,Boolean *fIsWazoo);
+void DidResizeWazoo(MyWindowPtr win, Rect * oldCont);
+Boolean DraggingWazoo(MyWindowPtr win, DragTrackingMessage message,
+		      DragReference drag, OSErr * err);
+MyWindowPtr GetNewWazoo(short windowKind, Boolean * fIsWazoo);
 void InitWazoos(void);
 void KillWazoos(void);
 Boolean IsKindWazoo(short windowKind);
@@ -58,9 +60,10 @@ void PositionWazoo(MyWindowPtr win);
 void PromoteToWazoo(MyWindowPtr win);
 void UpdateWazoo(MyWindowPtr win);
 void SetupDefaultWazoos(void);
-void SafeWazooControl(MyWindowPtr win,ControlHandle ctl,short windowKind);
-void SetWinMinSize(MyWindowPtr win,short h,short v);
-Boolean WazooHelp(MyWindowPtr win,Point mouse);
+void SafeWazooControl(MyWindowPtr win, ControlHandle ctl,
+		      short windowKind);
+void SetWinMinSize(MyWindowPtr win, short h, short v);
+Boolean WazooHelp(MyWindowPtr win, Point mouse);
 Boolean SelectOpenWazoo(short windowKind);
 Boolean IsWazooEmbedderCntl(ControlHandle cntl);
 Boolean IsWazooTabCntl(ControlHandle cntl);
@@ -68,6 +71,5 @@ void DirtyWazoo(MyWindowPtr win, short windowKind);
 void SetTabBackColor(MyWindowPtr win);
 void WazooPreUpdate(MyWindowPtr win);
 MyWindowPtr FindOpenWazoo(short windowKind);
-void EmbedInWazoo(ControlRef cntl,WindowPtr win);
+void EmbedInWazoo(ControlRef cntl, WindowPtr win);
 #endif
-

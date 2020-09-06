@@ -36,15 +36,15 @@
 /************************************************************************
  * declarations for functions primarily involving TextEdit
  ************************************************************************/
-void ShowInsertion(MyWindowPtr win,short whichEnd);
-Boolean InsertCommaIfNeedBe(PETEHandle pte,HSPtr hs);
-OSErr WrapSendTrans(TransStream stream, UPtr text,long size, ...);
-OSErr TextWrap(Handle text,long start,long stop,Boolean wrap);
+void ShowInsertion(MyWindowPtr win, short whichEnd);
+Boolean InsertCommaIfNeedBe(PETEHandle pte, HSPtr hs);
+OSErr WrapSendTrans(TransStream stream, UPtr text, long size, ...);
+OSErr TextWrap(Handle text, long start, long stop, Boolean wrap);
 void UnwrapClip(void);
-#define TE_VMARGIN	1		/* inset between view rect and enclosing box */
-#define TE_HMARGIN	1		/* ditto */
-#define TE_DV_DV		4		/* inset between view rects and dest rects */
-typedef enum {InsertStart=-1,InsertAny,InsertEnd} ShowInsertEnum;
+#define TE_VMARGIN	1	/* inset between view rect and enclosing box */
+#define TE_HMARGIN	1	/* ditto */
+#define TE_DV_DV		4	/* inset between view rects and dest rects */
+typedef enum { InsertStart = -1, InsertAny, InsertEnd } ShowInsertEnum;
 
 
 #endif

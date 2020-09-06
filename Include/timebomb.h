@@ -30,9 +30,9 @@
 */
 
 //
-//	JDB DEMO	960628
+//      JDB DEMO        960628
 //
-//	Added this file and altered it slightly to incorporate the TimeBomb demo feature
+//      Added this file and altered it slightly to incorporate the TimeBomb demo feature
 //
 
 #ifndef TIMEBOMB_H
@@ -55,35 +55,34 @@
 #define	ALT_SECRET_FILE_LEN		24
 #define	ALT_SECRET_FILE_TYPE	//Some sort of file type?
 
-typedef struct TIME_BOMB_DATA
-{
-	OSType			creator;
-	unsigned short	version;
-	unsigned short	days;
-	unsigned long	date;
+typedef struct TIME_BOMB_DATA {
+	OSType creator;
+	unsigned short version;
+	unsigned short days;
+	unsigned long date;
 } TimeBombDataRecord;
 
 typedef TimeBombDataRecord *TimeBombDataPtr;
 typedef TimeBombDataRecord **TimeBombDataHandle;
 
-extern TimeBombDataRecord	gTimeBombData;
-extern Boolean		gTimeStampValid;
-extern long today;							
+extern TimeBombDataRecord gTimeBombData;
+extern Boolean gTimeStampValid;
+extern long today;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 	OSErr ClearTimeStamp(void);
 	OSErr GetTimeStampData(void);
 	OSErr RemoveTimeStampData(void);
 	OSErr SetTimeStampData(void);
-	unsigned short TimeStampValid(unsigned long currentTime, unsigned short graceDays);
+	unsigned short TimeStampValid(unsigned long currentTime,
+				      unsigned short graceDays);
 	void DeScrambleTimeBombData(void);
 	void ScrambleTimeBombData(void);
-	
-	Boolean	DemoExpired(void);		
-	void TimeBomb(void);			
+
+	Boolean DemoExpired(void);
+	void TimeBomb(void);
 #ifdef __cplusplus
 };
 #endif

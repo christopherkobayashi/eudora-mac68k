@@ -36,7 +36,7 @@
  *
  *	Routines to import data from other email applications.
  **********************************************************************/
- 
+
 #ifndef IMPORT_H
 #define IMPORT_H
 
@@ -44,16 +44,18 @@
 #define kUnspecifiedImportPluginId -1
 
 // defined in emsapi-macGlue.h to pass information about an email account
-typedef struct ImportAccountInfoS ImportAccountInfoS, *ImportAccountInfoP, **ImportAccountInfoH;
+typedef struct ImportAccountInfoS ImportAccountInfoS, *ImportAccountInfoP,
+    **ImportAccountInfoH;
 
 // import messages and mail
 void DoMailImport(void);
 
 // Display an importer related error string
-OSErr ImportError(long id, short importOperation, short importError, OSErr err, short line);
+OSErr ImportError(long id, short importOperation, short importError,
+		  OSErr err, short line);
 
 // Do the right thing to some HTML
-OSErr TurnIntoEudoraHTML(Handle *t);	// in newhtml.c
+OSErr TurnIntoEudoraHTML(Handle * t);	// in newhtml.c
 
 
 // Callback routines for EMSAPI Importer Plugins
@@ -65,17 +67,22 @@ short ImportMakeNewSigCalback(Str255 name, Handle sigText);
 short ImportMakeAddressBookCallback(Str255 name);
 
 // make an address book entry
-OSErr ImportMakeABEntryCallback(short which, Boolean isGroup, UPtr nickName, Handle addresses, Handle notes);
+OSErr ImportMakeABEntryCallback(short which, Boolean isGroup,
+				UPtr nickName, Handle addresses,
+				Handle notes);
 
 // make a mailbox
-OSErr ImportMakeMailboxCallback(ImportMailboxOperationEnum command, FSSpecPtr boxSpec, Boolean isFolder, Boolean noSelect);
+OSErr ImportMakeMailboxCallback(ImportMailboxOperationEnum command,
+				FSSpecPtr boxSpec, Boolean isFolder,
+				Boolean noSelect);
 
 // make an outgoing message in a malbox
 OSErr ImportMakeOutMessCallback(emsMakeOutMessDataP o);
 
 // read a MIME encoded message from a file
-OSErr ImportMessageCallback(short ref, long offset, long len, short state, Handle attachments, FSSpecPtr boxSpec);
+OSErr ImportMessageCallback(short ref, long offset, long len, short state,
+			    Handle attachments, FSSpecPtr boxSpec);
 
 // Import a MBOX file
-OSErr ImportMboxCallback( FSSpecPtr sourceMBox, FSSpecPtr dest );
-#endif	//IMPORT_H
+OSErr ImportMboxCallback(FSSpecPtr sourceMBox, FSSpecPtr dest);
+#endif				//IMPORT_H

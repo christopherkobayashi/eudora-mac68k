@@ -66,12 +66,13 @@ typedef enum {
 DirSvcLookupType GetCurDirSvcType(void);
 void SetCurDirSvcType(DirSvcLookupType lookupType);
 OSErr OpenPh(PStr initialQuery);
-Boolean PhNickFieldCheck (PETEHandle pte);
-OSErr NetRecvLine(TransStream stream,UPtr line,long *size);
+Boolean PhNickFieldCheck(PETEHandle pte);
+OSErr NetRecvLine(TransStream stream, UPtr line, long *size);
 void PhFixFont(void);
 void NewPhHost(void);
-OSErr PhURLLookup(ProtocolEnum protocol,PStr host,PStr query,Handle *result);
-OSErr InsertAddress(MyWindowPtr win,short txeIndex,PStr address);
+OSErr PhURLLookup(ProtocolEnum protocol, PStr host, PStr query,
+		  Handle * result);
+OSErr InsertAddress(MyWindowPtr win, short txeIndex, PStr address);
 Boolean PhCanMakeNick(void);
 void PhKill(void);
 void PhRememberServer(void);

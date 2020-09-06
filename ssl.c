@@ -56,24 +56,29 @@
 //#define SSL_MEM_CHECK
 
 OSStatus ESSLInit();
-OSErr ESSLConnectTrans(TransStream stream, UPtr serverName, long port,Boolean silently,uLong timeout);
-OSErr ESSLSendTrans(TransStream stream, UPtr text,long size, ...);
-OSErr ESSLReceiveTrans(TransStream stream, UPtr line,long *size);
+OSErr ESSLConnectTrans(TransStream stream, UPtr serverName, long port,
+		       Boolean silently, uLong timeout);
+OSErr ESSLSendTrans(TransStream stream, UPtr text, long size, ...);
+OSErr ESSLReceiveTrans(TransStream stream, UPtr line, long *size);
 OSErr ESSLDisTrans(TransStream stream);
 OSErr ESSLDestroyTrans(TransStream stream);
 OSErr ESSLTransErr(TransStream stream);
 void ESSLSilenceTrans(TransStream stream, Boolean silence);
-unsigned char * ESSLWhoAmI(TransStream stream, Uptr who);
+unsigned char *ESSLWhoAmI(TransStream stream, Uptr who);
 
-int SSLVerifyCert (  int, X509_STORE_CTX * );
+int SSLVerifyCert(int, X509_STORE_CTX *);
 
-pascal long ESSLKCCallback(KCEvent keychainEvent, KCCallbackInfo* eventInfo,void *userContext);
+pascal long ESSLKCCallback(KCEvent keychainEvent,
+			   KCCallbackInfo * eventInfo, void *userContext);
 // OSStatus ESSLZapContext(SSLContext **context);
 OSStatus ESSLStartSSLLo(TransStream stream);
 
 Boolean gKeychainChanged = false, gKeychainProcInstalled = false;
 TransVector ESSLSubTrans;
-TransVector ESSLTrans = {ESSLConnectTrans,ESSLSendTrans,ESSLReceiveTrans,ESSLDisTrans,ESSLDestroyTrans,ESSLTransErr,ESSLSilenceTrans,nil,ESSLWhoAmI,NetRecvLine,nil};
+TransVector ESSLTrans =
+    { ESSLConnectTrans, ESSLSendTrans, ESSLReceiveTrans, ESSLDisTrans,
+ESSLDestroyTrans, ESSLTransErr, ESSLSilenceTrans, nil, ESSLWhoAmI, NetRecvLine,
+nil };
 
 TransVector ESSLSetupVector(TransVector theTrans)
 {
@@ -87,252 +92,266 @@ OSStatus ESSLStartSSLLo(TransStream stream)
 	OSStatus err = noErr;
 	Boolean bContinue = true;
 	Boolean bSuccess = false;
-	int		hsErr;
-	
-//	If we've already started the SSL stuff, then we're done
-	if(stream->ESSLSetting & esslSSLInUse)
+	int hsErr;
+
+//      If we've already started the SSL stuff, then we're done
+	if (stream->ESSLSetting & esslSSLInUse)
 		return noErr;
 
-//	Load the cert for the server
-//	stream->serverName is what we want.
-//	(void) OpenSSLReadCerts ( stream->ssl, stream->serverName );
-	
-//	Do the handhake
-	while ( !bSuccess && bContinue ) {
-	hsErr = SSL_do_handshake ( stream->ssl );
-	if ( hsErr == 1 )		// Handshake succeeded.
-		bSuccess = true;
-	else if ( hsErr == 0 )	// Handshake failed but shutdown was clean.
-		bContinue = false;
-	else {					// Handshake experienced temporary or fatal error.
-		ASSERT ( hsErr < 0 );
+//      Load the cert for the server
+//      stream->serverName is what we want.
+//      (void) OpenSSLReadCerts ( stream->ssl, stream->serverName );
 
-		switch ( SSL_get_error ( stream->ssl, hsErr )) {
+//      Do the handhake
+	while (!bSuccess && bContinue) {
+		hsErr = SSL_do_handshake(stream->ssl);
+		if (hsErr == 1)	// Handshake succeeded.
+			bSuccess = true;
+		else if (hsErr == 0)	// Handshake failed but shutdown was clean.
+			bContinue = false;
+		else {		// Handshake experienced temporary or fatal error.
+			ASSERT(hsErr < 0);
+
+			switch (SSL_get_error(stream->ssl, hsErr)) {
 			case SSL_ERROR_NONE:
-			// Shouldn't happen on iRet < 0.
+				// Shouldn't happen on iRet < 0.
 				ASSERT(0);
 				bContinue = false;
 				break;
-			
+
 			case SSL_ERROR_ZERO_RETURN:
 			case SSL_ERROR_SSL:
 			case SSL_ERROR_SYSCALL:
-			// Fatal error, stop trying.
+				// Fatal error, stop trying.
 				bContinue = false;
 				break;
-				
+
 			case SSL_ERROR_WANT_READ:
 			case SSL_ERROR_WANT_WRITE:
 			case SSL_ERROR_WANT_X509_LOOKUP:
 			case SSL_ERROR_WANT_CONNECT:
 			case SSL_ERROR_WANT_ACCEPT:
-			// Call SSL_do_handshake() again.
+				// Call SSL_do_handshake() again.
 				break;
-			
+
 			default:	// Huh? Log and try again
-				ASSERT ( 0 );
+				ASSERT(0);
 				break;
 			}
 		}
 	}
 
-	ComposeLogS ( LOG_SSL, nil, "\pSSL_Handshake %d\r", hsErr );
- 	if ( 1 == hsErr )	// "we hand shook successfully"
+	ComposeLogS(LOG_SSL, nil, "\pSSL_Handshake %d\r", hsErr);
+	if (1 == hsErr)		// "we hand shook successfully"
 		stream->ESSLSetting |= esslSSLInUse;
 	else
 		err = stream->ESSLSetting & esslOptional ? noErr : paramErr;	// !!! need a better error on failure
 	return err;
 }
 
-OSStatus ESSLStartSSL ( TransStream stream ) {
+OSStatus ESSLStartSSL(TransStream stream)
+{
 	OSStatus retVal = noErr;
 	static volatile int SSLMutex = 0;
-	
-	while ( SSLMutex > 0 )
-		MyYieldToAnyThread ();
+
+	while (SSLMutex > 0)
+		MyYieldToAnyThread();
 	SSLMutex++;
-	retVal = ESSLStartSSLLo ( stream );
+	retVal = ESSLStartSSLLo(stream);
 	SSLMutex--;
 	return retVal;
-	}
-	
+}
+
 /* Initializes the SSL global template */
 OSStatus ESSLInit()
 {
 	OSStatus err;
-	
-	if(!gKeychainProcInstalled)
-	{
-		err = KCAddCallback(NewKCCallbackUPP(ESSLKCCallback), kAddKCEventMask|kDeleteKCEventMask|kDefaultChangedKCEventMask, &gKeychainChanged);
-		if(err)
+
+	if (!gKeychainProcInstalled) {
+		err =
+		    KCAddCallback(NewKCCallbackUPP(ESSLKCCallback),
+				  kAddKCEventMask | kDeleteKCEventMask |
+				  kDefaultChangedKCEventMask,
+				  &gKeychainChanged);
+		if (err)
 			return err;
 		else
 			gKeychainProcInstalled = true;
 	}
-	
-	err = InitOpenSSL ();
+
+	err = InitOpenSSL();
 	return err;
 }
 
-OSErr ESSLConnectTrans(TransStream stream, UPtr serverName, long port,Boolean silently,uLong timeout)
+OSErr ESSLConnectTrans(TransStream stream, UPtr serverName, long port,
+		       Boolean silently, uLong timeout)
 {
 	OSStatus err = noErr;
-	
-	if(stream->ESSLSetting > 1)
-	{
-		if((!gKeychainChanged) || ((err = ESSLInit()) == noErr))
-		{
-			long versionOptions;
-		
-			if ( stream->ESSLSetting & esslUseAltPort )
-				versionOptions = GetRLong ( SSL_VERSION_ALT_PORT );
-			else
-				versionOptions = GetRLong ( SSL_VERSION_STD_PORT );
-					
-		//	Set up the SSL stuff
-			err = SetupSSLConnection ( stream, versionOptions, SSLVerifyCert );
 
-		if(err && !(stream->ESSLSetting & esslOptional))
-			return err;
+	if (stream->ESSLSetting > 1) {
+		if ((!gKeychainChanged) || ((err = ESSLInit()) == noErr)) {
+			long versionOptions;
+
+			if (stream->ESSLSetting & esslUseAltPort)
+				versionOptions =
+				    GetRLong(SSL_VERSION_ALT_PORT);
+			else
+				versionOptions =
+				    GetRLong(SSL_VERSION_STD_PORT);
+
+			//      Set up the SSL stuff
+			err =
+			    SetupSSLConnection(stream, versionOptions,
+					       SSLVerifyCert);
+
+			if (err && !(stream->ESSLSetting & esslOptional))
+				return err;
 		}
 	}
-	
+
 	/* Connect to the remote host */
-	err = (*ESSLSubTrans.vConnectTrans)(stream, serverName, port, silently, timeout);
-	if(err)
-		; //	!!! ESSLZapContext(&stream->ESSLContext);
-	else
-	{
+	err =
+	    (*ESSLSubTrans.vConnectTrans) (stream, serverName, port,
+					   silently, timeout);
+	if (err);		//    !!! ESSLZapContext(&stream->ESSLContext);
+	else {
 		/* That looks like a convenient place! */
 		stream->port = port;
 		PtoCcpy(stream->serverName, serverName);
-		
+
 		/* Handshake now or wait until later? */
-		if( stream->ESSLSetting & esslUseAltPort )
+		if (stream->ESSLSetting & esslUseAltPort)
 			err = ESSLStartSSL(stream);
 	}
-	
-	if (err) ComposeLogS(LOG_ALRT,nil,"\p%p: %d",SSL_ERR_STRING,err);
-	
+
+	if (err)
+		ComposeLogS(LOG_ALRT, nil, "\p%p: %d", SSL_ERR_STRING,
+			    err);
+
 	return err;
 }
 
-OSErr ESSLSendTrans(TransStream stream, UPtr text,long size, ...)
+OSErr ESSLSendTrans(TransStream stream, UPtr text, long size, ...)
 {
 	OSErr err = noErr;
 	va_list extra_buffers;
-	
-	if (CommandPeriod) return(userCancelled);
-			
-	if (size==0) 
-		return(noErr); 	// allow vacuous sends
+
+	if (CommandPeriod)
+		return (userCancelled);
+
+	if (size == 0)
+		return (noErr);	// allow vacuous sends
 
 	/* Loop through the buffers and send them */
-	va_start(extra_buffers,size);
-	
-	do
-	{
-		ASSERT ( size != 0 );
-		ASSERT ( text != NULL );
+	va_start(extra_buffers, size);
 
-		if(!(stream->ESSLSetting & esslSSLInUse))
-		{
+	do {
+		ASSERT(size != 0);
+		ASSERT(text != NULL);
+
+		if (!(stream->ESSLSetting & esslSSLInUse)) {
 			/* If not doing SSL now, just send */
-			err = (*ESSLSubTrans.vSendTrans)(stream, text, size, nil);
-		}
-		else
-		{
+			err =
+			    (*ESSLSubTrans.vSendTrans) (stream, text, size,
+							nil);
+		} else {
 			int bytesWritten;
-		/*	Use SSL to write out the data, looping if not complete */
+			/*      Use SSL to write out the data, looping if not complete */
 			do {
-				bytesWritten = SSL_write ( stream->ssl, text, size );
-				if ( bytesWritten != size )
-					if ( SSL_get_error ( stream->ssl, bytesWritten ) != SSL_ERROR_WANT_WRITE ) {
+				bytesWritten =
+				    SSL_write(stream->ssl, text, size);
+				if (bytesWritten != size)
+					if (SSL_get_error
+					    (stream->ssl,
+					     bytesWritten) !=
+					    SSL_ERROR_WANT_WRITE) {
 						err = kOTFlowErr;
 						break;
-						}
-				} while ( bytesWritten != size );
-			
-			if (LogLevel&LOG_SSL && !stream->streamErr && !err && size) CarefulLog(LOG_SSL,LOG_SENT,text,size);
+					}
+			} while (bytesWritten != size);
+
+			if (LogLevel & LOG_SSL && !stream->streamErr
+			    && !err && size)
+				CarefulLog(LOG_SSL, LOG_SENT, text, size);
 		}
-		text = va_arg(extra_buffers,UPtr);
-		size = va_arg(extra_buffers,long);
-	} while(!err && text);
+		text = va_arg(extra_buffers, UPtr);
+		size = va_arg(extra_buffers, long);
+	} while (!err && text);
 	return err;
 }
 
-OSErr ESSLReceiveTrans(TransStream stream, UPtr line,long *size)
+OSErr ESSLReceiveTrans(TransStream stream, UPtr line, long *size)
 {
 	OSErr err = noErr;
-	if(!(stream->ESSLSetting & esslSSLInUse))
-	{
+	if (!(stream->ESSLSetting & esslSSLInUse)) {
 		/* If not doing SSL now, just receive */
-		return (*ESSLSubTrans.vRecvTrans)(stream, line, size);
-	}
-	else
-	{
-		int	bytesRead;
+		return (*ESSLSubTrans.vRecvTrans) (stream, line, size);
+	} else {
+		int bytesRead;
 
 		stream->DontWait = true;	// read only what's on the wire now
-		bytesRead = SSL_read ( stream->ssl, line, *size );
-		if ( bytesRead > 0 )
+		bytesRead = SSL_read(stream->ssl, line, *size);
+		if (bytesRead > 0)
 			*size = bytesRead;
-		else {	// no bytes moved
+		else {		// no bytes moved
 			*size = 0;
 			err = stream->streamErr;
-			if ( 0 == bytesRead )	// Some kinda error happened
-				ASSERT ( noErr != err );
-			else { 					// We're going to retry
-				ASSERT ( -1 == bytesRead );
-				if ( kOTNoDataErr == err )
+			if (0 == bytesRead)	// Some kinda error happened
+				ASSERT(noErr != err);
+			else {	// We're going to retry
+				ASSERT(-1 == bytesRead);
+				if (kOTNoDataErr == err)
 					err = noErr;
-				}
 			}
+		}
 		stream->DontWait = false;
 
-		if (*size && !stream->streamErr && !err && LogLevel&LOG_SSL) CarefulLog(LOG_SSL,LOG_GOT,line,*size);	//log what we got ...
-		ASSERT ( err <= noErr );
+		if (*size && !stream->streamErr && !err
+		    && LogLevel & LOG_SSL)
+			CarefulLog(LOG_SSL, LOG_GOT, line, *size);	//log what we got ...
+		ASSERT(err <= noErr);
 		return err;
 	}
 }
 
 OSErr ESSLDisTrans(TransStream stream)
 {
-	return (*ESSLSubTrans.vDisTrans)(stream);
+	return (*ESSLSubTrans.vDisTrans) (stream);
 }
 
 OSErr ESSLDestroyTrans(TransStream stream)
 {
-	(void) CleanupSSLConnection ( stream );
+	(void) CleanupSSLConnection(stream);
 	stream->ESSLSetting = 0;
-	return (*ESSLSubTrans.vDestroyTrans)(stream);
+	return (*ESSLSubTrans.vDestroyTrans) (stream);
 }
 
 OSErr ESSLTransErr(TransStream stream)
 {
-	return (*ESSLSubTrans.vTransError)(stream);
+	return (*ESSLSubTrans.vTransError) (stream);
 }
 
 void ESSLSilenceTrans(TransStream stream, Boolean silence)
 {
-	(*ESSLSubTrans.vSilenceTrans)(stream, silence);
+	(*ESSLSubTrans.vSilenceTrans) (stream, silence);
 }
 
-unsigned char * ESSLWhoAmI(TransStream stream, Uptr who)
+unsigned char *ESSLWhoAmI(TransStream stream, Uptr who)
 {
-	return (*ESSLSubTrans.vWhoAmI)(stream, who);
+	return (*ESSLSubTrans.vWhoAmI) (stream, who);
 }
 
-pascal long ESSLKCCallback(KCEvent keychainEvent, KCCallbackInfo* eventInfo,void *userContext)
+pascal long ESSLKCCallback(KCEvent keychainEvent,
+			   KCCallbackInfo * eventInfo, void *userContext)
 {
-	*(Boolean *)userContext = true;
+	*(Boolean *) userContext = true;
 	return 0;
 }
 
 
 #define NID_commonName		13
 
-//	Errors
+//      Errors
 #define		X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT		2
 #define		X509_V_ERR_UNABLE_TO_GET_CRL			3
 #define		X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE	4
@@ -340,7 +359,7 @@ pascal long ESSLKCCallback(KCEvent keychainEvent, KCCallbackInfo* eventInfo,void
 #define		X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY	6
 #define		X509_V_ERR_CERT_SIGNATURE_FAILURE		7
 #define		X509_V_ERR_CRL_SIGNATURE_FAILURE		8
-#define		X509_V_ERR_CERT_NOT_YET_VALID			9	
+#define		X509_V_ERR_CERT_NOT_YET_VALID			9
 #define		X509_V_ERR_CERT_HAS_EXPIRED			10
 #define		X509_V_ERR_CRL_NOT_YET_VALID			11
 #define		X509_V_ERR_CRL_HAS_EXPIRED			12
@@ -369,56 +388,59 @@ pascal long ESSLKCCallback(KCEvent keychainEvent, KCCallbackInfo* eventInfo,void
 #define		X509_V_ERR_UNABLE_TO_GET_CRL_ISSUER		33
 #define		X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION		34
 
-int SSLVerifyCert ( int preverify, X509_STORE_CTX *storeCtx ) {
+int SSLVerifyCert(int preverify, X509_STORE_CTX * storeCtx)
+{
 
-	X509 *	err_cert = X509_STORE_CTX_get_current_cert	( storeCtx );
-	int		err		 = X509_STORE_CTX_get_error			( storeCtx );
-	int		depth	 = X509_STORE_CTX_get_error_depth	( storeCtx );
+	X509 *err_cert = X509_STORE_CTX_get_current_cert(storeCtx);
+	int err = X509_STORE_CTX_get_error(storeCtx);
+	int depth = X509_STORE_CTX_get_error_depth(storeCtx);
 
-	if ( preverify )
+	if (preverify)
 		return 1;
 
-//	If OpenSSL can't verify the cert and the cert is in the user's KC, we're good to go.
-	if ( IsCertInKeychain ( err_cert ))
+//      If OpenSSL can't verify the cert and the cert is in the user's KC, we're good to go.
+	if (IsCertInKeychain(err_cert))
 		return 1;
 
-	ComposeLogS ( LOG_SSL, nil, "\pSSLVerifyCert(%d,xx) error = %d\r", preverify, err );
+	ComposeLogS(LOG_SSL, nil, "\pSSLVerifyCert(%d,xx) error = %d\r",
+		    preverify, err);
 
-//	UNABLE_TO_GET_ISSUER_LOCALLY and SELF_SIGNED_CERT
-	switch ( err ) {
-		case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-		case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-		case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-		case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-		//	I wonder what other errors we should handle this way??
-			if ( noErr == ShowOpenSSLCertToUser ( err_cert )) {
-				(void) AddOpenSSLCertToKeychain ( err_cert );
-				preverify = 1;
-				}
-			break;
-		
-		case X509_V_ERR_CERT_NOT_YET_VALID:
-		case X509_V_ERR_CERT_HAS_EXPIRED:
-		//	For now, we let these slide
+//      UNABLE_TO_GET_ISSUER_LOCALLY and SELF_SIGNED_CERT
+	switch (err) {
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+		//      I wonder what other errors we should handle this way??
+		if (noErr == ShowOpenSSLCertToUser(err_cert)) {
+			(void) AddOpenSSLCertToKeychain(err_cert);
 			preverify = 1;
-			break;
-		
-		default:
-			break;
 		}
-	
-#if 0	//	Check the host name
-	{
-		char peer_CN[256];
-		
-		DumpCertStore ( * (X509_STORE **) storeCtx );
-		X509_NAME_get_text_by_NID ( X509_get_subject_name ( err_cert ), NID_commonName, peer_CN, sizeof ( peer_CN ));
-		printf ( "%s\n", peer_CN );
-	}	
-#endif
+		break;
 
-	
-	return preverify;
-//	return 1;	// it's ok!
+	case X509_V_ERR_CERT_NOT_YET_VALID:
+	case X509_V_ERR_CERT_HAS_EXPIRED:
+		//      For now, we let these slide
+		preverify = 1;
+		break;
+
+	default:
+		break;
 	}
 
+#if 0				//      Check the host name
+	{
+		char peer_CN[256];
+
+		DumpCertStore(*(X509_STORE **) storeCtx);
+		X509_NAME_get_text_by_NID(X509_get_subject_name(err_cert),
+					  NID_commonName, peer_CN,
+					  sizeof(peer_CN));
+		printf("%s\n", peer_CN);
+	}
+#endif
+
+
+	return preverify;
+//      return 1;       // it's ok!
+}

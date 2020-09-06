@@ -37,9 +37,8 @@
  * handling the update window
  **********************************************************************/
 
-OSErr		OpenUpdateWin (void);
-OSErr		UpdateCheck (void);
-void		FinishedUpdateCheck (long refCon, OSErr theError);
+OSErr OpenUpdateWin(void);
+OSErr UpdateCheck(void);
+void FinishedUpdateCheck(long refCon, OSErr theError);
 
 #endif
-

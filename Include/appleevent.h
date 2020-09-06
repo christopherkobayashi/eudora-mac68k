@@ -205,33 +205,43 @@ typedef struct MyWindowStruct *MyWindowPtr;
 /*
  * standard hander types
  */
-typedef	pascal OSErr AEHandler(AppleEvent *event,AppleEvent *reply,long refCon);
-typedef pascal OSErr ObjectAccessor(DescType desiredClass, AEDescPtr containerToken, DescType containerClass, DescType keyForm, AEDescPtr keyData, AEDescPtr theToken,long refCon);
-typedef pascal OSErr AECounter(DescType desiredType, DescType containerClass, const AEDesc *container, long *result);
-typedef OSErr ElementCounter(DescType countClass,AEDescPtr countIn,long *count);
-typedef OSErr TokenTaker(AEDescPtr token,AppleEvent *reply,long refCon);
+typedef pascal OSErr AEHandler(AppleEvent * event, AppleEvent * reply,
+			       long refCon);
+typedef pascal OSErr ObjectAccessor(DescType desiredClass,
+				    AEDescPtr containerToken,
+				    DescType containerClass,
+				    DescType keyForm, AEDescPtr keyData,
+				    AEDescPtr theToken, long refCon);
+typedef pascal OSErr AECounter(DescType desiredType,
+			       DescType containerClass,
+			       const AEDesc * container, long *result);
+typedef OSErr ElementCounter(DescType countClass, AEDescPtr countIn,
+			     long *count);
+typedef OSErr TokenTaker(AEDescPtr token, AppleEvent * reply, long refCon);
 
 void InstallAE(void);
 void InstallAERest(void);
-OSErr OpenOtherDoc(FSSpecPtr spec,Boolean finderSelect,Boolean printIt,PETEHandle sourcePTE);
+OSErr OpenOtherDoc(FSSpecPtr spec, Boolean finderSelect, Boolean printIt,
+		   PETEHandle sourcePTE);
 OSErr LaunchAppWith(FSSpecPtr app, FSSpecPtr doc, Boolean printIt);
 OSErr QuitApp(AEAddressDescPtr aead);
 void HandleWordServices(MyWindowPtr win, short item);
 typedef struct TOCType **TOCHandle;
 void NotifyHelpers(short newCount, OSType ofWhat, TOCHandle tocH);
-typedef enum {kTOLNot, kTOLSettings, kTOLOther} TypeIsOnListEnum;
-TypeIsOnListEnum TypeIsOnListWhereAndIndex(OSType type,OSType listType,short *where,short *index);
+typedef enum { kTOLNot, kTOLSettings, kTOLOther } TypeIsOnListEnum;
+TypeIsOnListEnum TypeIsOnListWhereAndIndex(OSType type, OSType listType,
+					   short *where, short *index);
 #define TypeIsOnList(x,y) TypeIsOnListWhere(x,y,nil)
 #define TypeIsOnListWhere(x,y,z) TypeIsOnListWhereAndIndex(x,y,z,nil)
 
-OSErr CreatorToApp(OSType creator,AliasHandle *app);
-OSErr OpenDocWith(FSSpecPtr doc,FSSpecPtr app,Boolean printIt);
+OSErr CreatorToApp(OSType creator, AliasHandle * app);
+OSErr OpenDocWith(FSSpecPtr doc, FSSpecPtr app, Boolean printIt);
 OSErr CreateTEHObj(MyWindowPtr win, AEDescPtr objAD);
 
-Boolean CanOpen(OSType type,short vRef,long dirId,PStr name);
-OSErr OpenOneDoc(PETEHandle pte,FSSpecPtr spec,FInfo *info);
+Boolean CanOpen(OSType type, short vRef, long dirId, PStr name);
+OSErr OpenOneDoc(PETEHandle pte, FSSpecPtr spec, FInfo * info);
 
-OSErr FinderOpen(FSSpecPtr spec,Boolean finderSelect,Boolean printIt);
+OSErr FinderOpen(FSSpecPtr spec, Boolean finderSelect, Boolean printIt);
 
 /*
  * Frontier macro
@@ -245,19 +255,52 @@ OSErr FinderOpen(FSSpecPtr spec,Boolean finderSelect,Boolean printIt);
 /*
  * token types
  */
-typedef struct {DescType propertyId; DescType tokenClass;} PropToken, *PropTokenPtr, **PropTokenHandle;
+typedef struct {
+	DescType propertyId;
+	DescType tokenClass;
+} PropToken, *PropTokenPtr, **PropTokenHandle;
 #ifdef TWO
-typedef struct {DescType form; long selector;} FilterToken, *FilterTokenPtr, **FilterTokenHandle;
-typedef struct {FilterToken filter; short term;} TermToken, *TermTokenPtr, **TermTokenHandle;
+typedef struct {
+	DescType form;
+	long selector;
+} FilterToken, *FilterTokenPtr, **FilterTokenHandle;
+typedef struct {
+	FilterToken filter;
+	short term;
+} TermToken, *TermTokenPtr, **TermTokenHandle;
 #endif
-typedef struct {short vRef; long dirId;} VDId, *VDIdPtr, **VDIdHandle;
-typedef struct {FSSpec spec; short index;} MessToken, *MessTokenPtr, **MessTokenHandle;
-typedef struct {Str31 name; MessToken messT; NickToken nickT; Boolean isNick;} FieldToken, *FieldTokenPtr, **FieldTokenHandle;
-typedef struct {MyWindowPtr win; PETEHandle pte;} TEToken, *TETokenPtr, **TETokenHandle;
-typedef struct {short start; short stop; TEToken teT;} TERangeToken, *TERTPtr, **TERTHandle;
+typedef struct {
+	short vRef;
+	long dirId;
+} VDId, *VDIdPtr, **VDIdHandle;
+typedef struct {
+	FSSpec spec;
+	short index;
+} MessToken, *MessTokenPtr, **MessTokenHandle;
+typedef struct {
+	Str31 name;
+	MessToken messT;
+	NickToken nickT;
+	Boolean isNick;
+} FieldToken, *FieldTokenPtr, **FieldTokenHandle;
+typedef struct {
+	MyWindowPtr win;
+	PETEHandle pte;
+} TEToken, *TETokenPtr, **TETokenHandle;
+typedef struct {
+	short start;
+	short stop;
+	TEToken teT;
+} TERangeToken, *TERTPtr, **TERTHandle;
 typedef struct Personality Personality, *PersPtr, **PersHandle;
-typedef struct {short pref; PersHandle personality;} PrefToken, *PrefTPtr, **PrefTHandle;
-typedef struct {MessToken messT; short index;} AttachmentToken, *AttachmentTPtr, **AttachmentTHandle;
+typedef struct {
+	short pref;
+	PersHandle personality;
+} PrefToken, *PrefTPtr, **PrefTHandle;
+typedef struct {
+	MessToken messT;
+	short index;
+} AttachmentToken, *AttachmentTPtr, **AttachmentTHandle;
 #endif
 
 #endif

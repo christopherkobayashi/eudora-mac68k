@@ -42,29 +42,29 @@ PStr ProxifyStr(PStr theString, short theIndex)
 {
 	ProxyEntryHandle peh;
 	Str255 localStr;
-	
-	if (NoProxify || !Proxies) return theString;
-	
+
+	if (NoProxify || !Proxies)
+		return theString;
+
 	CurPers = PERS_FORCE(CurPers);
-	
-	if ((*CurPers)->proxy)
-	{
+
+	if ((*CurPers)->proxy) {
 		// no nested proxies -- for now
 		NoProxify = true;
-		
-		for (peh=(*(*CurPers)->proxy)->peh;peh;peh=(*peh)->next)
-			if ((*peh)->id == theIndex)
-			{
-				ComposeString(localStr,LDRef(peh)->value,theString);
-				PCopy(theString,localStr);
+
+		for (peh = (*(*CurPers)->proxy)->peh; peh;
+		     peh = (*peh)->next)
+			if ((*peh)->id == theIndex) {
+				ComposeString(localStr, LDRef(peh)->value,
+					      theString);
+				PCopy(theString, localStr);
 				UL(peh);
 				break;
 			}
-		
 		// re-allow proxying
 		NoProxify = false;
 	}
-	
+
 	return theString;
 }
 
@@ -84,51 +84,48 @@ void ProxyInit(void)
 	short id;
 	short start, end;
 	UPtr spot;
-	
+
 	// Phase 1 - initialize the proxies
-	for (i=1;res=GetIndResource(PROXY_RTYPE,i);i++)
-	{
-		if (ph=NewZH(ProxyType))
-		{
+	for (i = 1; res = GetIndResource(PROXY_RTYPE, i); i++) {
+		if (ph = NewZH(ProxyType)) {
 			// build the name
-			GetResInfo(res,&id,&type,scratch);
-			PSCopy((*ph)->name,scratch);
-			
+			GetResInfo(res, &id, &type, scratch);
+			PSCopy((*ph)->name, scratch);
+
 			// now the strings
 			end = GetHandleSize(res);
 			start = 2;
-			while (start<end)
-			{
-				PCopy(scratch,(*res)+start);
-				spot = scratch+1;
-				PToken(scratch,token,&spot,":");
+			while (start < end) {
+				PCopy(scratch, (*res) + start);
+				spot = scratch + 1;
+				PToken(scratch, token, &spot, ":");
 				PTerminate(token);
-				id = atoi(token+1);
-				MakePStr(value,scratch+*token+2,*scratch-*token-1);
-				if (peh=NewZH(ProxyEntryType))
-				{
+				id = atoi(token + 1);
+				MakePStr(value, scratch + *token + 2,
+					 *scratch - *token - 1);
+				if (peh = NewZH(ProxyEntryType)) {
 					(*peh)->id = id;
-					PCopy((*peh)->value,value);
-					LL_Queue((*ph)->peh,peh,(ProxyEntryHandle));
-				}
-				else DieWithError(PROXY_INIT_FAILED,MemError());
-				start += (*res)[start]+1;
+					PCopy((*peh)->value, value);
+					LL_Queue((*ph)->peh, peh,
+						 (ProxyEntryHandle));
+				} else
+					DieWithError(PROXY_INIT_FAILED,
+						     MemError());
+				start += (*res)[start] + 1;
 			}
 			ReleaseResource(res);
-			LL_Queue(Proxies,ph,(ProxyHandle));
-		}
-		else DieWithError(PROXY_INIT_FAILED,MemError());
+			LL_Queue(Proxies, ph, (ProxyHandle));
+		} else
+			DieWithError(PROXY_INIT_FAILED, MemError());
 	}
-	
+
 	// Phase 2 - let the personalities know
-	for (CurPers=PersList;CurPers;CurPers=(*CurPers)->next)
-	{
-		if (*GetPrefNoDominant(scratch,PREF_PROXY))
-		if (ph=ProxyFind(scratch))
-		{
-			(*CurPers)->proxy = ph;
-			break;
-		}
+	for (CurPers = PersList; CurPers; CurPers = (*CurPers)->next) {
+		if (*GetPrefNoDominant(scratch, PREF_PROXY))
+			if (ph = ProxyFind(scratch)) {
+				(*CurPers)->proxy = ph;
+				break;
+			}
 	}
 }
 
@@ -139,14 +136,13 @@ ProxyHandle ProxyFind(PStr lookingFor)
 {
 	Str255 name;
 	ProxyHandle ph;
-	
-	for (ph=Proxies;ph;ph=(*ph)->next)
-	{
-		PCopy(name,(*ph)->name);
-		if (StringSame(name,lookingFor))
+
+	for (ph = Proxies; ph; ph = (*ph)->next) {
+		PCopy(name, (*ph)->name);
+		if (StringSame(name, lookingFor))
 			return ph;
 	}
-	
+
 	return nil;
 }
 
@@ -157,13 +153,11 @@ void ProxyZap(void)
 {
 	ProxyHandle ph;
 	ProxyEntryHandle peh;
-	
-	while(ph=Proxies)
-	{
-		LL_Remove(Proxies,ph,(ProxyHandle));
-		while (peh=(*ph)->peh)
-		{
-			LL_Remove((*ph)->peh,peh,(ProxyEntryHandle));
+
+	while (ph = Proxies) {
+		LL_Remove(Proxies, ph, (ProxyHandle));
+		while (peh = (*ph)->peh) {
+			LL_Remove((*ph)->peh, peh, (ProxyEntryHandle));
 			ZapHandle(peh);
 		}
 		ZapHandle(ph);
@@ -177,13 +171,13 @@ OSErr ProxyMenu(MenuHandle mh)
 {
 	ProxyHandle ph;
 	Str31 name;
-	
-	if (!Proxies) return fnfErr;
-	
-	for (ph=Proxies;ph;ph=(*ph)->next)
-	{
-		PSCopy(name,(*ph)->name);
-		MyAppendMenu(mh,name);
+
+	if (!Proxies)
+		return fnfErr;
+
+	for (ph = Proxies; ph; ph = (*ph)->next) {
+		PSCopy(name, (*ph)->name);
+		MyAppendMenu(mh, name);
 	}
 	return noErr;
 }

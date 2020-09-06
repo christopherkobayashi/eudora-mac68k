@@ -31,5 +31,5 @@
 
 #ifndef MSTOC_H
 #define MSTOC_H
-OSErr MSTOCFunc(MSSubCallEnum selector,MStoreBoxHandle boxH);
+OSErr MSTOCFunc(MSSubCallEnum selector, MStoreBoxHandle boxH);
 #endif

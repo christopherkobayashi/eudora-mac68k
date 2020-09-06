@@ -35,45 +35,44 @@
 /**********************************************************************
  * code to support multiple simultaneous network connections
  **********************************************************************/
- 
+
 
 /**********************************************************************
  * NewTransStream - allocate memory for a new TransStream
  **********************************************************************/
- 
-OSErr NewTransStream(TransStream *newStream)
+
+OSErr NewTransStream(TransStream * newStream)
 {
 	OSErr err = noErr;
-	
+
 	*newStream = New(TransStreamStruct);
 
-	if (*newStream)
-	{
-		WriteZero(*newStream,sizeof(TransStreamStruct));
-	}
-	else err = MemError();
+	if (*newStream) {
+		WriteZero(*newStream, sizeof(TransStreamStruct));
+	} else
+		err = MemError();
 
-	if (err != noErr)
-	{
-		WarnUser(MEM_ERR,err);
+	if (err != noErr) {
+		WarnUser(MEM_ERR, err);
 		*newStream = 0;
-	}	
-			
+	}
+
 	return (err);
 }
 
 /**********************************************************************
  * ZapTransStream - clean up and destroy a transstream.
  **********************************************************************/
-void ZapTransStream(TransStream *theStream)
-{	
+void ZapTransStream(TransStream * theStream)
+{
 	// Disconnect the stream if we have to.
-	if (DestroyTrans) DestroyTrans(*theStream);
-	
+	if (DestroyTrans)
+		DestroyTrans(*theStream);
+
 	// Verify that the streams sub structures have been destroyed.
 	ASSERT((*theStream)->OTTCPStream == 0);
 	ASSERT((*theStream)->RcvBuffer == 0);
-	
+
 	// Now kill it.
 	ZapPtr(*theStream);
 	*theStream = 0;
@@ -84,8 +83,7 @@ void ZapTransStream(TransStream *theStream)
  **********************************************************************/
 void StartStreamAudit(TransStream theStream, StreamAuditTypeEnum what)
 {
-	if (theStream)
-	{
+	if (theStream) {
 		theStream->auditType = what;
 		theStream->bytesTransferred = 0;
 	}
@@ -96,8 +94,7 @@ void StartStreamAudit(TransStream theStream, StreamAuditTypeEnum what)
  **********************************************************************/
 void StopStreamAudit(TransStream theStream)
 {
-	if (theStream)
-	{
+	if (theStream) {
 		theStream->auditType = kAuditNothing;
 	}
 }
@@ -108,11 +105,10 @@ void StopStreamAudit(TransStream theStream)
 long ReportStreamAudit(TransStream theStream)
 {
 	long byteMe = 0;
-	
-	if (theStream)
-	{
+
+	if (theStream) {
 		byteMe = theStream->bytesTransferred;
 	}
-	
+
 	return (byteMe);
 }

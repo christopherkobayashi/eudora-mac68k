@@ -46,53 +46,61 @@
 
 #define MAILTMPLEN 1024		/* size of a temporary buffer */
 
-Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox, Boolean readOnly);
-Boolean IMAPOpenMailboxSpecifiedInStream(IMAPStreamPtr imapStream, Boolean readOnly);
-Boolean LockStream(MAILSTREAM *stream);
-void UnlockStream(MAILSTREAM *stream);
+Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox,
+		   Boolean readOnly);
+Boolean IMAPOpenMailboxSpecifiedInStream(IMAPStreamPtr imapStream,
+					 Boolean readOnly);
+Boolean LockStream(MAILSTREAM * stream);
+void UnlockStream(MAILSTREAM * stream);
 STRINGLIST *CommaSeparatedTextToStringlist(char *Fields);
 void Trim(char *string);
-Boolean SetORSearchCriteria(SEARCHPGM *pPgm, char *pHeaderList, Boolean bBody, char *pSearchString);
-Boolean SetORHeaderSearchCriteria(SEARCHPGM *pPgm, char *pHeaderList, char *pSearchString);
-void SetMailGets(MAILSTREAM *stream, mailgets_t oldMailGets, mailgets_t newMailGets);
-void ResetMailGets(MAILSTREAM *stream, mailgets_t oldMailGets);
+Boolean SetORSearchCriteria(SEARCHPGM * pPgm, char *pHeaderList,
+			    Boolean bBody, char *pSearchString);
+Boolean SetORHeaderSearchCriteria(SEARCHPGM * pPgm, char *pHeaderList,
+				  char *pSearchString);
+void SetMailGets(MAILSTREAM * stream, mailgets_t oldMailGets,
+		 mailgets_t newMailGets);
+void ResetMailGets(MAILSTREAM * stream, mailgets_t oldMailGets);
 
-static char *file_gets(readfn_t readfn, void *stream, unsigned long size, GETS_DATA *md);
+static char *file_gets(readfn_t readfn, void *stream, unsigned long size,
+		       GETS_DATA * md);
 
 // this routine moves data into the MAILSTREAM's text handle.
-static char *buffer_gets (readfn_t readfn, void *read_data, unsigned long size, GETS_DATA *md);
+static char *buffer_gets(readfn_t readfn, void *read_data,
+			 unsigned long size, GETS_DATA * md);
 
 /**********************************************************************
  *	NewImapStream - initialize an IMAPStream.
  **********************************************************************/
-OSErr NewImapStream(IMAPStreamPtr *imapStream, UPtr ServerName, unsigned long PortNum)
+OSErr NewImapStream(IMAPStreamPtr * imapStream, UPtr ServerName,
+		    unsigned long PortNum)
 {
 	OSErr err = noErr;
-	
+
 	*imapStream = NuPtr(sizeof(IMAPStreamStruct));
 
-	if (*imapStream) WriteZero(*imapStream,sizeof(IMAPStreamStruct));
-	else err = MemError();
+	if (*imapStream)
+		WriteZero(*imapStream, sizeof(IMAPStreamStruct));
+	else
+		err = MemError();
 
-	if (err == noErr)
-	{
+	if (err == noErr) {
 		(*imapStream)->MessageSizeLimit = 2000000;	// Arbitrary
 
 		// IMAP Server identification:
 		if (ServerName)
-			PSCopy((*imapStream)->pServerName,ServerName);
+			PSCopy((*imapStream)->pServerName, ServerName);
 		else
 			(*imapStream)->pServerName[0] = 0;
 
 		// Port number
 		(*imapStream)->portNumber = PortNum;
-	}
-	else	//failed to get a new IMAPStreamStruct.
+	} else			//failed to get a new IMAPStreamStruct.
 	{
-		WarnUser(MEM_ERR,err);
+		WarnUser(MEM_ERR, err);
 		*imapStream = 0;
 	}
-		
+
 	return (err);
 }
 
@@ -100,24 +108,26 @@ OSErr NewImapStream(IMAPStreamPtr *imapStream, UPtr ServerName, unsigned long Po
 /**********************************************************************
  *	ZapImapStream - Zap an IMAPStream.  Kill everything else it loves.
  **********************************************************************/
-void ZapImapStream(IMAPStreamPtr *imapStream)
+void ZapImapStream(IMAPStreamPtr * imapStream)
 {
 	// if there is no stream, nothing to clean up.
-	if (!imapStream || !*imapStream) return;
-	
-	if ((*imapStream)->mailStream != nil)
-	{
+	if (!imapStream || !*imapStream)
+		return;
+
+	if ((*imapStream)->mailStream != nil) {
 		// close the spool file if there's one open.
-		if ((*imapStream)->mailStream->refN > 0) MyFSClose((*imapStream)->mailStream->refN);
+		if ((*imapStream)->mailStream->refN > 0)
+			MyFSClose((*imapStream)->mailStream->refN);
 
 #ifdef	DEBUG
-		if ((*imapStream)->mailStream->flagsRefN > 0) MyFSClose((*imapStream)->mailStream->flagsRefN);
+		if ((*imapStream)->mailStream->flagsRefN > 0)
+			MyFSClose((*imapStream)->mailStream->flagsRefN);
 #endif
-	
+
 		// If still connected, close.
-		mail_free_stream (&((*imapStream)->mailStream));
+		mail_free_stream(&((*imapStream)->mailStream));
 	}
-		
+
 	//Now kill it.
 	ZapPtr(*imapStream);
 	*imapStream = NULL;
@@ -133,7 +143,8 @@ void ZapImapStream(IMAPStreamPtr *imapStream)
 Boolean OpenControlStream(IMAPStreamPtr imapStream)
 {
 	// If we have an open and Authenticated stream, we're done.
-	if (imapStream && IsAuthenticated(imapStream->mailStream)) return true;
+	if (imapStream && IsAuthenticated(imapStream->mailStream))
+		return true;
 
 	return (OpenStream(imapStream, NULL, false));
 }
@@ -142,12 +153,14 @@ Boolean OpenControlStream(IMAPStreamPtr imapStream)
 /**********************************************************************
  *	IsAuthenticated - return true if the IMAPStream is authenticated.
  **********************************************************************/
-Boolean IsAuthenticated(MAILSTREAM *stream)
+Boolean IsAuthenticated(MAILSTREAM * stream)
 {
-	if (!stream) return false;
+	if (!stream)
+		return false;
 
 	// If we are not connected, we can't be selected.
-	if (!IsConnected(stream)) return false;
+	if (!IsConnected(stream))
+		return false;
 
 	// See if the stream is selected.
 	return stream->bAuthenticated;
@@ -157,22 +170,26 @@ Boolean IsAuthenticated(MAILSTREAM *stream)
 /**********************************************************************
  *	IsConnected - return true if we're connected
  **********************************************************************/
-Boolean IsConnected(MAILSTREAM *stream)
+Boolean IsConnected(MAILSTREAM * stream)
 {
-	if (!stream || !stream->dtb) return false;
-	else return (stream->dtb->connected(stream));
+	if (!stream || !stream->dtb)
+		return false;
+	else
+		return (stream->dtb->connected(stream));
 }
 
 
 /**********************************************************************
  *	IsSelected - return true if there's a mailbox selected
  **********************************************************************/
-Boolean IsSelected(MAILSTREAM *stream)
+Boolean IsSelected(MAILSTREAM * stream)
 {
-	if (!stream) return false;
+	if (!stream)
+		return false;
 
 	// If we are not connected, we can't be selected.
-	if (!IsConnected(stream)) return false;
+	if (!IsConnected(stream))
+		return false;
 
 	// See if the stream is selected.
 	return stream->bSelected && stream->bAuthenticated;
@@ -184,63 +201,73 @@ Boolean IsSelected(MAILSTREAM *stream)
  *	is NULL, open a  "control" stream instead.  Set readOnly to true
  *	to open a READ-ONLY connection to the server.
  **********************************************************************/
-Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox, Boolean readOnly)
+Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox,
+		   Boolean readOnly)
 {
 	MAILSTREAM *ps;
 	Boolean result = false;
 	long options = 0L;
-	
+
 	// Must have a server name or ip address.
-	if (!imapStream || !imapStream->pServerName[0]) return(false);
+	if (!imapStream || !imapStream->pServerName[0])
+		return (false);
 
 	// If we have an open control stream, re-use it
-	if (imapStream->mailStream)
-	{	
+	if (imapStream->mailStream) {
 		// If we are just opening a control stream, return if we are AUTHENTICATED.
-		if (!Mailbox)
-		{
-			if (IsAuthenticated(imapStream->mailStream))
-			{
+		if (!Mailbox) {
+			if (IsAuthenticated(imapStream->mailStream)) {
 				return (true);
 			}
-		}
-		else
-		{
+		} else {
 			// if we are already connected to the given mailbox, and readOnly hasn't changed, return.
-			if (IsSelected(imapStream->mailStream) 
-				&& (IsReadOnly(imapStream->mailStream)==readOnly))
-			{
-				if (imapStream->mailStream->mailbox)
-				{
-					if (!strcmp(Mailbox, imapStream->mailStream->mailbox))
-					{
+			if (IsSelected(imapStream->mailStream)
+			    && (IsReadOnly(imapStream->mailStream) ==
+				readOnly)) {
+				if (imapStream->mailStream->mailbox) {
+					if (!strcmp
+					    (Mailbox,
+					     imapStream->mailStream->
+					     mailbox)) {
 						// We can reuse this stream. Update the message count
-						FetchMailboxStatus(imapStream, Mailbox, SA_MESSAGES);
+						FetchMailboxStatus
+						    (imapStream, Mailbox,
+						     SA_MESSAGES);
 						return (true);
-					}
-					else
-					{
+					} else {
 						char tmp[MAILTMPLEN];
-						Str255 pUser, user, pHost, host;
+						Str255 pUser, user, pHost,
+						    host;
 						unsigned long port;
-						
+
 						// the name of the mailbox stored in the mailStream might be in the {<location>}<name> format
 						port = GetRLong(IMAP_PORT);
-						GetPOPInfoLo(pUser, pHost, &port);
+						GetPOPInfoLo(pUser, pHost,
+							     &port);
 
 						Zero(user);
 						Zero(host);
-						
-						strncpy(user, pUser+1, pUser[0]);
-						strncpy(host, pHost+1, pHost[0]);
-						sprintf(tmp,"{%s:%lu/imap/user=%s}",host,port,user);
+
+						strncpy(user, pUser + 1,
+							pUser[0]);
+						strncpy(host, pHost + 1,
+							pHost[0]);
+						sprintf(tmp,
+							"{%s:%lu/imap/user=%s}",
+							host, port, user);
 						strcat(tmp, Mailbox);
-						
-						if (!strcmp(tmp, imapStream->mailStream->mailbox))
-						{
+
+						if (!strcmp
+						    (tmp,
+						     imapStream->
+						     mailStream->
+						     mailbox)) {
 							// We can reuse this stream. Update the message count
-							FetchMailboxStatus(imapStream, Mailbox, SA_MESSAGES);
-						 	return (true);
+							FetchMailboxStatus
+							    (imapStream,
+							     Mailbox,
+							     SA_MESSAGES);
+							return (true);
 						}
 					}
 				}
@@ -249,34 +276,39 @@ Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox, Boolean readOnly)
 	}
 
 	// We have to open the stream.  Try to re-use if there's already one.
-	if (!imapStream->mailStream)
-	{
+	if (!imapStream->mailStream) {
 		// Allocate a new "stream" to pass to imapmail_open. 
-		mail_new_stream (&imapStream->mailStream, imapStream->pServerName, &(imapStream->portNumber), NULL);
+		mail_new_stream(&imapStream->mailStream,
+				imapStream->pServerName,
+				&(imapStream->portNumber), NULL);
 
-		if (!imapStream->mailStream) return (false);
+		if (!imapStream->mailStream)
+			return (false);
 	}
-	
+
 	// If we compiling the debug version, set the stream's debugging on.
 #ifdef _DEBUG
 	options |= OP_DEBUG;
 #endif
 
 	// If no mailbox, halfopen (i.e. a control stream).
-	if (!Mailbox) options |= (OP_HALFOPEN | OP_SILENT);
+	if (!Mailbox)
+		options |= (OP_HALFOPEN | OP_SILENT);
 
 	// open read only if we were asked to
-	if (readOnly) options |= OP_READONLY;
-	
+	if (readOnly)
+		options |= OP_READONLY;
+
 	//  Note here: c-client will return our stream if success, otherwise NIL.
 	// In any case, it no longer frees our stream.
-	ps = mail_open (imapStream->mailStream, Mailbox, options);
+	ps = mail_open(imapStream->mailStream, Mailbox, options);
 
-	if (ps && (ps == imapStream->mailStream))
-	{
+	if (ps && (ps == imapStream->mailStream)) {
 		// If we were trying to SELECT a mailbox and the stream is still "half-open", fail.
-		if (Mailbox && imapStream->mailStream->halfopen) result = false;
-		else result = true;
+		if (Mailbox && imapStream->mailStream->halfopen)
+			result = false;
+		else
+			result = true;
 	}
 
 	return (result);
@@ -285,22 +317,24 @@ Boolean OpenStream(IMAPStreamPtr imapStream, char *Mailbox, Boolean readOnly)
 
 /**********************************************************************
  *	Noop
- **********************************************************************/	
-Boolean Noop (IMAPStreamPtr imapStream)
-{	
+ **********************************************************************/
+Boolean Noop(IMAPStreamPtr imapStream)
+{
 	Boolean result = false;
-	
+
 	// Must have a stream.
-	if (!imapStream || !imapStream->mailStream) return (false);
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Do the command
 	result = mail_ping(imapStream->mailStream);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -308,13 +342,17 @@ Boolean Noop (IMAPStreamPtr imapStream)
  *	IMAPOpenMailbox -  Performs an IMAP "SELECT" on the mailbox. If the 
  *		connection to the mailbox has not already been made, do that 
  *		as well.
- **********************************************************************/	
-Boolean IMAPOpenMailbox(IMAPStreamPtr imapStream, const char *MailboxName, Boolean readOnly)
+ **********************************************************************/
+Boolean IMAPOpenMailbox(IMAPStreamPtr imapStream, const char *MailboxName,
+			Boolean readOnly)
 {
-	if (!MailboxName) return (false);
+	if (!MailboxName)
+		return (false);
 
 	// Copy pMailboxname.
-	if (imapStream->mailboxName) WriteZero(imapStream->mailboxName, sizeof(imapStream->mailboxName));
+	if (imapStream->mailboxName)
+		WriteZero(imapStream->mailboxName,
+			  sizeof(imapStream->mailboxName));
 	strcpy(imapStream->mailboxName, MailboxName);
 
 	// Now call above method.
@@ -325,21 +363,23 @@ Boolean IMAPOpenMailbox(IMAPStreamPtr imapStream, const char *MailboxName, Boole
 /**********************************************************************
  *	IMAPOpenMailboxSpecifiedInStream -  Performs an IMAP "SELECT" on the 
  *		mailbox stored in the imapstream.
- **********************************************************************/	
-Boolean IMAPOpenMailboxSpecifiedInStream(IMAPStreamPtr imapStream, Boolean readOnly)
+ **********************************************************************/
+Boolean IMAPOpenMailboxSpecifiedInStream(IMAPStreamPtr imapStream,
+					 Boolean readOnly)
 {
 	Boolean result = false;
 
 	// Must have a name.
-	if (!imapStream->mailboxName[0]) return (false);
+	if (!imapStream->mailboxName[0])
+		return (false);
 
 	// Go open or re-open the stream.
-	result =  OpenStream(imapStream, imapStream->mailboxName, readOnly);
-	if (result)
-	{
+	result = OpenStream(imapStream, imapStream->mailboxName, readOnly);
+	if (result) {
 		// Fill in some mailbox state information.
 		imapStream->messageCount = imapStream->mailStream->nmsgs;
-		imapStream->uidvalidity = imapStream->mailStream->uid_validity;
+		imapStream->uidvalidity =
+		    imapStream->mailStream->uid_validity;
 	}
 
 	return result;
@@ -349,28 +389,33 @@ Boolean IMAPOpenMailboxSpecifiedInStream(IMAPStreamPtr imapStream, Boolean readO
 /**********************************************************************
  *	CreateIMAPMailbox -  create a mailbox with the name mailboxName
  **********************************************************************/
-Boolean CreateIMAPMailbox(IMAPStreamPtr imapStream, const char *mailboxName)
+Boolean CreateIMAPMailbox(IMAPStreamPtr imapStream,
+			  const char *mailboxName)
 {
 	char pattern[MAILTMPLEN + 4];
 	Boolean result = false;
-		
-	if (!mailboxName) return (false);
+
+	if (!mailboxName)
+		return (false);
 
 	// If the name is too long, reject it.
-	if (strlen (mailboxName) > MAILTMPLEN) return (false);
+	if (strlen(mailboxName) > MAILTMPLEN)
+		return (false);
 
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Attempt to create it.
 	strcpy(pattern, mailboxName);
 	result = (mail_create(imapStream->mailStream, pattern) != 0);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -378,21 +423,26 @@ Boolean CreateIMAPMailbox(IMAPStreamPtr imapStream, const char *mailboxName)
 /**********************************************************************
  *	DeleteIMAPMailbox -  delete the mailbox with the name mailboxName
  **********************************************************************/
-Boolean DeleteIMAPMailbox (IMAPStreamPtr imapStream, const char *mailboxName)
+Boolean DeleteIMAPMailbox(IMAPStreamPtr imapStream,
+			  const char *mailboxName)
 {
 	char pattern[MAILTMPLEN + 4];
 	Boolean result = false;
-	
-	if (!mailboxName) return (false);
+
+	if (!mailboxName)
+		return (false);
 
 	// If the name is too long, reject it.
-	if (strlen (mailboxName) > MAILTMPLEN) return (false);
+	if (strlen(mailboxName) > MAILTMPLEN)
+		return (false);
 
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Attempt to create it.
 	strcpy(pattern, mailboxName);
@@ -406,23 +456,29 @@ Boolean DeleteIMAPMailbox (IMAPStreamPtr imapStream, const char *mailboxName)
 /**********************************************************************
  *	RenameMailbox -  rename a mailbox
  **********************************************************************/
-Boolean RenameIMAPMailbox(IMAPStreamPtr imapStream, const char *oldName, const char *newName)
+Boolean RenameIMAPMailbox(IMAPStreamPtr imapStream, const char *oldName,
+			  const char *newName)
 {
 	char oldN[MAILTMPLEN + 4];
 	char newN[MAILTMPLEN + 4];
 	Boolean result = false;
-		
-	if (!oldName || !newName) return (false);
+
+	if (!oldName || !newName)
+		return (false);
 
 	// If the name is too long, reject it.
-	if (strlen (newName) > MAILTMPLEN) return (false);
-	if (strlen (oldName) > MAILTMPLEN) return (false);
-	
+	if (strlen(newName) > MAILTMPLEN)
+		return (false);
+	if (strlen(oldName) > MAILTMPLEN)
+		return (false);
+
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Attempt to create it.
 	strcpy(oldN, oldName);
@@ -430,7 +486,7 @@ Boolean RenameIMAPMailbox(IMAPStreamPtr imapStream, const char *oldName, const c
 	result = (mail_rename(imapStream->mailStream, oldN, newN) != 0);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -440,14 +496,16 @@ Boolean RenameIMAPMailbox(IMAPStreamPtr imapStream, const char *oldName, const c
  **********************************************************************/
 void Check(IMAPStreamPtr imapStream)
 {
-	if (!imapStream || !imapStream->mailStream) return;
+	if (!imapStream || !imapStream->mailStream)
+		return;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return;
+	if (!LockStream(imapStream->mailStream))
+		return;
 
 	// Do the command.
-	mail_check (imapStream->mailStream);
-	
+	mail_check(imapStream->mailStream);
+
 	UnlockStream(imapStream->mailStream);
 }
 
@@ -456,24 +514,28 @@ void Check(IMAPStreamPtr imapStream)
  *	Expunge -  do a simple expunge on a stream, using the mailbox 
  *		specified therein.  
  **********************************************************************/
-Boolean Expunge (IMAPStreamPtr imapStream)
-{	
+Boolean Expunge(IMAPStreamPtr imapStream)
+{
 	Boolean result = false;
-	
-	if (!imapStream || !imapStream->mailStream) return (false);
-	if (!IsConnected(imapStream->mailStream)) return (false);
+
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
+	if (!IsConnected(imapStream->mailStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
-	
+	if (!LockStream(imapStream->mailStream))
+		return (false);
+
 	// Close down idle connections to the mailbox
-	if (PrefIsSet(PREF_IMAP_EXPUNGE_EXCLUSIVITY)) PrepareToExpunge(imapStream);
-	
+	if (PrefIsSet(PREF_IMAP_EXPUNGE_EXCLUSIVITY))
+		PrepareToExpunge(imapStream);
+
 	// Do the expunge.
-	result = mail_expunge (imapStream->mailStream);
-	
+	result = mail_expunge(imapStream->mailStream);
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -481,7 +543,7 @@ Boolean Expunge (IMAPStreamPtr imapStream)
 /**********************************************************************
  *	Logout -  you ain't seen nuthin yet
  **********************************************************************/
-Boolean Logout (IMAPStreamPtr imapStream)
+Boolean Logout(IMAPStreamPtr imapStream)
 {
 	return (false);
 }
@@ -512,31 +574,37 @@ unsigned long GetSTATUSMessageCount(IMAPStreamPtr imapStream)
  * 		get it's attributes.
  *		mm_list is called once for each mailbox returned.
  **********************************************************************/
-Boolean FetchMailboxAttributes (IMAPStreamPtr imapStream, const char *mailboxName)
+Boolean FetchMailboxAttributes(IMAPStreamPtr imapStream,
+			       const char *mailboxName)
 {
 	Boolean result = noErr;
 	char pattern[MAILTMPLEN + 4];
 
-	// allow NULL mailbox name		
-//	if (!(mailboxName)) return(false);
+	// allow NULL mailbox name              
+//      if (!(mailboxName)) return(false);
 
 	// If the name is too long, reject it.
-	if ((mailboxName != NULL) && ((strlen (mailboxName) > MAILTMPLEN))) return(false);
+	if ((mailboxName != NULL) && ((strlen(mailboxName) > MAILTMPLEN)))
+		return (false);
 
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return(false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
-	if (mailboxName) strcpy (pattern, mailboxName);
-	else pattern[0] = 0;
-	
+	if (mailboxName)
+		strcpy(pattern, mailboxName);
+	else
+		pattern[0] = 0;
+
 	// Do a LIST on the mailbox.
 	mail_list(imapStream->mailStream, "", pattern);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (true);
 }
 
@@ -544,29 +612,35 @@ Boolean FetchMailboxAttributes (IMAPStreamPtr imapStream, const char *mailboxNam
 /**********************************************************************
  *	FetchMailboxStatus - do a STATUS on the mailbox
  **********************************************************************/
-Boolean FetchMailboxStatus (IMAPStreamPtr imapStream, const char *mailboxName, long flags)
+Boolean FetchMailboxStatus(IMAPStreamPtr imapStream,
+			   const char *mailboxName, long flags)
 {
 	long result = 0;
 	char pattern[MAILTMPLEN + 4];
 
 	// If the name is too long, reject it.
-	if (strlen (mailboxName) > MAILTMPLEN) return(false);
+	if (strlen(mailboxName) > MAILTMPLEN)
+		return (false);
 
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return(false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
-	if (mailboxName) strcpy (pattern, mailboxName);
-	else pattern[0] = 0;
-	
+	if (mailboxName)
+		strcpy(pattern, mailboxName);
+	else
+		pattern[0] = 0;
+
 	// Fetch the status of the mailbox.
-	result = mail_status (imapStream->mailStream, pattern, flags);
-	
+	result = mail_status(imapStream->mailStream, pattern, flags);
+
 	UnlockStream(imapStream->mailStream);
-	
-	return (result!=0);
+
+	return (result != 0);
 }
 
 
@@ -576,42 +650,49 @@ Boolean FetchMailboxStatus (IMAPStreamPtr imapStream, const char *mailboxName, l
  *		is true, Fetch inbox as a separate command.
  *		mm_list is called once for each mailbox returned.
  **********************************************************************/
-Boolean IMAPListUnSubscribed (IMAPStreamPtr imapStream, const char *pReference, Boolean includeMailbox)
+Boolean IMAPListUnSubscribed(IMAPStreamPtr imapStream,
+			     const char *pReference,
+			     Boolean includeMailbox)
 {
 	Boolean result = false;
 	char pattern[2048];
 	Str255 pInbox, cInbox;
-	
+
 	// must have an imapStream
-	if (!imapStream) return (false);
-	
+	if (!imapStream)
+		return (false);
+
 	// If we have a stream, use it, else open temporary one.
-	if (!OpenControlStream(imapStream)) return (false);
+	if (!OpenControlStream(imapStream))
+		return (false);
 
 	// Catch locked streams here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Fetch inbox if asked to.
 	GetRString(pInbox, IMAP_INBOX_NAME);
 	PtoCcpy(cInbox, pInbox);
-	if (includeMailbox) mail_list (imapStream->mailStream, "", cInbox);
+	if (includeMailbox)
+		mail_list(imapStream->mailStream, "", cInbox);
 
 	// Fetch the rest.
 
 	// Create a pattern based on the reference.
-	if (pReference && *pReference)
-	{
+	if (pReference && *pReference) {
 		// Make sure we don't exceed pattern buffer length.
-		if (strlen (pReference) < (sizeof (pattern) - 1)) sprintf (pattern, "%s%%", pReference);
-		else sprintf (pattern, "%%");
-	}
-	else sprintf (pattern, "%%"); 
+		if (strlen(pReference) < (sizeof(pattern) - 1))
+			sprintf(pattern, "%s%%", pReference);
+		else
+			sprintf(pattern, "%%");
+	} else
+		sprintf(pattern, "%%");
 
 	// Get the folder list now.
-	mail_list (imapStream->mailStream, "", pattern);	
-	
+	mail_list(imapStream->mailStream, "", pattern);
+
 	UnlockStream(imapStream->mailStream);
-		
+
 	return (true);
 }
 
@@ -619,57 +700,71 @@ Boolean IMAPListUnSubscribed (IMAPStreamPtr imapStream, const char *pReference, 
  *	UIDDeleteMessages -  delete list of messages from the currently
  *		selected mailbox.  Expunge as well if we're told to.
  **********************************************************************/
-Boolean UIDDeleteMessages (IMAPStreamPtr imapStream, char *pUIDList, Boolean Expunge)
+Boolean UIDDeleteMessages(IMAPStreamPtr imapStream, char *pUIDList,
+			  Boolean Expunge)
 {
 	Boolean result = false;
-	
-	if (!pUIDList) return (false);
+
+	if (!pUIDList)
+		return (false);
 
 	// Must have a MAILSTREAM ...
-	if (!imapStream || !imapStream->mailStream) return (false);
-	
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
+
 	// and already be connected. 
-	if (!IsConnected(imapStream->mailStream)) return (false);
+	if (!IsConnected(imapStream->mailStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Set the message flags.
-	result = mail_flag (imapStream->mailStream, pUIDList, "\\Deleted", ST_UID | ST_SET | ST_SILENT);
+	result =
+	    mail_flag(imapStream->mailStream, pUIDList, "\\Deleted",
+		      ST_UID | ST_SET | ST_SILENT);
 
 	// and do the expunge, if we ought to
-	if (Expunge) mail_expunge (imapStream->mailStream);
+	if (Expunge)
+		mail_expunge(imapStream->mailStream);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
 /**********************************************************************
  *	UIDUnDeleteMessages -  Undelete a list of messages
  **********************************************************************/
-Boolean UIDUnDeleteMessages (IMAPStreamPtr imapStream, char *pUIDList)
+Boolean UIDUnDeleteMessages(IMAPStreamPtr imapStream, char *pUIDList)
 {
 	Boolean result = true;
 
 	// Must have a message to delete
-	if (!pUIDList) return (false);
+	if (!pUIDList)
+		return (false);
 
 	// Must have a MAILSTREAM
-	if (!imapStream || !imapStream->mailStream) return (false);
-	
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
+
 	// We must already be connected. 
-	if (!IsConnected(imapStream->mailStream)) return (false);
+	if (!IsConnected(imapStream->mailStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// Set the message flags.
 	// NOTE: Not setting a ST_SET flag clears the flag.
-	result = mail_flag (imapStream->mailStream, pUIDList, "\\Deleted", ST_UID | ST_SILENT);
+	result =
+	    mail_flag(imapStream->mailStream, pUIDList, "\\Deleted",
+		      ST_UID | ST_SILENT);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -681,16 +776,20 @@ ENVELOPE *UIDFetchEnvelope(IMAPStreamPtr imapStream, unsigned long uid)
 {
 	ENVELOPE *pEnv = NULL;
 
-	if (!imapStream || !imapStream->mailStream) return NULL;
+	if (!imapStream || !imapStream->mailStream)
+		return NULL;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return NULL;
+	if (!LockStream(imapStream->mailStream))
+		return NULL;
 
 	// Do the command.
-	pEnv = mail_fetch_envelope (imapStream->mailStream, uid, FT_UID | FT_PEEK);
+	pEnv =
+	    mail_fetch_envelope(imapStream->mailStream, uid,
+				FT_UID | FT_PEEK);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return pEnv;
 }
 
@@ -702,31 +801,34 @@ IMAPBODY *UIDFetchStructure(IMAPStreamPtr imapStream, unsigned long uid)
 {
 	IMAPBODY *pBody = NULL;
 
-	if (!imapStream || !imapStream->mailStream) return NULL;
+	if (!imapStream || !imapStream->mailStream)
+		return NULL;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return NULL;
+	if (!LockStream(imapStream->mailStream))
+		return NULL;
 
 	// special logging case
-	if (PrefIsSet(PREF_IMAP_EXTRA_LOGGING) && !(LogLevel&LOG_TRANS))
-	{
+	if (PrefIsSet(PREF_IMAP_EXTRA_LOGGING) && !(LogLevel & LOG_TRANS)) {
 		// turn on all bytes logging
 		LogLevel |= LOG_TRANS;
-		
+
 		// Get the BODY.
-		pBody = mail_fetch_structure (imapStream->mailStream, uid, FT_UID | FT_PEEK);
-	
+		pBody =
+		    mail_fetch_structure(imapStream->mailStream, uid,
+					 FT_UID | FT_PEEK);
+
 		// turn off all bytes logging
 		LogLevel &= ~LOG_TRANS;
-	}
-	else 
-	{
+	} else {
 		// Get the BODY.
-		pBody = mail_fetch_structure (imapStream->mailStream, uid, FT_UID | FT_PEEK);
+		pBody =
+		    mail_fetch_structure(imapStream->mailStream, uid,
+					 FT_UID | FT_PEEK);
 	}
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return pBody;
 }
 
@@ -735,9 +837,10 @@ IMAPBODY *UIDFetchStructure(IMAPStreamPtr imapStream, unsigned long uid)
  *	FreeBodyStructure -  Free a body structure reutrned by 
  *		UIDFetchStructure
  **********************************************************************/
-void FreeBodyStructure(IMAPBODY *pBody)
+void FreeBodyStructure(IMAPBODY * pBody)
 {
-	if (pBody) mail_free_body (&pBody);
+	if (pBody)
+		mail_free_body(&pBody);
 }
 
 
@@ -751,60 +854,66 @@ Boolean UIDFetchFlags(IMAPStreamPtr imapStream, const char *pSequence)
 	Boolean result = false;
 
 	// Must have an open stream.
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// clear out the old results handle if there is one
-	if (imapStream->mailStream->fUIDResults!=nil) 
-	{
+	if (imapStream->mailStream->fUIDResults != nil) {
 		UID_LL_Zap(&(imapStream->mailStream->fUIDResults));
 		imapStream->mailStream->fUIDResults = nil;
 	}
-	
-	// Make our own copy.
-	if (!pSequence) pS = cpystr("1:*");
-	else pS = cpystr(pSequence);
 
-	if (pS)
-	{
-		result = mail_fetch_flags(imapStream->mailStream, pS, FT_UID | FT_PEEK);
-		fs_give ((void **)&pS);
+	// Make our own copy.
+	if (!pSequence)
+		pS = cpystr("1:*");
+	else
+		pS = cpystr(pSequence);
+
+	if (pS) {
+		result =
+		    mail_fetch_flags(imapStream->mailStream, pS,
+				     FT_UID | FT_PEEK);
+		fs_give((void **) &pS);
 	}
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
 /**********************************************************************
  *	FetchAllFlags - fetch all flags (1:*) and accumulate the results
  *		into a UIDList.
- **********************************************************************/	
-Boolean FetchAllFlags (IMAPStreamPtr imapStream, UIDNodeHandle *uidList)
+ **********************************************************************/
+Boolean FetchAllFlags(IMAPStreamPtr imapStream, UIDNodeHandle * uidList)
 {
-	return (FetchFlags (imapStream, "1:*", uidList));
+	return (FetchFlags(imapStream, "1:*", uidList));
 }
 
 
 /**********************************************************************
  *	FetchFlags - fetch UID and FLAGS of the given UID sequence.
- **********************************************************************/	
-Boolean FetchFlags (IMAPStreamPtr imapStream, const char *sequence, UIDNodeHandle *uidList)
+ **********************************************************************/
+Boolean FetchFlags(IMAPStreamPtr imapStream, const char *sequence,
+		   UIDNodeHandle * uidList)
 {
 	Boolean result = false;
 	mailgets_t oldMailGets = NULL;
-	
+
 	// Must have a UID list object. But a sequence is optional
-	if (!uidList) return false;
-	
-	result = UIDFetchFlags (imapStream, sequence);
-	
+	if (!uidList)
+		return false;
+
+	result = UIDFetchFlags(imapStream, sequence);
+
 	// return the result of UIDFetchFlags.
 	*uidList = imapStream->mailStream->fUIDResults;
 	imapStream->mailStream->fUIDResults = nil;
-	
+
 	return (result);
 }
 
@@ -844,27 +953,34 @@ char *UIDFetchInternalDate(IMAPStreamPtr imapStream, unsigned long uid)
 /**********************************************************************
  *	UIDFetchHeader - get the header of the message with UID uid.
  **********************************************************************/
-Boolean UIDFetchHeader(IMAPStreamPtr imapStream, unsigned long uid, Boolean file)
+Boolean UIDFetchHeader(IMAPStreamPtr imapStream, unsigned long uid,
+		       Boolean file)
 {
-	Boolean	result = true;
+	Boolean result = true;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
-	
+
 	// Must have a stream, and be open
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
-	flags = FT_UID | FT_PEEK;		// We are using the UID* command.
+	flags = FT_UID | FT_PEEK;	// We are using the UID* command.
 
-	SetMailGets(imapStream->mailStream, oldMailGets, file?file_gets:buffer_gets);
-	result = (mail_fetch_header(imapStream->mailStream, uid, NULL, NULL, NULL, flags) != NIL);
+	SetMailGets(imapStream->mailStream, oldMailGets,
+		    file ? file_gets : buffer_gets);
+	result =
+	    (mail_fetch_header
+	     (imapStream->mailStream, uid, NULL, NULL, NULL,
+	      flags) != NIL);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -872,28 +988,34 @@ Boolean UIDFetchHeader(IMAPStreamPtr imapStream, unsigned long uid, Boolean file
 /**********************************************************************
  *	UIDFetchMessage - Fetches complete rfc822 message, including header
  **********************************************************************/
-Boolean UIDFetchMessage(IMAPStreamPtr imapStream, unsigned long uid, Boolean Peek)
+Boolean UIDFetchMessage(IMAPStreamPtr imapStream, unsigned long uid,
+			Boolean Peek)
 {
-	Boolean	result = false;
+	Boolean result = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
 
-	// Must have a stream, and it would help for it to be open.	
-	if (!imapStream || !imapStream->mailStream) return false;
-		
+	// Must have a stream, and it would help for it to be open.     
+	if (!imapStream || !imapStream->mailStream)
+		return false;
+
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
 	SetMailGets(imapStream->mailStream, oldMailGets, file_gets);
-	result = (mail_fetch_message(imapStream->mailStream, uid, flags) != NULL);
+	result =
+	    (mail_fetch_message(imapStream->mailStream, uid, flags) !=
+	     NULL);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -901,57 +1023,68 @@ Boolean UIDFetchMessage(IMAPStreamPtr imapStream, unsigned long uid, Boolean Pee
 /**********************************************************************
  *	UIDFetchMessageBody - fetch message without header.
  **********************************************************************/
-Boolean UIDFetchMessageBody(IMAPStreamPtr imapStream, unsigned long uid, Boolean Peek)
+Boolean UIDFetchMessageBody(IMAPStreamPtr imapStream, unsigned long uid,
+			    Boolean Peek)
 {
 	Boolean result = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
 
-	// Must have a stream, and it should be open	
-	if (!imapStream || !imapStream->mailStream) return false;
+	// Must have a stream, and it should be open    
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
 	SetMailGets(imapStream->mailStream, oldMailGets, file_gets);
-	result = mail_fetch_text (imapStream->mailStream, uid, "1", flags);
+	result = mail_fetch_text(imapStream->mailStream, uid, "1", flags);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
-#endif //NO_LONGER_USED
+#endif				//NO_LONGER_USED
 
 /**********************************************************************
  *	UIDFetchPartialMessage - fetch a range of bytes of a message
  **********************************************************************/
-Boolean UIDFetchPartialMessage(IMAPStreamPtr imapStream, unsigned long uid, unsigned long first, unsigned long nBytes, Boolean Peek)
+Boolean UIDFetchPartialMessage(IMAPStreamPtr imapStream, unsigned long uid,
+			       unsigned long first, unsigned long nBytes,
+			       Boolean Peek)
 {
 	Boolean result = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
 
-	// Must have a stream, and it should be open	
-	if (!imapStream || !imapStream->mailStream) return false;
+	// Must have a stream, and it should be open    
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
 	SetMailGets(imapStream->mailStream, oldMailGets, file_gets);
-	result = mail_partial_body (imapStream->mailStream, uid, "", first, nBytes, flags);
+	result =
+	    mail_partial_body(imapStream->mailStream, uid, "", first,
+			      nBytes, flags);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -959,28 +1092,35 @@ Boolean UIDFetchPartialMessage(IMAPStreamPtr imapStream, unsigned long uid, unsi
 /**********************************************************************
  *	UIDFetchPartialMessageBody - can't be right.  Does the same as UIDFetchPartialMessage
  **********************************************************************/
-Boolean	UIDFetchPartialMessageBody(IMAPStreamPtr imapStream, unsigned long uid, unsigned long first, unsigned long nBytes, Boolean Peek)
+Boolean UIDFetchPartialMessageBody(IMAPStreamPtr imapStream,
+				   unsigned long uid, unsigned long first,
+				   unsigned long nBytes, Boolean Peek)
 {
 	Boolean result = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
-	
+
 	// Must have a stream, and it should be open
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
 	SetMailGets(imapStream->mailStream, oldMailGets, file_gets);
-	result = mail_partial_body (imapStream->mailStream, uid, NULL, first, nBytes, flags);
+	result =
+	    mail_partial_body(imapStream->mailStream, uid, NULL, first,
+			      nBytes, flags);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -988,28 +1128,37 @@ Boolean	UIDFetchPartialMessageBody(IMAPStreamPtr imapStream, unsigned long uid, 
 /**********************************************************************
  *	UIDFetchPartialBodyText - fetch a section of the message
  **********************************************************************/
-Boolean	UIDFetchPartialBodyText(IMAPStreamPtr imapStream, unsigned long uid, char *section, unsigned long first, unsigned long nBytes, Boolean Peek, Boolean file)
+Boolean UIDFetchPartialBodyText(IMAPStreamPtr imapStream,
+				unsigned long uid, char *section,
+				unsigned long first, unsigned long nBytes,
+				Boolean Peek, Boolean file)
 {
 	Boolean result = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
-	
-	// Must have a stream and it should be open	
-	if (!imapStream || !imapStream->mailStream) return false;
+
+	// Must have a stream and it should be open     
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
-	SetMailGets(imapStream->mailStream, oldMailGets, file?file_gets:buffer_gets);
-	result = mail_partial_body (imapStream->mailStream, uid, section, first, nBytes, flags);
+	SetMailGets(imapStream->mailStream, oldMailGets,
+		    file ? file_gets : buffer_gets);
+	result =
+	    mail_partial_body(imapStream->mailStream, uid, section, first,
+			      nBytes, flags);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -1022,15 +1171,17 @@ unsigned long FetchUID(IMAPStreamPtr imapStream, unsigned long msgNum)
 	unsigned long result = 0L;
 
 	// Must have a stream
-	if (!imapStream || !imapStream->mailStream) return 0L;
+	if (!imapStream || !imapStream->mailStream)
+		return 0L;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return 0L;
+	if (!LockStream(imapStream->mailStream))
+		return 0L;
 
-	result = mail_uid (imapStream->mailStream, msgNum);
+	result = mail_uid(imapStream->mailStream, msgNum);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -1038,7 +1189,8 @@ unsigned long FetchUID(IMAPStreamPtr imapStream, unsigned long msgNum)
 /**********************************************************************
  *	UIDFetchRFC822Header - not yet implemented
  **********************************************************************/
-Boolean UIDFetchRFC822Header(IMAPStreamPtr imapStream, unsigned long uid, char *sequence)
+Boolean UIDFetchRFC822Header(IMAPStreamPtr imapStream, unsigned long uid,
+			     char *sequence)
 {
 	return false;
 }
@@ -1046,7 +1198,8 @@ Boolean UIDFetchRFC822Header(IMAPStreamPtr imapStream, unsigned long uid, char *
 /**********************************************************************
  *	UIDFetchRFC822Text - not yet implemented
  **********************************************************************/
-Boolean UIDFetchRFC822Text(IMAPStreamPtr imapStream, unsigned long uid, char *sequence)
+Boolean UIDFetchRFC822Text(IMAPStreamPtr imapStream, unsigned long uid,
+			   char *sequence)
 {
 	return false;
 }
@@ -1054,42 +1207,52 @@ Boolean UIDFetchRFC822Text(IMAPStreamPtr imapStream, unsigned long uid, char *se
 /**********************************************************************
  *	UIDFetchRFC822HeaderFields
  **********************************************************************/
-Boolean UIDFetchRFC822HeaderFields(IMAPStreamPtr imapStream, unsigned long uid, char *sequence, char *Fields)
+Boolean UIDFetchRFC822HeaderFields(IMAPStreamPtr imapStream,
+				   unsigned long uid, char *sequence,
+				   char *Fields)
 {
 	STRINGLIST *slist;
 	Boolean result = false;
 	mailgets_t oldMailGets = NULL;
 
 	// Check out the parameters
-	if (!uid || !Fields) return false;
+	if (!uid || !Fields)
+		return false;
 
 	// Must have a stream.
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Convert Fields to a STRINGLIST.
-	slist = CommaSeparatedTextToStringlist (Fields);
-	if (slist)
-	{
-		SetMailGets(imapStream->mailStream, oldMailGets, buffer_gets);
-		result = (mail_fetch_header (imapStream->mailStream, uid, sequence, NULL, slist, FT_UID | FT_PEEK) != NIL);
+	slist = CommaSeparatedTextToStringlist(Fields);
+	if (slist) {
+		SetMailGets(imapStream->mailStream, oldMailGets,
+			    buffer_gets);
+		result =
+		    (mail_fetch_header
+		     (imapStream->mailStream, uid, sequence, NULL, slist,
+		      FT_UID | FT_PEEK) != NIL);
 		ResetMailGets(imapStream->mailStream, oldMailGets);
-		
+
 		// Cleanup.
-		mail_free_stringlist (&slist);
-	}			
+		mail_free_stringlist(&slist);
+	}
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
 /**********************************************************************
  *	UIDFetchRFC822HeaderFieldsNot - not yet implemented
  **********************************************************************/
-Boolean UIDFetchRFC822HeaderFieldsNot(IMAPStreamPtr imapStream, unsigned long uid, char *sequence, char *fields)
+Boolean UIDFetchRFC822HeaderFieldsNot(IMAPStreamPtr imapStream,
+				      unsigned long uid, char *sequence,
+				      char *fields)
 {
 	return false;
 }
@@ -1098,7 +1261,8 @@ Boolean UIDFetchRFC822HeaderFieldsNot(IMAPStreamPtr imapStream, unsigned long ui
 /**********************************************************************
  *	UIDFetchMimeHeader - not yet implemented
  **********************************************************************/
-Boolean	UIDFetchMimeHeader(IMAPStreamPtr imapStream, unsigned long uid, char *sequence)
+Boolean UIDFetchMimeHeader(IMAPStreamPtr imapStream, unsigned long uid,
+			   char *sequence)
 {
 	return false;
 }
@@ -1106,28 +1270,34 @@ Boolean	UIDFetchMimeHeader(IMAPStreamPtr imapStream, unsigned long uid, char *se
 /**********************************************************************
  *	UIDFetchBodyText
  **********************************************************************/
-Boolean	UIDFetchBodyText(IMAPStreamPtr imapStream, unsigned long uid, char *sequence, Boolean Peek)
+Boolean UIDFetchBodyText(IMAPStreamPtr imapStream, unsigned long uid,
+			 char *sequence, Boolean Peek)
 {
 	Boolean results = false;
 	unsigned long flags;
 	mailgets_t oldMailGets = NULL;
-	
+
 	// Must have a stream,ld be open
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Setup flags.
 	flags = FT_UID;		// We are using the UID* command.
-	if (Peek) flags |= FT_PEEK;
+	if (Peek)
+		flags |= FT_PEEK;
 
 	SetMailGets(imapStream->mailStream, oldMailGets, file_gets);
-	results = (mail_fetch_body (imapStream->mailStream, uid, sequence, flags) != NULL);
+	results =
+	    (mail_fetch_body(imapStream->mailStream, uid, sequence, flags)
+	     != NULL);
 	ResetMailGets(imapStream->mailStream, oldMailGets);
-	
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return results;
 }
 
@@ -1135,32 +1305,36 @@ Boolean	UIDFetchBodyText(IMAPStreamPtr imapStream, unsigned long uid, char *sequ
  * UIDFetchBodyTextInChunks - like UIDFetchBodyText, but nicer
  *	to cancel out of
  **********************************************************************/
-Boolean	UIDFetchBodyTextInChunks(IMAPStreamPtr imapStream, unsigned long uid, char *sequence, Boolean Peek, long size)
+Boolean UIDFetchBodyTextInChunks(IMAPStreamPtr imapStream,
+				 unsigned long uid, char *sequence,
+				 Boolean Peek, long size)
 {
 	mailgets_t oldMailGets = NULL;
-	long bufferSize = 2*GetRLong(IMAP_TRANSFER_BUFFER_SIZE);
-	long last = 0, nBytes = MIN(size,bufferSize);
-	
-	// Must have a stream, should be open
-	if (!imapStream || !imapStream->mailStream) return false;
+	long bufferSize = 2 * GetRLong(IMAP_TRANSFER_BUFFER_SIZE);
+	long last = 0, nBytes = MIN(size, bufferSize);
 
-	while(!CommandPeriod && (last<size))
-	{
-		if (UIDFetchPartialBodyText(imapStream, uid, sequence, last, nBytes, Peek, true)) 
+	// Must have a stream, should be open
+	if (!imapStream || !imapStream->mailStream)
+		return false;
+
+	while (!CommandPeriod && (last < size)) {
+		if (UIDFetchPartialBodyText
+		    (imapStream, uid, sequence, last, nBytes, Peek, true))
 			last += nBytes;
-		else 
+		else
 			break;
-		
-		nBytes = MIN(nBytes, (size-last));	//set nBytes so we don't try to read past end of message
+
+		nBytes = MIN(nBytes, (size - last));	//set nBytes so we don't try to read past end of message
 	}
-	
-	return ((last>=size));
+
+	return ((last >= size));
 }
 
 /**********************************************************************
  *	UIDFetchPreamble - not yet implemented
  **********************************************************************/
-Boolean UIDFetchPreamble(IMAPStreamPtr imapStream, unsigned long uid, char *sequence)
+Boolean UIDFetchPreamble(IMAPStreamPtr imapStream, unsigned long uid,
+			 char *sequence)
 {
 	return false;
 }
@@ -1168,7 +1342,8 @@ Boolean UIDFetchPreamble(IMAPStreamPtr imapStream, unsigned long uid, char *sequ
 /**********************************************************************
  *	UIDFetchTrailer
  **********************************************************************/
-Boolean UIDFetchTrailer(IMAPStreamPtr imapStream, unsigned long uid, char *sequence)
+Boolean UIDFetchTrailer(IMAPStreamPtr imapStream, unsigned long uid,
+			char *sequence)
 {
 	return false;
 }
@@ -1176,55 +1351,67 @@ Boolean UIDFetchTrailer(IMAPStreamPtr imapStream, unsigned long uid, char *seque
 /**********************************************************************
  *	UIDSaveFlags - 
  **********************************************************************/
-Boolean UIDSaveFlags(IMAPStreamPtr imapStream, unsigned long uid, char *uidList, IMAPFLAGS *Flags, Boolean Set, Boolean Silent)
+Boolean UIDSaveFlags(IMAPStreamPtr imapStream, unsigned long uid,
+		     char *uidList, IMAPFLAGS * Flags, Boolean Set,
+		     Boolean Silent)
 {
 	Boolean result = false;
 	Str255 cUidStr;
 	char *flagsStr = nil;
-	
+
 	// Must have a MAILSTREAM ...
-	if (!imapStream || !imapStream->mailStream) return (false);
-	
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
+
 	// must have a Flags struct
-	if (!Flags) return (false);
-	
+	if (!Flags)
+		return (false);
+
 	// and already be connected. 
-	if (!IsConnected(imapStream->mailStream)) return (false);
+	if (!IsConnected(imapStream->mailStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// build the flag string to send to the server
-	flagsStr = FlagsString(&flagsStr, Flags->SEEN, Flags->DELETED, Flags->FLAGGED, Flags->ANSWERED, Flags->DRAFT, Flags->RECENT, false);
-	if (!flagsStr) return (false);
-	
+	flagsStr =
+	    FlagsString(&flagsStr, Flags->SEEN, Flags->DELETED,
+			Flags->FLAGGED, Flags->ANSWERED, Flags->DRAFT,
+			Flags->RECENT, false);
+	if (!flagsStr)
+		return (false);
+
 	// Set the message flags.
-	if (!uidList)
-	{
-		sprintf (cUidStr,"%lu",uid);
+	if (!uidList) {
+		sprintf(cUidStr, "%lu", uid);
 		uidList = cUidStr;
-	}
-	else
-	{
+	} else {
 		strcpy(cUidStr, uidList);
 	}
-	result = mail_flag (imapStream->mailStream, cUidStr, flagsStr, ST_UID | (Set ? ST_SET : 0) | (Silent ? ST_SILENT : 0));
+	result =
+	    mail_flag(imapStream->mailStream, cUidStr, flagsStr,
+		      ST_UID | (Set ? ST_SET : 0) | (Silent ? ST_SILENT :
+						     0));
 
 	// get rid of the flags string
-	if (flagsStr) ZapPtr(flagsStr);
-				
+	if (flagsStr)
+		ZapPtr(flagsStr);
+
 	UnlockStream(imapStream->mailStream);
-			
+
 	return (result);
 }
 
 /**********************************************************************
  *	UIDAddFlags - 
  **********************************************************************/
-Boolean UIDAddFlags(IMAPStreamPtr imapStream, unsigned long uid, IMAPFLAGS *Flags, Boolean Silent)
+Boolean UIDAddFlags(IMAPStreamPtr imapStream, unsigned long uid,
+		    IMAPFLAGS * Flags, Boolean Silent)
 {
 	Boolean result = false;
-	
+
 	return (result);
 }
 
@@ -1232,10 +1419,11 @@ Boolean UIDAddFlags(IMAPStreamPtr imapStream, unsigned long uid, IMAPFLAGS *Flag
 /**********************************************************************
  *	UIDRemoveFlags - 
  **********************************************************************/
-Boolean UIDRemoveFlags(IMAPStreamPtr imapStream, unsigned long uid, IMAPFLAGS *Flags, Boolean Silent)
+Boolean UIDRemoveFlags(IMAPStreamPtr imapStream, unsigned long uid,
+		       IMAPFLAGS * Flags, Boolean Silent)
 {
 	Boolean result = false;
-	
+
 	return (result);
 }
 
@@ -1249,44 +1437,53 @@ Boolean UIDMarkAsReplied(IMAPStreamPtr imapStream, unsigned long uid)
 
 	Zero(flagsToChange);
 	flagsToChange.ANSWERED = true;
-	
-	result = UIDSaveFlags(imapStream, uid, nil, &flagsToChange, true, true);
-	 
+
+	result =
+	    UIDSaveFlags(imapStream, uid, nil, &flagsToChange, true, true);
+
 	return (result);
 }
-	
+
 /**********************************************************************
  *	UIDCopy -  Copy a list of messages from the current mailbox to
  *		a destination mailbox.  The destination must be on the same
  *		server!
  **********************************************************************/
-Boolean UIDCopy (IMAPStreamPtr imapStream, char *pUidlist, char *pDestMailbox)
+Boolean UIDCopy(IMAPStreamPtr imapStream, char *pUidlist,
+		char *pDestMailbox)
 {
 	Boolean result = false;
 	char *pList = NULL;
 	char *pMbox = NULL;
 
 	// must have valid arguments
-	if (!pUidlist || !pDestMailbox) return (false);
+	if (!pUidlist || !pDestMailbox)
+		return (false);
 
 	// must have a MAILSTREAM
-	if (!imapStream || !imapStream->mailStream) return (false);
-	
+	if (!imapStream || !imapStream->mailStream)
+		return (false);
+
 	// The stream MUST be open, otherwise fail.
-	if (!IsConnected(imapStream->mailStream)) return (false);
+	if (!IsConnected(imapStream->mailStream))
+		return (false);
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return (false);
+	if (!LockStream(imapStream->mailStream))
+		return (false);
 
 	// clear old response
-  	AccuZap(imapStream->mailStream->UIDPLUSResponse);
-  	AccuInit(&imapStream->mailStream->UIDPLUSResponse);
-  	imapStream->mailStream->UIDPLUSuv = 0;
-  	
-	result = (mail_copy_full(imapStream->mailStream, pUidlist, pDestMailbox, CP_UID) != 0);
+	AccuZap(imapStream->mailStream->UIDPLUSResponse);
+	AccuInit(&imapStream->mailStream->UIDPLUSResponse);
+	imapStream->mailStream->UIDPLUSuv = 0;
+
+	result =
+	    (mail_copy_full
+	     (imapStream->mailStream, pUidlist, pDestMailbox,
+	      CP_UID) != 0);
 
 	UnlockStream(imapStream->mailStream);
-	
+
 	return (result);
 }
 
@@ -1294,35 +1491,46 @@ Boolean UIDCopy (IMAPStreamPtr imapStream, char *pUidlist, char *pDestMailbox)
 /**********************************************************************
  *	AppendMessage - append a message to the current mailbox
  **********************************************************************/
-Boolean IMAPAppendMessage (IMAPStreamPtr imapStream, const char* Flags, long seconds, STRING *pMsg)
+Boolean IMAPAppendMessage(IMAPStreamPtr imapStream, const char *Flags,
+			  long seconds, STRING * pMsg)
 {
-	char flgs [MAILTMPLEN + 4];
+	char flgs[MAILTMPLEN + 4];
 	Boolean result = false;
 
 	// Sanity
-	if (!pMsg) return false;
+	if (!pMsg)
+		return false;
 
 	// Must have a mailStrem
-	if (!imapStream->mailStream) return false;
+	if (!imapStream->mailStream)
+		return false;
 
 	// Must also have a mailbox name.
-	if (!imapStream->mailboxName) return false;
+	if (!imapStream->mailboxName)
+		return false;
 
 	// Must be SELECTed
-	if (!IsSelected(imapStream->mailStream)) return false;
+	if (!IsSelected(imapStream->mailStream))
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(imapStream->mailStream)) return false;
+	if (!LockStream(imapStream->mailStream))
+		return false;
 
 	// Copy Flags to an internal buffer
 	*flgs = 0;
-	if ((Flags) && (strlen(Flags) < MAILTMPLEN)) strcpy (flgs, Flags);
-	else *flgs = 0;
-	
-	result = (mail_append_full(imapStream->mailStream, imapStream->mailboxName, flgs, nil, pMsg) != 0);
-	
+	if ((Flags) && (strlen(Flags) < MAILTMPLEN))
+		strcpy(flgs, Flags);
+	else
+		*flgs = 0;
+
+	result =
+	    (mail_append_full
+	     (imapStream->mailStream, imapStream->mailboxName, flgs, nil,
+	      pMsg) != 0);
+
 	UnlockStream(imapStream->mailStream);
-	
+
 	return result;
 }
 
@@ -1330,26 +1538,30 @@ Boolean IMAPAppendMessage (IMAPStreamPtr imapStream, const char* Flags, long sec
 /**********************************************************************
  *	UIDMessageIsMultipart -  Return true if the message is multipart
  **********************************************************************/
-Boolean	 UIDMessageIsMultipart(IMAPStreamPtr stream, unsigned long uid)
+Boolean UIDMessageIsMultipart(IMAPStreamPtr stream, unsigned long uid)
 {
 	IMAPBODY *body = NULL;
 	Boolean result = false;
 
-	if (!stream || !stream->mailStream) return false;
+	if (!stream || !stream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(stream->mailStream)) return false;
+	if (!LockStream(stream->mailStream))
+		return false;
 
 	// Look at the top body's type.
-	body = mail_fetch_structure (stream->mailStream, uid, FT_UID | FT_PEEK);
+	body =
+	    mail_fetch_structure(stream->mailStream, uid,
+				 FT_UID | FT_PEEK);
 
 	result = body && (body->type == TYPEMULTIPART);
 
 	UnlockStream(stream->mailStream);
-	
+
 	// I was just using you for your body
 	FreeBodyStructure(body);
-	
+
 	return result;
 }
 
@@ -1359,22 +1571,22 @@ Boolean	 UIDMessageIsMultipart(IMAPStreamPtr stream, unsigned long uid)
  **********************************************************************/
 long UIDGetTime(IMAPStreamPtr stream, IMAPUID uid)
 {
-#if 0 // BUG - MUST FIX
+#if 0				// BUG - MUST FIX
 	struct tm time;
-	MESSAGECACHE	*elt = NULL;
+	MESSAGECACHE *elt = NULL;
 
 	// Initialize.
-	memset (&time, 0, sizeof(struct tm));
+	memset(&time, 0, sizeof(struct tm));
 
 	// Sanity.
-	if (!stream || !stream->mailStream) return 0L;
+	if (!stream || !stream->mailStream)
+		return 0L;
 
 	// Get the MESSAGECACHE for this message.
 	// BUG:: Should make sure the msgno is valid!!
-	elt = mail_elt (stream->mailStream, UidToMsgmno (uid));
+	elt = mail_elt(stream->mailStream, UidToMsgmno(uid));
 
-	if (elt)
-	{
+	if (elt) {
 		time.tm_mon = elt->month;
 		// elt->year is years since 1969.
 		if (elt->year < 1)
@@ -1383,9 +1595,9 @@ long UIDGetTime(IMAPStreamPtr stream, IMAPUID uid)
 			time.tm_year = elt->year - 1;
 		time.tm_mday = elt->day;
 		time.tm_hour = elt->hours;
-		time.tm_min  = elt->minutes;
-		time.tm_sec  = elt->seconds;
-	
+		time.tm_min = elt->minutes;
+		time.tm_sec = elt->seconds;
+
 		time.tm_isdst = -1;
 	}
 
@@ -1393,9 +1605,9 @@ long UIDGetTime(IMAPStreamPtr stream, IMAPUID uid)
 
 	return (seconds < 0L ? 0L : seconds);
 
-#endif // JOK BUG
+#endif				// JOK BUG
 
-	return 0;  // FORNOW
+	return 0;		// FORNOW
 }
 
 
@@ -1407,15 +1619,19 @@ unsigned long GetRfc822Size(IMAPStreamPtr stream, IMAPUID uid)
 	unsigned long result = 0;
 
 	// Must have a stream, and be connected.
-	if (!stream || !IsConnected(stream->mailStream)) return 0;
+	if (!stream || !IsConnected(stream->mailStream))
+		return 0;
 
 	// Catch a locked stream here.
-	if (!LockStream(stream->mailStream)) return 0;
+	if (!LockStream(stream->mailStream))
+		return 0;
 
-	result = mail_fetch_rfc822size(stream->mailStream, uid, FT_UID | FT_PEEK);
+	result =
+	    mail_fetch_rfc822size(stream->mailStream, uid,
+				  FT_UID | FT_PEEK);
 
 	UnlockStream(stream->mailStream);
-	
+
 	return result;
 }
 
@@ -1423,17 +1639,19 @@ unsigned long GetRfc822Size(IMAPStreamPtr stream, IMAPUID uid)
 /**********************************************************************
  *	UIDVALIDITY -  return UIDVALIDITY of selected mailbox
  **********************************************************************/
-UIDVALIDITY	UIDValidity(IMAPStreamPtr stream)
+UIDVALIDITY UIDValidity(IMAPStreamPtr stream)
 {
-	if (stream && stream->mailStream && stream->mailboxName) return (stream->uidvalidity);
-	else return NULL;
+	if (stream && stream->mailStream && stream->mailboxName)
+		return (stream->uidvalidity);
+	else
+		return NULL;
 }
 
 
 /**********************************************************************
  *	IsReadOnly -  Return true if this stream is rdonly.
  **********************************************************************/
-Boolean IsReadOnly(MAILSTREAM *stream)
+Boolean IsReadOnly(MAILSTREAM * stream)
 {
 	return (stream->rdonly);
 }
@@ -1442,55 +1660,59 @@ Boolean IsReadOnly(MAILSTREAM *stream)
  * UIDFind -  Do an IMAP Search of a mailbox. 
  *	Returns a list of UID nodes, ordered by UID.	
  **********************************************************************/
-Boolean UIDFind(IMAPStreamPtr stream, const char *headerList, Boolean body, Boolean not, char *string, unsigned long firstUID, unsigned long lastUID, UIDNodeHandle *results)
+Boolean UIDFind(IMAPStreamPtr stream, const char *headerList, Boolean body,
+		Boolean not, char *string, unsigned long firstUID,
+		unsigned long lastUID, UIDNodeHandle * results)
 {
 	unsigned long flags = 0;
 	Boolean result = false;
-	SEARCHPGM* pPgm = nil;
+	SEARCHPGM *pPgm = nil;
 	SEARCHPGMLIST *pNotList = nil;
 
 	// Must have a stream.
-	if (!stream || !stream->mailStream) return false;
+	if (!stream || !stream->mailStream)
+		return false;
 
 	// Must be searching either a list of headers, or the body
-	if (!body && (!headerList || !*headerList)) return (false);
-	
+	if (!body && (!headerList || !*headerList))
+		return (false);
+
 	// Must have something to search for
-	if (!string || !*string) return (false);
+	if (!string || !*string)
+		return (false);
 
 	// UidFirst MUST be non-zero.
-	if (firstUID == 0) firstUID = 1;
+	if (firstUID == 0)
+		firstUID = 1;
 
 	// clear any old results we may have laying around
-	if (stream->mailStream->fUIDResults!=nil) 
-	{
+	if (stream->mailStream->fUIDResults != nil) {
 		UID_LL_Zap(&(stream->mailStream->fUIDResults));
 		stream->mailStream->fUIDResults = nil;
 	}
-		
+
 	// Attempt to lock the stream:
-	if (!LockStream(stream->mailStream)) return (false);
+	if (!LockStream(stream->mailStream))
+		return (false);
 
 	// Fill a search program with the criteria.
 	pPgm = NuPtrClear(sizeof(SEARCHPGM));
-	if (!pPgm) return (false);
+	if (!pPgm)
+		return (false);
 
 	// Set the Uid range in the top level spgm.
-	if (lastUID)
-	{
+	if (lastUID) {
 		pPgm->uid = NuPtrClear(sizeof(SEARCHSET));
-		if (!pPgm->uid)
-		{
+		if (!pPgm->uid) {
 			mail_free_searchpgm(&pPgm);
 			return (false);
 		}
 		pPgm->uid->first = firstUID;
-		pPgm->uid->last  = (lastUID==firstUID)?0:lastUID;
+		pPgm->uid->last = (lastUID == firstUID) ? 0 : lastUID;
 	}
-	
+
 	// Go accumulate the search criteria.
-	if (not)
-	{
+	if (not) {
 		//
 		// Allocate a SEARCHPGMLIST off the ->not member, allocate a 
 		// new SPGM in it, and fill that with the OR'd list.
@@ -1498,8 +1720,7 @@ Boolean UIDFind(IMAPStreamPtr stream, const char *headerList, Boolean body, Bool
 
 		pNotList = NuPtrClear(sizeof(SEARCHPGMLIST));
 
-		if (!pNotList)
-		{
+		if (!pNotList) {
 			result = false;
 			goto cleanup;
 		}
@@ -1510,42 +1731,42 @@ Boolean UIDFind(IMAPStreamPtr stream, const char *headerList, Boolean body, Bool
 
 		// Allocate a new SPGM.
 		pNotList->pgm = NuPtrClear(sizeof(SEARCHPGM));
-		if (!pNotList->pgm)
-		{
+		if (!pNotList->pgm) {
 			result = false;
 			goto cleanup;
 		}
 
 		// Set the OR criteria into this now.
-		result = SetORSearchCriteria(pNotList->pgm, (char *)headerList, body, string);
-	}
-	else
-	{
+		result =
+		    SetORSearchCriteria(pNotList->pgm, (char *) headerList,
+					body, string);
+	} else {
 		// Uses a series of OR's
-		result = SetORSearchCriteria(pPgm, (char *)headerList, body, string);
+		result =
+		    SetORSearchCriteria(pPgm, (char *) headerList, body,
+					string);
 	}
 
-	if (result)
-	{
+	if (result) {
 		// Do UID search
 		flags |= SE_UID;
-	
-		// Do the search.
-		result = mail_search_full(stream->mailStream, NULL, pPgm, flags);
 
-		if (result)
-		{
+		// Do the search.
+		result =
+		    mail_search_full(stream->mailStream, NULL, pPgm,
+				     flags);
+
+		if (result) {
 			// Copy the stream's results.
 			*results = stream->mailStream->fUIDResults;
 			stream->mailStream->fUIDResults = nil;
-		}
-		else
-		{
-			IMAPError(kIMAPSearching, kIMAPNotConnectedErr, errIMAPSearchMailboxErr);
+		} else {
+			IMAPError(kIMAPSearching, kIMAPNotConnectedErr,
+				  errIMAPSearchMailboxErr);
 		}
 	}
 
-cleanup:
+      cleanup:
 	// Cleanup.
 	mail_free_searchpgm(&pPgm);
 
@@ -1566,47 +1787,54 @@ Boolean FetchHeader(IMAPStreamPtr stream, unsigned long msgNum)
 	mailgets_t oldMailGets = NULL;
 
 	// Should be open.
-	if (!stream || !stream->mailStream) return false;
+	if (!stream || !stream->mailStream)
+		return false;
 
 	// Catch a locked stream here.
-	if (!LockStream(stream->mailStream)) return false;
+	if (!LockStream(stream->mailStream))
+		return false;
 
 	// Setup flags.
-	flags = 0L;			// msgno fetch - nu UID this time.
+	flags = 0L;		// msgno fetch - nu UID this time.
 
 	SetMailGets(stream->mailStream, oldMailGets, file_gets);
-	result = (mail_fetch_header (stream->mailStream, msgNum, NULL, NULL, NULL, flags) != NIL);
+	result =
+	    (mail_fetch_header
+	     (stream->mailStream, msgNum, NULL, NULL, NULL, flags) != NIL);
 	ResetMailGets(stream->mailStream, oldMailGets);
-	
+
 	UnlockStream(stream->mailStream);
-	
+
 	return result;
 }
 
 /**********************************************************************
  *	FetchMIMEHeader - fetch the mime header of a given message part
  **********************************************************************/
-long FetchMIMEHeader(IMAPStreamPtr stream, unsigned long uid, char* section, unsigned long flags)
+long FetchMIMEHeader(IMAPStreamPtr stream, unsigned long uid,
+		     char *section, unsigned long flags)
 {
 	long result = 0;
 	mailgets_t oldMailGets = NULL;
 
 	// Should be open.
-	if (!stream || !stream->mailStream) return 0;
+	if (!stream || !stream->mailStream)
+		return 0;
 
 	// Catch a locked stream here.
-	if (!LockStream(stream->mailStream)) return 0;
+	if (!LockStream(stream->mailStream))
+		return 0;
 
 	// set up flags
 	flags |= FT_UID;
 	flags |= FT_PEEK;	// don't mark un-recent the message, silly -jdboyd 11/07/00
 
 	SetMailGets(stream->mailStream, oldMailGets, file_gets);
-	result = mail_fetch_mime (stream->mailStream, uid, section, flags);
+	result = mail_fetch_mime(stream->mailStream, uid, section, flags);
 	ResetMailGets(stream->mailStream, oldMailGets);
-	
+
 	UnlockStream(stream->mailStream);
-	
+
 	return result;
 }
 
@@ -1615,13 +1843,15 @@ long FetchMIMEHeader(IMAPStreamPtr stream, unsigned long uid, char* section, uns
  *	OrderedInsert - this is called once per message when doing a 
  *		UIDFetchFlags.
  **********************************************************************/
-void OrderedInsert(MAILSTREAM *mailStream, unsigned long uid, Boolean seen, Boolean deleted, Boolean flagged, Boolean answered, Boolean draft, Boolean recent, Boolean sent, unsigned long size)
+void OrderedInsert(MAILSTREAM * mailStream, unsigned long uid,
+		   Boolean seen, Boolean deleted, Boolean flagged,
+		   Boolean answered, Boolean draft, Boolean recent,
+		   Boolean sent, unsigned long size)
 {
 	UIDNodeHandle node = nil;
-	
+
 	node = NewZH(UIDNode);
-	if (node)
-	{
+	if (node) {
 		(*node)->uid = uid;
 		(*node)->l_seen = seen;
 		(*node)->l_deleted = deleted;
@@ -1631,39 +1861,42 @@ void OrderedInsert(MAILSTREAM *mailStream, unsigned long uid, Boolean seen, Bool
 		(*node)->l_recent = recent;
 		(*node)->l_sent = sent;
 		(*node)->size = size;
-		
+
 		// ordered insert this node into the list
-		UID_LL_OrderedInsert(&(mailStream->fUIDResults), &node, true);
-	}
-	else
-	{
-		WarnUser(MEM_ERR,MemError());
+		UID_LL_OrderedInsert(&(mailStream->fUIDResults), &node,
+				     true);
+	} else {
+		WarnUser(MEM_ERR, MemError());
 	}
 }
 
 /**********************************************************************
  *	LockStream - lock the stream.  Return false if it was already locked.
  **********************************************************************/
-Boolean LockStream(MAILSTREAM *stream)
-{	
-	ASSERT(stream && (stream->lock==0));
-	
-	if (!stream) return false;
-	
-	if (stream->lock != 0) return false;
-	else stream->lock = 1;
-	
+Boolean LockStream(MAILSTREAM * stream)
+{
+	ASSERT(stream && (stream->lock == 0));
+
+	if (!stream)
+		return false;
+
+	if (stream->lock != 0)
+		return false;
+	else
+		stream->lock = 1;
+
 	return true;
 }
 
 /**********************************************************************
  *	UnlockStream - unlock a stream.
  **********************************************************************/
-void UnlockStream(MAILSTREAM *stream)
-{	
+void UnlockStream(MAILSTREAM * stream)
+{
 	ASSERT(stream && stream->lock);
-	
-	if (stream) stream->lock = 0;
+
+	if (stream)
+		stream->lock = 0;
 }
 
 
@@ -1671,14 +1904,15 @@ void UnlockStream(MAILSTREAM *stream)
  *	CommaSeparatedTextToStringlist - Convert a comma-separated string 
  *		of strings into a STRINGLIST.
  **********************************************************************/
-STRINGLIST *CommaSeparatedTextToStringlist (char *Fields)
+STRINGLIST *CommaSeparatedTextToStringlist(char *Fields)
 {
-	size_t		len;
-	char		buf [MAILTMPLEN];
-	char		*p, *q;
-	STRINGLIST	*first = NULL, *last, *m;
+	size_t len;
+	char buf[MAILTMPLEN];
+	char *p, *q;
+	STRINGLIST *first = NULL, *last, *m;
 
-	if (!Fields) return NULL;
+	if (!Fields)
+		return NULL;
 
 	// Format the comma-separated list of fields into a STRINGLIST.
 	p = Fields;
@@ -1686,54 +1920,45 @@ STRINGLIST *CommaSeparatedTextToStringlist (char *Fields)
 	*buf = 0;
 
 	// Wade through Fields.
-	while (p && *p)
-	{
-		q = strchr (p, ',');
+	while (p && *p) {
+		q = strchr(p, ',');
 
 		// Get token.
-		if (q)
-		{
+		if (q) {
 			len = q - p;
-			if (len >= MAILTMPLEN)		// Can't handle long strings.
+			if (len >= MAILTMPLEN)	// Can't handle long strings.
 				*buf = 0;
-			else
-			{
-				strncpy ( buf, p, len );
+			else {
+				strncpy(buf, p, len);
 				buf[len] = 0;
 				Trim(buf);
-			}					
+			}
 			p = q + 1;
-		}
-		else
-		{
-			len = strlen (buf);
+		} else {
+			len = strlen(buf);
 			// Must be last or only one.
 			if (strlen(p) >= MAILTMPLEN)
 				*buf = 0;
-			else
-			{
-				strcpy (buf, p);
+			else {
+				strcpy(buf, p);
 				Trim(buf);
 			}
-			p = NULL;   // So we stop.
+			p = NULL;	// So we stop.
 		}
 
 		// Add to stringlist if not blank.
-		if (*buf)
-		{
+		if (*buf) {
 			// Get new stringlist.
-			m = mail_newstringlist ();
-			if (m)
-			{
-				m->text.data = cpystr (buf);
-				m->text.size = strlen (buf);
+			m = mail_newstringlist();
+			if (m) {
+				m->text.data = cpystr(buf);
+				m->text.size = strlen(buf);
 				m->next = NULL;
 
 				// Link in:
 				if (!first)
 					first = m;
-				else
-				{
+				else {
 					last = first;
 					while (last->next)
 						last = last->next;
@@ -1755,8 +1980,7 @@ void Trim(char *string)
 {
 	char *p, *q;
 
-	if (string)
-	{
+	if (string) {
 		p = q = string;
 
 		// Look for first non-blank char.
@@ -1766,16 +1990,14 @@ void Trim(char *string)
 		// All blank?
 		if (!*q)
 			*p = 0;	// We're done.
-		else
-		{
-			while (*q)
-			{
+		else {
+			while (*q) {
 				*p++ = *q++;
 			}
 			*p = 0;	// Tie off.
 
 			// Strip trailing;
-			q = p + strlen (p) - 1;
+			q = p + strlen(p) - 1;
 			while (q && (q >= p) && !(*q == ' ' || *q == '\t'))
 				*q-- = 0;
 		}
@@ -1787,68 +2009,76 @@ void Trim(char *string)
  *	SetORSearchCriteria - Accumulate the searech criteria into the 
  *		given SEARCHPGM.
  **********************************************************************/
-Boolean SetORSearchCriteria (SEARCHPGM *pPgm, char *pHeaderList, Boolean bBody, char *pSearchString)
+Boolean SetORSearchCriteria(SEARCHPGM * pPgm, char *pHeaderList,
+			    Boolean bBody, char *pSearchString)
 {
 	Boolean result = false;
 
 	// must have a search struct to fill, and some search criteria
-	if (!pPgm || !pSearchString) return false;
+	if (!pPgm || !pSearchString)
+		return false;
 
 	// Set this to TRUE if we succeed.
 	result = false;
-	
+
 	// Do we want to search the message body?
-	if (bBody)
-	{
+	if (bBody) {
 		// If headers also, use an OR.
-		if (pHeaderList && *pHeaderList)
-		{
+		if (pHeaderList && *pHeaderList) {
 			pPgm->or = NuPtrClear(sizeof(SEARCHOR));
-			if (pPgm->or)
-			{
+			if (pPgm->or) {
 				// Fill body criterion;
-				pPgm->or->first = NuPtrClear(sizeof(SEARCHPGM));
-				if (pPgm->or->first)
-				{
+				pPgm->or->first =
+				    NuPtrClear(sizeof(SEARCHPGM));
+				if (pPgm->or->first) {
 					// Fill the body criterion only!
-					result = SetORSearchCriteria (pPgm->or->first, NULL, bBody, pSearchString);
-					if (result)
-					{
+					result =
+					    SetORSearchCriteria(pPgm->or->
+								first,
+								NULL,
+								bBody,
+								pSearchString);
+					if (result) {
 						// Restart.
 						result = FALSE;
 
 						// Go add the header list.
-						pPgm->or->second = NuPtrClear(sizeof(SEARCHPGM));
-						if (pPgm->or->second)
-						{
+						pPgm->or->second =
+						    NuPtrClear(sizeof
+							       (SEARCHPGM));
+						if (pPgm->or->second) {
 							// This will recursively add the headers.
-							result = SetORHeaderSearchCriteria(pPgm->or->second, pHeaderList, pSearchString);
+							result =
+							    SetORHeaderSearchCriteria
+							    (pPgm->or->
+							     second,
+							     pHeaderList,
+							     pSearchString);
 						}
 					}
 				}
 			}
-		}
-		else
-		{
+		} else {
 			// No header list. We are searching just the body.
 			result = false;
 
 			pPgm->body = NuPtrClear(sizeof(STRINGLIST));
-			if (pPgm->body)
-			{
+			if (pPgm->body) {
 				pPgm->body->next = NULL;
 
-				pPgm->body->text.data = cpystr(pSearchString);
-				pPgm->body->text.size = strlen(pSearchString);
+				pPgm->body->text.data =
+				    cpystr(pSearchString);
+				pPgm->body->text.size =
+				    strlen(pSearchString);
 
 				result = TRUE;
 			}
 		}
-	}
-	else if (pHeaderList && *pHeaderList)
-	{
+	} else if (pHeaderList && *pHeaderList) {
 		// Add header list.
-		result = SetORHeaderSearchCriteria (pPgm, pHeaderList, pSearchString);
+		result =
+		    SetORHeaderSearchCriteria(pPgm, pHeaderList,
+					      pSearchString);
 	}
 
 	return result;
@@ -1859,14 +2089,16 @@ Boolean SetORSearchCriteria (SEARCHPGM *pPgm, char *pHeaderList, Boolean bBody, 
  *	SetORHeaderSearchCriteria - pHeaderList is a comma-separated list 
  *		of headers that must be put into a OR'd list of searchprograms. 
  **********************************************************************/
-Boolean SetORHeaderSearchCriteria (SEARCHPGM *pPgm, char *pHeaderList, char *pSearchString)
+Boolean SetORHeaderSearchCriteria(SEARCHPGM * pPgm, char *pHeaderList,
+				  char *pSearchString)
 {
 	Boolean result = false;
 	char Comma = ',';
 	char *p = 0;
-	
+
 	// These must be valid
-	if (!pPgm || !pHeaderList || !pSearchString) return (false);
+	if (!pPgm || !pHeaderList || !pSearchString)
+		return (false);
 
 	// Set this to TRUE if we succeed.
 	result = false;
@@ -1875,48 +2107,49 @@ Boolean SetORHeaderSearchCriteria (SEARCHPGM *pPgm, char *pHeaderList, char *pSe
 
 	// Is this the last or only header?
 	p = strchr(pHeaderList, Comma);
-	if (p)
-	{
+	if (p) {
 		// Tie off temporarily.
 		*p = '\0';
 
 		// Use an OR.
 		pPgm->or = NuPtrClear(sizeof(SEARCHOR));
-		if (pPgm->or)
-		{
+		if (pPgm->or) {
 			// Add single header.
 			pPgm->or->first = NuPtrClear(sizeof(SEARCHPGM));
-			if (pPgm->or->first)
-			{
-				result = SetORSearchCriteria (pPgm->or->first, pHeaderList, false, pSearchString);
+			if (pPgm->or->first) {
+				result =
+				    SetORSearchCriteria(pPgm->or->first,
+							pHeaderList, false,
+							pSearchString);
 			}
 
 			// Add rest of headers.
-			if (result)
-			{
+			if (result) {
 				result = false;
 
 				// Put the comma back.
 				*p++ = Comma;
 
 				// Second criteria..
-				pPgm->or->second = NuPtrClear(sizeof (SEARCHPGM));
-				if (pPgm->or->second)
-				{
+				pPgm->or->second =
+				    NuPtrClear(sizeof(SEARCHPGM));
+				if (pPgm->or->second) {
 					// This will recursively add the headers.
-					result = SetORSearchCriteria (pPgm->or->second, p, false, pSearchString);
+					result =
+					    SetORSearchCriteria(pPgm->or->
+								second, p,
+								false,
+								pSearchString);
 				}
 			}
 		}
-	} // if p.
-	else
-	{
+	}			// if p.
+	else {
 		result = false;
 
 		// Single header. Add it.
 		pPgm->IMAPheader = NuPtrClear(sizeof(SEARCHHEADER));
-		if (pPgm->IMAPheader)
-		{
+		if (pPgm->IMAPheader) {
 			pPgm->IMAPheader->line = cpystr(pHeaderList);
 			pPgm->IMAPheader->text = cpystr(pSearchString);
 
@@ -1933,11 +2166,12 @@ Boolean SetORHeaderSearchCriteria (SEARCHPGM *pPgm, char *pHeaderList, char *pSe
  *	SetMailGets - set the function that will get called when a line
  *		of data is received from the server.  Remember the old one.
  **********************************************************************/
-void SetMailGets(MAILSTREAM *stream, mailgets_t oldMailGets, mailgets_t newMailGets)
+void SetMailGets(MAILSTREAM * stream, mailgets_t oldMailGets,
+		 mailgets_t newMailGets)
 {
-	if (stream)
-	{
-		oldMailGets = (mailgets_t) mail_parameters(stream, GET_GETS, NULL);
+	if (stream) {
+		oldMailGets =
+		    (mailgets_t) mail_parameters(stream, GET_GETS, NULL);
 		mail_parameters(stream, SET_GETS, newMailGets);
 	}
 }
@@ -1945,10 +2179,9 @@ void SetMailGets(MAILSTREAM *stream, mailgets_t oldMailGets, mailgets_t newMailG
 /**********************************************************************
  *	ResetMailGets - set the function that gets called per line of data
  **********************************************************************/
-void ResetMailGets(MAILSTREAM *stream, mailgets_t oldMailGets)
+void ResetMailGets(MAILSTREAM * stream, mailgets_t oldMailGets)
 {
-	if (stream)
-	{
+	if (stream) {
 		mail_parameters(stream, SET_GETS, oldMailGets);
 	}
 }
@@ -1960,21 +2193,20 @@ unsigned long UIDFetchLastUid(IMAPStreamPtr imapStream)
 {
 	unsigned long uid = 0;
 	UIDNodeHandle uidList = nil, node = nil;
-	
+
 	// If we don't have a mailbox open, fail.
-	if (!imapStream) return 0;
+	if (!imapStream)
+		return 0;
 
 	// If no messages in the mailbox, we can't do this.
-	if (GetMessageCount(imapStream) <= 0) return 0;
+	if (GetMessageCount(imapStream) <= 0)
+		return 0;
 
 	// Fetch flags
-	if (FetchFlags(imapStream, "*", &uidList))
-	{
-		if (uidList)
-		{
-			LL_Last(uidList,node);
-			if (node)
-			{
+	if (FetchFlags(imapStream, "*", &uidList)) {
+		if (uidList) {
+			LL_Last(uidList, node);
+			if (node) {
 				uid = (*node)->uid;
 			}
 			UID_LL_Zap(&uidList);
@@ -1988,50 +2220,57 @@ unsigned long UIDFetchLastUid(IMAPStreamPtr imapStream)
  *	 "first" and "last" of the body part.   Return the length of text 
  *	 obtained in pBuffer in the output parameter: pLen.
  **********************************************************************/
-Boolean UIDFetchPartialContentsToBuffer(IMAPStreamPtr imapStream, unsigned long uid, char *sequence, int first, unsigned long nBytes, char *buffer, unsigned long bufferSize, unsigned long *len)
+Boolean UIDFetchPartialContentsToBuffer(IMAPStreamPtr imapStream,
+					unsigned long uid, char *sequence,
+					int first, unsigned long nBytes,
+					char *buffer,
+					unsigned long bufferSize,
+					unsigned long *len)
 {
-	Boolean	result = false;
+	Boolean result = false;
 	unsigned long length = 0;
 	mailgets_t oldMailGets = NULL;
 
 	// must have a buffer and some length
-	if (!buffer || bufferSize < 1 || !len || nBytes < 1) return false;
-		
-	// Must have a stream and it should be open	
-	if (!imapStream || !imapStream->mailStream) return false;
+	if (!buffer || bufferSize < 1 || !len || nBytes < 1)
+		return false;
+
+	// Must have a stream and it should be open     
+	if (!imapStream || !imapStream->mailStream)
+		return false;
 
 	// Init
 	*len = 0;
 
 	// go do the partial fetch now
-	result = UIDFetchPartialBodyText(imapStream, uid, sequence, first, nBytes, true, false);
-	if (result)
-	{
+	result =
+	    UIDFetchPartialBodyText(imapStream, uid, sequence, first,
+				    nBytes, true, false);
+	if (result) {
 		// we must have received something from the server.
-		if (!imapStream->mailStream->fNetData) 
-		{
+		if (!imapStream->mailStream->fNetData) {
 			result = false;
 			CommandPeriod = true;
-		}
-		else
-		{
+		} else {
 			// figure out how much data we got
-			if ((length = strlen(*(imapStream->mailStream->fNetData))) == nBytes)
-			{
+			if ((length =
+			     strlen(*(imapStream->mailStream->fNetData)))
+			    == nBytes) {
 				// copy it to the buffer we were passed
 				WriteZero(buffer, bufferSize);
 				LDRef(imapStream->mailStream->fNetData);
-				strncpy(buffer,*(imapStream->mailStream->fNetData),length);
+				strncpy(buffer,
+					*(imapStream->mailStream->
+					  fNetData), length);
 				UL(imapStream->mailStream->fNetData);
-			}
-			else
+			} else
 				// we didn't get the amount of data we asked for, most likely because the server doesn't support partial fetches correctly.
-				result = false;	
-			
+				result = false;
+
 			// destroy the stream's buffer
 			ZapHandle(imapStream->mailStream->fNetData);
 		}
-	}	
+	}
 
 	// Output: 
 	*len = length;
@@ -2044,43 +2283,51 @@ Boolean UIDFetchPartialContentsToBuffer(IMAPStreamPtr imapStream, unsigned long 
  *		to move data from some buffer (primarily the network buffer)
  *		to a handle inside the stream we can get at later.
  **********************************************************************/
-static char *buffer_gets (readfn_t readfn, void *read_data, unsigned long size, GETS_DATA *md)
+static char *buffer_gets(readfn_t readfn, void *read_data,
+			 unsigned long size, GETS_DATA * md)
 {
 	MAILSTREAM *mailStream = NULL;
 	Boolean result = false;
-	
+
 	// must have a read function and some data to read
-	if (!readfn || !read_data) return (nil);
+	if (!readfn || !read_data)
+		return (nil);
 
 	// Nothing to read?
-	if (size <= 0) return (nil);
-	
+	if (size <= 0)
+		return (nil);
+
 	// must have a mailstream
-	if (!md) return (nil);
+	if (!md)
+		return (nil);
 
 	// Extract our stream.
 	mailStream = md->stream;
-	
+
 	// is there an existing buffer?  Trash it.
-	if (mailStream->fNetData) ZapHandle(mailStream->fNetData);
-	
+	if (mailStream->fNetData)
+		ZapHandle(mailStream->fNetData);
+
 	// Allocate our MAILSTREAM buffer.  Add a char 'cause it's gonna get NULL terminated.
-	if (!mailStream->fNetData) mailStream->fNetData = NuHandle(size+1);
+	if (!mailStream->fNetData)
+		mailStream->fNetData = NuHandle(size + 1);
 
 	// Did we get a buffer??
-	if (!mailStream->fNetData || !*(mailStream->fNetData)) return (nil);
+	if (!mailStream->fNetData || !*(mailStream->fNetData))
+		return (nil);
 
 	// Nothing in the buffer yet.
 	**(mailStream->fNetData) = 0;
 
 	// read the data into the buffer
 	LDRef(mailStream->fNetData);
-	result = (*readfn)(read_data, size, *(mailStream->fNetData));
+	result = (*readfn) (read_data, size, *(mailStream->fNetData));
 	UL(mailStream->fNetData);
-	
+
 	// throw away what we got if there's a problem
-	if (!result) ZapHandle(mailStream->fNetData);
-	
+	if (!result)
+		ZapHandle(mailStream->fNetData);
+
 	return (nil);
 }
 
@@ -2088,7 +2335,8 @@ static char *buffer_gets (readfn_t readfn, void *read_data, unsigned long size, 
 // NOTES
 // The "size" parameter if the size of the total data.
 // END NOTES
-static char *file_gets (readfn_t readfn, void *read_data, unsigned long size, GETS_DATA *md)
+static char *file_gets(readfn_t readfn, void *read_data,
+		       unsigned long size, GETS_DATA * md)
 {
 	MAILSTREAM *mailStream = NULL;
 	Boolean result;
@@ -2097,57 +2345,63 @@ static char *file_gets (readfn_t readfn, void *read_data, unsigned long size, GE
 	OSErr err = noErr;
 
 	// must have been passed a function to read bytes
-	if (!readfn || !read_data) return (nil);
+	if (!readfn || !read_data)
+		return (nil);
 
 	// must have been asked to read some bytes 
-	if (size < 0) return (nil);
+	if (size < 0)
+		return (nil);
 
 	// Nothing to read?
-	if (size == 0) return (nil);
-	
+	if (size == 0)
+		return (nil);
+
 	// must have a stream
-	if (!md) return (nil);
-	
+	if (!md)
+		return (nil);
+
 	// Extract our stream.
 	mailStream = md->stream;
-	
+
 	// now write the stuff we get from the network line by line to the spool file
 	totalSize = 0;
-	do
-	{
-		readSize = MIN(sizeof(buffer)-1,size-totalSize);
-		result = (*readfn)(read_data, readSize, buffer);
-			
+	do {
+		readSize = MIN(sizeof(buffer) - 1, size - totalSize);
+		result = (*readfn) (read_data, readSize, buffer);
+
 		// remember the number of bytes we've read.  
 		totalSize += readSize;
 
 #ifdef	DEBUG
-		ASSERT (readSize==strlen(buffer));
+		ASSERT(readSize == strlen(buffer));
 #endif
 
 		ASSERT(!InAThread() || CurThreadGlobals != &ThreadGlobals);
 
 		// write the line to the spool file
-		if (result) NCWrite(mailStream->refN,&readSize,buffer);
-		
+		if (result)
+			NCWrite(mailStream->refN, &readSize, buffer);
+
 		// and display some progress when downloading message bodies, once a second, and when we're done
-		if (mailStream->showProgress && mailStream->totalTransfer)
-		{
+		if (mailStream->showProgress && mailStream->totalTransfer) {
 			long ticks = TickCount();
-			
+
 			mailStream->currentTransfer += readSize;
-			if (((ticks - mailStream->lastProgress) > 60) || (mailStream->currentTransfer==mailStream->totalTransfer))
-			{
-				ByteProgress(nil,mailStream->currentTransfer,mailStream->totalTransfer);
-				mailStream->lastProgress = ticks;	
+			if (((ticks - mailStream->lastProgress) > 60)
+			    || (mailStream->currentTransfer ==
+				mailStream->totalTransfer)) {
+				ByteProgress(nil,
+					     mailStream->currentTransfer,
+					     mailStream->totalTransfer);
+				mailStream->lastProgress = ticks;
 			}
 		}
 	}
-	while ((totalSize < size) && result && (err==noErr));
-	
+	while ((totalSize < size) && result && (err == noErr));
+
 	return (nil);
-}  	
-#endif	//IMAP
+}
+#endif				//IMAP
 
 #ifdef DEBUG
 /**********************************************************************
@@ -2162,15 +2416,16 @@ long LoMemCheck(void)
 	char *c;
 	short i;
 	const short goodBit = 20;
-	
-	c = (char *)0x20;
+
+	c = (char *) 0x20;
 	last[0] = goodBit;
-	for (i = 1; i <= last[0]; i++) last[i] = *c++;
-		
-	ASSERT (StringSame(last, lastTwenty));
-	
+	for (i = 1; i <= last[0]; i++)
+		last[i] = *c++;
+
+	ASSERT(StringSame(last, lastTwenty));
+
 	PCopy(lastTwenty, last);
-		
+
 #undef TickCount
 	ret = TickCount();
 #define TickCount LoMemCheck

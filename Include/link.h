@@ -33,7 +33,8 @@
 #define LINK_H
 
 #define IsALink(tocH,sumNum)	((((*tocH)->sums[sumNum].flags&FLAG_LINK))!=0)
-MyWindowPtr OpenLink(TOCHandle tocH,short sumNum,WindowPtr theWindow, MyWindowPtr win,Boolean showIt);
+MyWindowPtr OpenLink(TOCHandle tocH, short sumNum, WindowPtr theWindow,
+		     MyWindowPtr win, Boolean showIt);
 
 
 #endif

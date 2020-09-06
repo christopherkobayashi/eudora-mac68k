@@ -33,79 +33,84 @@
 /* Copyright (c) 1996 by QUALCOMM Incorporated */
 
 #pragma segment TlateCalc
-void TlateListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
-void TlateListHilite(Rect *lRect,Cell lCell,ListHandle lHandle);
-void TlateListCalc(ListHandle lHandle,Handle suite,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn);
-pascal void TlateListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell,
-	short lDataOffset, short lDataLen, ListHandle lHandle)
+void TlateListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		   ListHandle lHandle);
+void TlateListHilite(Rect * lRect, Cell lCell, ListHandle lHandle);
+void TlateListCalc(ListHandle lHandle, Handle suite, Rect * lRect,
+		   PStr name, Rect * iconR, Point * textP, RgnHandle iRgn);
+pascal void TlateListDef(short lMessage, Boolean lSelect, Rect * lRect,
+			 Cell lCell, short lDataOffset, short lDataLen,
+			 ListHandle lHandle)
 {
 #pragma unused(lDataOffset,lDataLen)
 	Rect fullRect;
-	if (lMessage==lDrawMsg || lMessage==lHiliteMsg)
-	{
+	if (lMessage == lDrawMsg || lMessage == lHiliteMsg) {
 		fullRect = *lRect;
 		fullRect.bottom = fullRect.top + (*lHandle)->cellSize.v;
 	}
-	switch (lMessage)
-	{
-		case lDrawMsg:
-			TlateListDraw(lSelect,&fullRect,lCell,lHandle);
-			break;
-		case lHiliteMsg:
-			TlateListHilite(&fullRect,lCell,lHandle);
-			break;
+	switch (lMessage) {
+	case lDrawMsg:
+		TlateListDraw(lSelect, &fullRect, lCell, lHandle);
+		break;
+	case lHiliteMsg:
+		TlateListHilite(&fullRect, lCell, lHandle);
+		break;
 	}
 }
 
-void TlateListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void TlateListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+		   ListHandle lHandle)
 {
-	short junk=sizeof(short);
+	short junk = sizeof(short);
 	Str255 name;
 	Rect iconR;
 	Point textP;
 	Handle suite;
 	SAVE_STUFF;
 	SET_COLORS;
-	
+
 	/*
 	 * erase the rectangle first
 	 */
 	EraseRect(lRect);
 	SetSmallSysFont();
-	
+
 	/*
 	 * fetch the suite and name
 	 */
-	ETLNameAndIcon(lCell.v,name,&suite);
-	
+	ETLNameAndIcon(lCell.v, name, &suite);
+
 	/*
 	 * calculate boxes and regions and stuff
 	 */
-	TlateListCalc(lHandle,suite,lRect,name,&iconR,&textP,nil);
-	
+	TlateListCalc(lHandle, suite, lRect, name, &iconR, &textP, nil);
+
 	/*
 	 * draw the text
 	 */
-	MoveTo(textP.h,textP.v); DrawString(name);
-	
+	MoveTo(textP.h, textP.v);
+	DrawString(name);
+
 	/*
 	 * and the icon
 	 */
-	if (iconR.bottom)
-	{
-		if (suite) PlotIconSuite(&iconR, atAbsoluteCenter, ttNone, suite);
+	if (iconR.bottom) {
+		if (suite)
+			PlotIconSuite(&iconR, atAbsoluteCenter, ttNone,
+				      suite);
 	}
-	if (lSelect) TlateListHilite(lRect,lCell,lHandle);
-	
+	if (lSelect)
+		TlateListHilite(lRect, lCell, lHandle);
+
 	/*
 	 * restore
 	 */
 	REST_STUFF;
 }
 
-void TlateListHilite(Rect *lRect,Cell lCell,ListHandle lHandle)
+void TlateListHilite(Rect * lRect, Cell lCell, ListHandle lHandle)
 {
-	short junk=sizeof(short);
+	short junk = sizeof(short);
 	Rect iconR;
 	Point textP;
 	RgnHandle iRgn = NewRgn();
@@ -113,51 +118,52 @@ void TlateListHilite(Rect *lRect,Cell lCell,ListHandle lHandle)
 	Handle suite;
 	SAVE_STUFF;
 	SET_COLORS;
-	
+
 	/*
 	 * fetch the suite and name
 	 */
-	ETLNameAndIcon(lCell.v,name,&suite);
+	ETLNameAndIcon(lCell.v, name, &suite);
 
-	if (iRgn)
-	{
-		TlateListCalc(lHandle,suite,lRect,name,&iconR,&textP,iRgn);
+	if (iRgn) {
+		TlateListCalc(lHandle, suite, lRect, name, &iconR, &textP,
+			      iRgn);
 		HiInvertRgn(iRgn);
 		DisposeRgn(iRgn);
-	}
-	else
-	{
+	} else {
 		HiInvertRect(lRect);
 	}
 	REST_STUFF;
 }
 
-void TlateListCalc(ListHandle lHandle,Handle suite,Rect *lRect,PStr name,Rect *iconR,Point *textP, RgnHandle iRgn)
+void TlateListCalc(ListHandle lHandle, Handle suite, Rect * lRect,
+		   PStr name, Rect * iconR, Point * textP, RgnHandle iRgn)
 {
 	RgnHandle iconRgn = NewRgn();
 
-	NamedIconCalc(lRect,name,(*lHandle)->indent.h,(*lHandle)->indent.v,iconR,textP);
-	SetRect(iconR,lRect->left,lRect->top,lRect->left+32,lRect->top+32);
-	OffsetRect(iconR,(*lHandle)->indent.h,(*lHandle)->indent.v+(RectHi(*lRect)-32)/2);
-	textP->h = iconR->right+2;
-	textP->v = iconR->bottom-8;
-	if (iconRgn && suite)
-	{
-		IconSuiteToRgn(iconRgn,iconR,atAbsoluteCenter,suite);
+	NamedIconCalc(lRect, name, (*lHandle)->indent.h,
+		      (*lHandle)->indent.v, iconR, textP);
+	SetRect(iconR, lRect->left, lRect->top, lRect->left + 32,
+		lRect->top + 32);
+	OffsetRect(iconR, (*lHandle)->indent.h,
+		   (*lHandle)->indent.v + (RectHi(*lRect) - 32) / 2);
+	textP->h = iconR->right + 2;
+	textP->v = iconR->bottom - 8;
+	if (iconRgn && suite) {
+		IconSuiteToRgn(iconRgn, iconR, atAbsoluteCenter, suite);
 		/*
 		 * invert region begins as whole rectangle
 		 */
-		if (iRgn)
-		{
-			RectRgn(iRgn,lRect);
-		
+		if (iRgn) {
+			RectRgn(iRgn, lRect);
+
 			/*
 			 * punch icon mask out of invert region
 			 */
-			if (lRect->bottom-lRect->top>18 && (iconRgn = NewRgn()))
-			{
-				IconSuiteToRgn(iconRgn,iconR,atAbsoluteCenter,suite);
-				DiffRgn(iRgn,iconRgn,iRgn);
+			if (lRect->bottom - lRect->top > 18
+			    && (iconRgn = NewRgn())) {
+				IconSuiteToRgn(iconRgn, iconR,
+					       atAbsoluteCenter, suite);
+				DiffRgn(iRgn, iconRgn, iRgn);
 			}
 		}
 	}

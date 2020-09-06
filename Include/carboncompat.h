@@ -30,17 +30,17 @@
 */
 
 //
-//	carboncompat.h
+//      carboncompat.h
 //
-//	Macros for selectively dealing with TARGET_CARBON style window records and
-//	pre TARGET_CARBON windows
+//      Macros for selectively dealing with TARGET_CARBON style window records and
+//      pre TARGET_CARBON windows
 //
 
 #ifndef CARBONCOMPAT_H
 #define CARBONCOMPAT_H
 
 //
-//	QuickDraw Helpers
+//      QuickDraw Helpers
 //
 #define	MyGetWMgrPort(aGrafPtrPtr)										(*(aGrafPtrPtr) = FakeWMgrPort)
 #define	MyCreateNewPort()															(CreateNewPort ())
@@ -59,7 +59,7 @@
 
 
 //
-//	QuickDraw Globals Helpers
+//      QuickDraw Globals Helpers
 //
 #define	QDGlobalsThePort											(GetQDGlobalsThePort ())
 #define MyGetQDGlobalsGray(aPatternPtr)				(GetQDGlobalsGray (aPatternPtr))
@@ -71,7 +71,7 @@
 
 
 //
-//	Window Manager Helpers
+//      Window Manager Helpers
 //
 
 #define	MyCloseWindow(aWindowPtr)								MyDisposeWindow (aWindowPtr)
@@ -94,7 +94,7 @@
 #define	GetWindowVisRgn(aWindowPtr,aRgnHandle)	(GetPortVisibleRegion (GetWindowPort (aWindowPtr), (aRgnHandle)))
 
 //
-//	Control Manager Helpers
+//      Control Manager Helpers
 //
 
 #define	MyGetControlDataHandle(cntl)							(GetControlDataHandle (cntl))
@@ -110,7 +110,7 @@
 
 
 //
-//	Menu Manager Helpers
+//      Menu Manager Helpers
 //
 
 #define	EnableItem	MacEnableMenuItem
@@ -124,7 +124,7 @@
 
 
 //
-//	Dialog Manager Helpers
+//      Dialog Manager Helpers
 //
 
 #define	MyGetDialogPortBounds(dp,aRectPtr)		(GetWindowPortBounds (GetDialogPort (dp), (aRectPtr)))
@@ -132,7 +132,7 @@
 #define	MyGetDialogTextEditHandle(dp)					(GetDialogTextEditHandle (dp))
 
 //
-//	AppleEvent Helpers
+//      AppleEvent Helpers
 //
 
 #define	MyAEGetDescData(aDescPtr,aDescType,aVoidPtr,aSize)		AEGetDescData ((aDescPtr), (aDescType), (aVoidPtr), (aSize))
@@ -140,11 +140,11 @@
 
 
 //
-//	OpenTransport Helpers
+//      OpenTransport Helpers
 //
 
 #define	MyOTAsyncOpenInternetServices(aOTConfigurationPtr,aOTOpenFlags,aOTNotifyUPP,aVoidPtr,aOTClientContextPtr)							\
-					OTAsyncOpenInternetServices((aOTConfigurationPtr),(aOTOpenFlags),(aOTNotifyUPP),(aVoidPtr),(aOTClientContextPtr))	
+					OTAsyncOpenInternetServices((aOTConfigurationPtr),(aOTOpenFlags),(aOTNotifyUPP),(aVoidPtr),(aOTClientContextPtr))
 #define	MyOTAsyncOpenEndpoint(aOTConfigurationPtr,aOTOpenFlags,aTEndpointInfoPtr,aOTNotifyUPP,aVoidPtr,aOTClientContextPtr)		\
 					OTAsyncOpenEndpoint((aOTConfigurationPtr),(aOTOpenFlags),(aTEndpointInfoPtr),(aOTNotifyUPP),(aVoidPtr),(aOTClientContextPtr))
 #define	MyOTOpenEndpoint(aOTConfigurationPtr,aOTOpenFlags,aTEndpointInfoPtr,aOSStatusPtr,aOTClientContextPtr)									\
@@ -152,7 +152,7 @@
 
 
 //
-//	Help Manager Helpers (redundant redundant)
+//      Help Manager Helpers (redundant redundant)
 //
 #ifdef TARGET_CARBON_NO_BALLON_HELP
 #define MyHMRemoveBalloon				NotSupportedInCarbon

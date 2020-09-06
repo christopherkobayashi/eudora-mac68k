@@ -41,61 +41,74 @@
 					number of elements in the arrays fBits[] and icons[], which are
 					declared in compact.c */
 #define ICON_BAR_NUM 6
-void CompSetFormatBarIcon(MyWindowPtr win,Boolean visible);
+void CompSetFormatBarIcon(MyWindowPtr win, Boolean visible);
 OSErr AddPriorityPopup(MessHandle messH);
-void CompDelAttachment(MessHandle messH,HSPtr hs);
+void CompDelAttachment(MessHandle messH, HSPtr hs);
 void CompActivateAppropriate(MessHandle messH);
-OSErr CompLeaving(MessHandle messH,short head);
+OSErr CompLeaving(MessHandle messH, short head);
 Boolean CompClose(MyWindowPtr win);
-void CompDidResize(MyWindowPtr win, Rect *oldContR);
-void CompClick(MyWindowPtr win, EventRecord *event);
+void CompDidResize(MyWindowPtr win, Rect * oldContR);
+void CompClick(MyWindowPtr win, EventRecord * event);
 Boolean CompMenu(MyWindowPtr win, int menu, int item, short modifiers);
-Boolean CompKey(MyWindowPtr win, EventRecord *event);
+Boolean CompKey(MyWindowPtr win, EventRecord * event);
 OSErr CompGonnaShow(MyWindowPtr win);
-OSErr AddMessTranslator(MessHandle messH,long which,Handle properties);
-OSErr RemoveMessTranslator(MessHandle messH,long wich);
-OSErr SetSig(TOCHandle tocH,short sumNum,long sigId);
+OSErr AddMessTranslator(MessHandle messH, long which, Handle properties);
+OSErr RemoveMessTranslator(MessHandle messH, long wich);
+OSErr SetSig(TOCHandle tocH, short sumNum, long sigId);
 void CompUnattach(MyWindowPtr win);
 void AttachSelect(MessHandle messH);
-void CompButton(MyWindowPtr win,ControlHandle buttonHandle,long modifiers,short part);
-void CompIdle(MyWindowPtr win); /* MJN *//* new routine */
-void CompHelp(MyWindowPtr win,Point mouse);
-void CompAttach(MyWindowPtr win,Boolean insertDefault);
-void CompAttachStd(MyWindowPtr win,Boolean insertDefault);
-Boolean ModifyQueue(short *state,uLong *when,Boolean swap);
+void CompButton(MyWindowPtr win, ControlHandle buttonHandle,
+		long modifiers, short part);
+void CompIdle(MyWindowPtr win);	/* MJN *//* new routine */
+void CompHelp(MyWindowPtr win, Point mouse);
+void CompAttach(MyWindowPtr win, Boolean insertDefault);
+void CompAttachStd(MyWindowPtr win, Boolean insertDefault);
+Boolean ModifyQueue(short *state, uLong * when, Boolean swap);
 void WarpQueue(uLong secs);
-void CompZoomSize(MyWindowPtr win,Rect *zoom);
+void CompZoomSize(MyWindowPtr win, Rect * zoom);
 short CountAttachments(MessHandle messH);
-Boolean InTranslator(TransInfoHandle hTranslators,long id);
-void PlotFlag(Rect *r,Boolean on,short which);
+Boolean InTranslator(TransInfoHandle hTranslators, long id);
+void PlotFlag(Rect * r, Boolean on, short which);
 void CompAttachSpec(MyWindowPtr win, FSSpecPtr spec);
 #define AttachOptNumber(flags) (((flags & (FLAG_ATYPE_LO|FLAG_ATYPE_HI))>>6)&0x3)
 #define SetAOptNumber(flags,num)\
 	do{(flags) &= ~(FLAG_ATYPE_LO|FLAG_ATYPE_HI); (flags) |= (num)<<6;}while(0)
-void ForceCompWindowRecalcAndRedraw(MyWindowPtr win); /* MJN *//* new routine */
+void ForceCompWindowRecalcAndRedraw(MyWindowPtr win);	/* MJN *//* new routine */
 void SetAttachmentType(TOCHandle tocH, short sumNum, short type);
-OSErr GetStationerySum(Handle textH,MSumPtr pSum);
+OSErr GetStationerySum(Handle textH, MSumPtr pSum);
 #ifdef TWO
 uLong ApproxMessageSize(MessHandle messH);
-OSErr AttachDoc(MyWindowPtr win,FSSpecPtr spec);
-OSErr SaveStationeryStuff(short refN,MessHandle messH);
-void ApplyStationery(MyWindowPtr win,FSSpecPtr spec,Boolean dontCleanse,Boolean personality);
-void ApplyStationeryLo(MyWindowPtr win,FSSpecPtr spec,Boolean dontCleanse,Boolean personality,Boolean editStationery);
-void ApplyStationeryHandle(MyWindowPtr win,Handle textH,Boolean dontCleanse,Boolean personality,Boolean editStationery);
+OSErr AttachDoc(MyWindowPtr win, FSSpecPtr spec);
+OSErr SaveStationeryStuff(short refN, MessHandle messH);
+void ApplyStationery(MyWindowPtr win, FSSpecPtr spec, Boolean dontCleanse,
+		     Boolean personality);
+void ApplyStationeryLo(MyWindowPtr win, FSSpecPtr spec,
+		       Boolean dontCleanse, Boolean personality,
+		       Boolean editStationery);
+void ApplyStationeryHandle(MyWindowPtr win, Handle textH,
+			   Boolean dontCleanse, Boolean personality,
+			   Boolean editStationery);
 void CompIBarUpdate(MessHandle messH);
 #endif
-void DrawPopIBox(Rect *r, short sicnId);
-void DrawShadowBox(Rect *r);
-typedef enum {kEuSendNow, kEuSendNext, kEuSendLater, kEuSendNever} SendTypeEnum;
-OSErr QueueMessage(TOCHandle tocH,short sumNum,SendTypeEnum st,long secs, Boolean noSpell, Boolean noAnalDelay);
-OSErr CompDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag);
-OSErr NickExpandAndCacheHead(MessHandle messH,short head,Boolean cacheOnly);
+void DrawPopIBox(Rect * r, short sicnId);
+void DrawShadowBox(Rect * r);
+typedef enum { kEuSendNow, kEuSendNext, kEuSendLater,
+	    kEuSendNever } SendTypeEnum;
+OSErr QueueMessage(TOCHandle tocH, short sumNum, SendTypeEnum st,
+		   long secs, Boolean noSpell, Boolean noAnalDelay);
+OSErr CompDragHandler(MyWindowPtr win, DragTrackingMessage which,
+		      DragReference drag);
+OSErr NickExpandAndCacheHead(MessHandle messH, short head,
+			     Boolean cacheOnly);
 void CompReallyPreferBody(MyWindowPtr win);
 #ifdef THREADING_ON
 #define SENT_OR_SENDING(state)	((state)==SENT || (state)==BUSY_SENDING)
 #else
 #define SENT_OR_SENDING(state) ((state)==SENT)
 #endif
-OSErr GatherRecipientAddresses (MessHandle messH, Handle *dest, Boolean wantComments);
-pascal OSErr PersGraphic(PETEHandle pte,PETEGraphicInfoHandle graphic,long offset,PETEGraphicMessage message,void *data);
+OSErr GatherRecipientAddresses(MessHandle messH, Handle * dest,
+			       Boolean wantComments);
+pascal OSErr PersGraphic(PETEHandle pte, PETEGraphicInfoHandle graphic,
+			 long offset, PETEGraphicMessage message,
+			 void *data);
 #endif

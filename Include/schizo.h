@@ -35,12 +35,12 @@
 #define PERS_VERS 0
 
 #ifdef	IMAP
-typedef struct MailboxNode MailboxNode, *MailboxNodePtr, **MailboxNodeHandle;
+typedef struct MailboxNode MailboxNode, *MailboxNodePtr,
+    **MailboxNodeHandle;
 #endif
 
 typedef struct Personality Personality, *PersPtr, **PersHandle;
-struct Personality
-{
+struct Personality {
 	uLong persId;
 	short version;
 	short resId;
@@ -84,30 +84,32 @@ Boolean PersAnyPasswords(void);
 OSErr PersSaveAll(void);
 OSErr PersSave(PersHandle pers);
 OSErr PersSavePw(PersHandle pers);
-OSErr PersFillPw(PersHandle pers,uLong whichOnes);
+OSErr PersFillPw(PersHandle pers, uLong whichOnes);
 #define kFillRegularPw 1
 #define kFillSecondPw 2
 PersHandle PersNew(void);
 PersHandle FindPersById(uLong persId);
 PersHandle FindPersByName(PStr name);
-OSType PersType(OSType theType,PersHandle pers);
-OSErr SetPersProperty(AEDescPtr token,AEDescPtr descP);
-OSErr GetPersProperty(AEDescPtr token,AppleEvent *reply,long refCon);
-OSErr AECreatePersonality(DescType theClass,AEDescPtr inContainer,AppleEvent *event, AppleEvent *reply);
-OSErr AEPersObj(PersHandle pers,AEDescPtr descP);
-OSErr AESetPers(TOCHandle tocH,short sumNum,AEDescPtr descP);
+OSType PersType(OSType theType, PersHandle pers);
+OSErr SetPersProperty(AEDescPtr token, AEDescPtr descP);
+OSErr GetPersProperty(AEDescPtr token, AppleEvent * reply, long refCon);
+OSErr AECreatePersonality(DescType theClass, AEDescPtr inContainer,
+			  AppleEvent * event, AppleEvent * reply);
+OSErr AEPersObj(PersHandle pers, AEDescPtr descP);
+OSErr AESetPers(TOCHandle tocH, short sumNum, AEDescPtr descP);
 OSErr PersDelete(PersHandle pers);
 long PersCount(void);
-OSErr PersSetName(PersHandle pers,PStr name);
+OSErr PersSetName(PersHandle pers, PStr name);
 void PushPers(PersHandle newCur);
 void PopPers(void);
-OSErr SetPers(TOCHandle tocH,short sumNum,PersHandle pers,Boolean stationery);
-void CheckPers(MyWindowPtr win,Boolean all);
+OSErr SetPers(TOCHandle tocH, short sumNum, PersHandle pers,
+	      Boolean stationery);
+void CheckPers(MyWindowPtr win, Boolean all);
 short Pers2Index(PersHandle goalPers);
 PersHandle Index2Pers(short n);
 void PersSetAutoCheck(void);
 PersHandle PersChoose(StringPtr prompt);
-void PersZapResources(OSType type,short resEnd);
+void PersZapResources(OSType type, short resEnd);
 void SetBGColorsByPers(MessHandle messH);
 
 #define PERS_TYPE(t,r)	((r) ? (((t)&0xffff0000) | (r)) : (t))

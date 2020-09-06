@@ -42,8 +42,8 @@
 #define FILE_NUM 110
 #pragma segment LDAPUtils
 
-//	Since Apple, in their infinite wisdom, obsoleted this identifier,
-//	and provided nothing to replace it.....
+//      Since Apple, in their infinite wisdom, obsoleted this identifier,
+//      and provided nothing to replace it.....
 enum { kNoConnectionID = 0 };
 
 #if GENERATING68KSEGLOAD
@@ -75,8 +75,17 @@ static Boolean DFLStubLibLoaded = false;
 #if GENERATING68KSEGLOAD
 #pragma mpwc on
 #endif
-typedef pascal OSErr (*DFLStub_GetSharedLibraryProcPtr)(ConstStr63Param libName, OSType archType, CFragLoadOptions loadFlags, CFragConnectionID *connID, Ptr *mainAddr, Str255 errMessage);
-typedef pascal OSErr (*DFLStub_CloseConnectionProcPtr)(CFragConnectionID *connID);
+typedef pascal OSErr(*DFLStub_GetSharedLibraryProcPtr) (ConstStr63Param
+							libName,
+							OSType archType,
+							CFragLoadOptions
+							loadFlags,
+							CFragConnectionID *
+							connID,
+							Ptr * mainAddr,
+							Str255 errMessage);
+typedef pascal OSErr(*DFLStub_CloseConnectionProcPtr) (CFragConnectionID *
+						       connID);
 
 #define DFLStub_GetSharedLibrary(libName, archType, loadFlags, connID, mainAddr, errMessage) (*(DFLStub_GetSharedLibraryProcPtr)DFLStub_GetSharedLibraryUPP)((libName), (archType), (loadFlags), (connID), (mainAddr), (errMessage))
 #define DFLStub_CloseConnection(connID) (*(DFLStub_CloseConnectionProcPtr)DFLStub_CloseConnectionUPP)(connID)
@@ -96,23 +105,21 @@ Boolean useDFLStubLib = true;
 Boolean useDFLStubLib = false;
 #endif
 
-static CFragConnectionID curDFRLibConnID = (void *)kNoConnectionID;
+static CFragConnectionID curDFRLibConnID = (void *) kNoConnectionID;
 static ISAType curDFRLibISA = kOld68kRTA | kM68kISA;
 static OSErr curDFRProcInitErr = paramErr;
 
 
 
 void ResetDFRLoaderGlobals(void)
-
 {
-	curDFRLibConnID = (void *)kNoConnectionID;
+	curDFRLibConnID = (void *) kNoConnectionID;
 	curDFRLibISA = kOld68kRTA | kM68kISA;
 	curDFRProcInitErr = paramErr;
 }
 
 
 void SetDFRLoaderGlobals(CFragConnectionID connID, ISAType connISA)
-
 {
 	curDFRLibConnID = connID;
 	curDFRLibISA = connISA;
@@ -121,14 +128,14 @@ void SetDFRLoaderGlobals(CFragConnectionID connID, ISAType connISA)
 
 
 OSErr DFRLoaderErr(void)
-
 {
 	return curDFRProcInitErr;
 }
 
 
-static void SetDFRRoutineDescriptor(RoutineDescriptorPtr routineRD, ProcInfoType procInfo, Ptr procAddr, ISAType procISA)
-
+static void SetDFRRoutineDescriptor(RoutineDescriptorPtr routineRD,
+				    ProcInfoType procInfo, Ptr procAddr,
+				    ISAType procISA)
 {
 	if (!routineRD)
 		return;
@@ -145,26 +152,26 @@ static void SetDFRRoutineDescriptor(RoutineDescriptorPtr routineRD, ProcInfoType
 	routineRD->routineRecords[0].procInfo = procInfo;
 	routineRD->routineRecords[0].reserved1 = 0;
 	routineRD->routineRecords[0].ISA = procISA;
-	routineRD->routineRecords[0].routineFlags = kProcDescriptorIsAbsolute | kFragmentIsPrepared | kUseNativeISA;
-	routineRD->routineRecords[0].procDescriptor = (ProcPtr)procAddr;
+	routineRD->routineRecords[0].routineFlags =
+	    kProcDescriptorIsAbsolute | kFragmentIsPrepared |
+	    kUseNativeISA;
+	routineRD->routineRecords[0].procDescriptor = (ProcPtr) procAddr;
 	routineRD->routineRecords[0].reserved2 = 0;
 	routineRD->routineRecords[0].selector = 0;
 }
 
 
-static void CopyCStrToPStr(unsigned char* theCString, Str255 thePString)
-
+static void CopyCStrToPStr(unsigned char *theCString, Str255 thePString)
 {
-	unsigned char*	src;
-	unsigned char*	dst;
-	long						len;
+	unsigned char *src;
+	unsigned char *dst;
+	long len;
 
 
 	len = 0;
 	src = theCString;
 	dst = thePString + 1;
-	while (*src && len < 255)
-	{
+	while (*src && len < 255) {
 		*dst++ = *src++;
 		len++;
 	}
@@ -172,48 +179,48 @@ static void CopyCStrToPStr(unsigned char* theCString, Str255 thePString)
 }
 
 
-OSErr InitDFR(char* symbolNameCStr, RoutineDescriptorPtr routineRD, ProcInfoType procInfo)
-
+OSErr InitDFR(char *symbolNameCStr, RoutineDescriptorPtr routineRD,
+	      ProcInfoType procInfo)
 {
-	OSErr							err;
-	Str255						symbolName;
-	Ptr								symbolAddr;
-	CFragSymbolClass	symbolClass;
+	OSErr err;
+	Str255 symbolName;
+	Ptr symbolAddr;
+	CFragSymbolClass symbolClass;
 
 
 	if (curDFRProcInitErr)
 		return curDFRProcInitErr;
-	if (!routineRD || !symbolNameCStr || !*symbolNameCStr || (curDFRLibConnID == (CFragConnectionID)kNoConnectionID))
-	{
+	if (!routineRD || !symbolNameCStr || !*symbolNameCStr
+	    || (curDFRLibConnID == (CFragConnectionID) kNoConnectionID)) {
 		err = paramErr;
 		goto Error;
 	}
-	CopyCStrToPStr((unsigned char*)symbolNameCStr, symbolName);
-	err = FindSymbol(curDFRLibConnID, symbolName, &symbolAddr, &symbolClass);
+	CopyCStrToPStr((unsigned char *) symbolNameCStr, symbolName);
+	err =
+	    FindSymbol(curDFRLibConnID, symbolName, &symbolAddr,
+		       &symbolClass);
 	if (err)
 		goto Error;
-	if ((long)symbolAddr == kUnresolvedCFragSymbolAddress)
-	{
+	if ((long) symbolAddr == kUnresolvedCFragSymbolAddress) {
 		err = cfragNoSymbolErr;
 		goto Error;
 	}
-	if (symbolClass != kTVectorCFragSymbol)
-	{
+	if (symbolClass != kTVectorCFragSymbol) {
 		err = cfragNoSymbolErr;
 		goto Error;
 	}
-	SetDFRRoutineDescriptor(routineRD, procInfo, symbolAddr, curDFRLibISA);
+	SetDFRRoutineDescriptor(routineRD, procInfo, symbolAddr,
+				curDFRLibISA);
 	return noErr;
 
 
-Error:
+      Error:
 	curDFRProcInitErr = err;
 	return err;
 }
 
 
 void InvalDFR(RoutineDescriptorPtr routineRD)
-
 {
 	if (!routineRD)
 		return;
@@ -230,23 +237,23 @@ void InvalDFR(RoutineDescriptorPtr routineRD)
 	routineRD->routineRecords[0].procInfo = 0;
 	routineRD->routineRecords[0].reserved1 = 0;
 	routineRD->routineRecords[0].ISA = kOld68kRTA | kM68kISA;
-	routineRD->routineRecords[0].routineFlags = kProcDescriptorIsAbsolute | kFragmentIsPrepared | kUseNativeISA;
-	routineRD->routineRecords[0].procDescriptor = (ProcPtr)0;
+	routineRD->routineRecords[0].routineFlags =
+	    kProcDescriptorIsAbsolute | kFragmentIsPrepared |
+	    kUseNativeISA;
+	routineRD->routineRecords[0].procDescriptor = (ProcPtr) 0;
 	routineRD->routineRecords[0].reserved2 = 0;
 	routineRD->routineRecords[0].selector = 0;
 }
 
 
-static OSErr GetSysNativeISA(ISAType *nativeISA)
-
+static OSErr GetSysNativeISA(ISAType * nativeISA)
 {
-	OSErr		err;
-	long		response;
+	OSErr err;
+	long response;
 
 
 	err = Gestalt(gestaltSysArchitecture, &response);
-	if (err)
-	{
+	if (err) {
 		err = Gestalt(gestaltNativeCPUtype, &response);
 		if (err)
 			return err;
@@ -258,41 +265,41 @@ static OSErr GetSysNativeISA(ISAType *nativeISA)
 			return paramErr;
 		return noErr;
 	}
-	switch (response)
-	{
-		case gestalt68k:
-			*nativeISA = kM68kISA;
-			break;
-		case gestaltPowerPC:
-			*nativeISA = kPowerPCISA;
-			break;
-		default:
-			return paramErr;
+	switch (response) {
+	case gestalt68k:
+		*nativeISA = kM68kISA;
+		break;
+	case gestaltPowerPC:
+		*nativeISA = kPowerPCISA;
+		break;
+	default:
+		return paramErr;
 	}
 	return noErr;
 }
 
 
 static OSErr GetCFM68KVers(long *vers)
-
 {
-	OSErr				err;
-	short				extFldrVRefNum;
-	long				extFldrDirID;
-	CInfoPBRec	catInfo;
-	Str255			fileName;
-	short				index;
-	Boolean			found;
-	long				parID;
-	short				origResFile;
-	short				initRefNum;
-	Handle			versHdl;
-	long				longVersNum;
+	OSErr err;
+	short extFldrVRefNum;
+	long extFldrDirID;
+	CInfoPBRec catInfo;
+	Str255 fileName;
+	short index;
+	Boolean found;
+	long parID;
+	short origResFile;
+	short initRefNum;
+	Handle versHdl;
+	long longVersNum;
 
 
 	*vers = 0;
 
-	err = FindFolder(kOnSystemDisk, kExtensionFolderType, kDontCreateFolder, &extFldrVRefNum, &extFldrDirID);
+	err =
+	    FindFolder(kOnSystemDisk, kExtensionFolderType,
+		       kDontCreateFolder, &extFldrVRefNum, &extFldrDirID);
 	if (err)
 		return err;
 
@@ -301,8 +308,7 @@ static OSErr GetCFM68KVers(long *vers)
 	err = noErr;
 	found = false;
 	index = 0;
-	while (!found && !err)
-	{
+	while (!found && !err) {
 		index++;
 		catInfo.hFileInfo.ioFDirIndex = index;
 		catInfo.hFileInfo.ioDirID = extFldrDirID;
@@ -311,7 +317,10 @@ static OSErr GetCFM68KVers(long *vers)
 			continue;
 		if (catInfo.hFileInfo.ioFlAttrib & ioDirMask)
 			continue;
-		if ((catInfo.hFileInfo.ioFlFndrInfo.fdType == kCFM68KFileType) && (catInfo.hFileInfo.ioFlFndrInfo.fdCreator == kCFM68KCreatorType))
+		if ((catInfo.hFileInfo.ioFlFndrInfo.fdType ==
+		     kCFM68KFileType)
+		    && (catInfo.hFileInfo.ioFlFndrInfo.fdCreator ==
+			kCFM68KCreatorType))
 			found = true;
 	}
 	if (err)
@@ -322,7 +331,8 @@ static OSErr GetCFM68KVers(long *vers)
 	parID = catInfo.hFileInfo.ioFlParID;
 
 	origResFile = CurResFile();
-	initRefNum = HOpenResFile(extFldrVRefNum, parID, fileName, fsRdWrPerm);
+	initRefNum =
+	    HOpenResFile(extFldrVRefNum, parID, fileName, fsRdWrPerm);
 	err = ResError();
 	if (err)
 		return err;
@@ -332,12 +342,11 @@ static OSErr GetCFM68KVers(long *vers)
 		err = resNotFound;
 	if (!err && (GetHandleSize(versHdl) < 8))
 		err = paramErr;
-	if (err)
-	{
+	if (err) {
 		UseResFile(origResFile);
 		return err;
 	}
-	longVersNum = **(long**)versHdl;
+	longVersNum = **(long **) versHdl;
 	CloseResFile(initRefNum);
 	err = ResError();
 	UseResFile(origResFile);
@@ -350,11 +359,10 @@ static OSErr GetCFM68KVers(long *vers)
 
 
 Boolean CFM68KOkay(void)
-
 {
-	OSErr		err;
-	long		response;
-	ISAType	nativeISA;
+	OSErr err;
+	long response;
+	ISAType nativeISA;
 
 
 	err = GetSysNativeISA(&nativeISA);
@@ -387,24 +395,23 @@ OSErr SystemSupportsDFRLibraries(OSType libArchType)
 
 #if USEDFLSTUBLOADER
 static OSErr LoadDFLStubLib(OSType libArchType)
-
 {
-	OSErr		err, scratchErr;
-	Ptr			mainAddr;
-	Str255	errName;
-	Ptr								symbolAddr;
-	CFragSymbolClass	symbolClass;
-	Handle	h;
-	Boolean	doFragRsrcMod;
-	Handle	code0Hdl;
-	short		code0ResFile;
-	short		origResFile;
-	Handle	cfrgHdl;
-	CodeFragRsrcPtr			cfrgPtr;
-	CodeFragInfoRecPtr	curFragInfoRecPtr;
-	long		numFrags;
-	long		curFragIndex;
-	Boolean	found;
+	OSErr err, scratchErr;
+	Ptr mainAddr;
+	Str255 errName;
+	Ptr symbolAddr;
+	CFragSymbolClass symbolClass;
+	Handle h;
+	Boolean doFragRsrcMod;
+	Handle code0Hdl;
+	short code0ResFile;
+	short origResFile;
+	Handle cfrgHdl;
+	CodeFragRsrcPtr cfrgPtr;
+	CodeFragInfoRecPtr curFragInfoRecPtr;
+	long numFrags;
+	long curFragIndex;
+	Boolean found;
 
 
 	if (DFLStubLibLoaded)
@@ -412,14 +419,12 @@ static OSErr LoadDFLStubLib(OSType libArchType)
 
 	doFragRsrcMod = false;
 	h = GetResource(kRsrcModOverrideRsrcType, kRsrcModOverrideRsrcID);
-	if (h)
-	{
+	if (h) {
 		if (*h && (GetHandleSize(h) == 1))
 			doFragRsrcMod = **h ? true : false;
 		ReleaseResource(h);
 	}
-	if (doFragRsrcMod)
-	{
+	if (doFragRsrcMod) {
 		code0Hdl = GetResource('CODE', 0);
 		err = ResError();
 		if (!err && (!code0Hdl || !*code0Hdl))
@@ -427,15 +432,16 @@ static OSErr LoadDFLStubLib(OSType libArchType)
 		if (err)
 			return err;
 		code0ResFile = HomeResFile(code0Hdl);
-		err = ResError(); /* no error expected */
+		err = ResError();	/* no error expected */
 		if (err)
 			return err;
 		origResFile = CurResFile();
 		UseResFile(code0ResFile);
-		err = ResError(); /* no error expected */
+		err = ResError();	/* no error expected */
 		if (err)
 			return err;
-		cfrgHdl = Get1Resource(kCFragResourceType, kCFragResourceID);
+		cfrgHdl =
+		    Get1Resource(kCFragResourceType, kCFragResourceID);
 		err = ResError();
 		UseResFile(origResFile);
 		if (!err && (!cfrgHdl || !*cfrgHdl))
@@ -445,23 +451,29 @@ static OSErr LoadDFLStubLib(OSType libArchType)
 		HNoPurge(cfrgHdl);
 		HLock(cfrgHdl);
 
-		cfrgPtr = (CodeFragRsrcPtr)*cfrgHdl;
+		cfrgPtr = (CodeFragRsrcPtr) * cfrgHdl;
 		if (cfrgPtr->cfrgRsrcVers != kCurrentCfrgRsrcVers)
 			return paramErr;
 		numFrags = cfrgPtr->numFragInfoRecs;
 
 		found = false;
 		curFragIndex = 0;
-		curFragInfoRecPtr = (CodeFragInfoRecPtr)&cfrgPtr->firstFragInfoRec;
-		while (!found && (curFragIndex < numFrags))
-		{
-			if ((curFragInfoRecPtr->fragArch == libArchType) && EqualString(DFLStubSharedLibName, curFragInfoRecPtr->fragName, true, true))
-			{
+		curFragInfoRecPtr =
+		    (CodeFragInfoRecPtr) & cfrgPtr->firstFragInfoRec;
+		while (!found && (curFragIndex < numFrags)) {
+			if ((curFragInfoRecPtr->fragArch == libArchType)
+			    && EqualString(DFLStubSharedLibName,
+					   curFragInfoRecPtr->fragName,
+					   true, true)) {
 				found = true;
 				break;
 			}
 			curFragIndex++;
-			curFragInfoRecPtr = (CodeFragInfoRecPtr)((long)curFragInfoRecPtr + curFragInfoRecPtr->infoRecLen);
+			curFragInfoRecPtr =
+			    (CodeFragInfoRecPtr) ((long) curFragInfoRecPtr
+						  +
+						  curFragInfoRecPtr->
+						  infoRecLen);
 		}
 		HUnlock(cfrgHdl);
 		if (!found)
@@ -469,35 +481,40 @@ static OSErr LoadDFLStubLib(OSType libArchType)
 		curFragInfoRecPtr->fragType = kIsApp;
 	}
 
-	err = GetSharedLibrary(DFLStubSharedLibName, libArchType, kLoadNewCopy, &DFLStubLibConnID, &mainAddr, errName);
+	err =
+	    GetSharedLibrary(DFLStubSharedLibName, libArchType,
+			     kLoadNewCopy, &DFLStubLibConnID, &mainAddr,
+			     errName);
 	if (err)
 		return err;
 
-	err = FindSymbol(DFLStubLibConnID, "\pDFLStub_GetSharedLibraryUPP", &symbolAddr, &symbolClass);
+	err =
+	    FindSymbol(DFLStubLibConnID, "\pDFLStub_GetSharedLibraryUPP",
+		       &symbolAddr, &symbolClass);
 	if (err)
 		goto Error;
-	if (symbolClass != kDataSym)
-	{
+	if (symbolClass != kDataSym) {
 		err = cfragNoSymbolErr;
 		goto Error;
 	}
-	DFLStub_GetSharedLibraryUPP = *(RoutineDescriptorPtr*)symbolAddr;
+	DFLStub_GetSharedLibraryUPP = *(RoutineDescriptorPtr *) symbolAddr;
 
-	err = FindSymbol(DFLStubLibConnID, "\pDFLStub_CloseConnectionUPP", &symbolAddr, &symbolClass);
+	err =
+	    FindSymbol(DFLStubLibConnID, "\pDFLStub_CloseConnectionUPP",
+		       &symbolAddr, &symbolClass);
 	if (err)
 		goto Error;
-	if (symbolClass != kDataSym)
-	{
+	if (symbolClass != kDataSym) {
 		err = cfragNoSymbolErr;
 		goto Error;
 	}
-	DFLStub_CloseConnectionUPP = *(RoutineDescriptorPtr*)symbolAddr;
+	DFLStub_CloseConnectionUPP = *(RoutineDescriptorPtr *) symbolAddr;
 
 	DFLStubLibLoaded = true;
 	return noErr;
 
 
-Error:
+      Error:
 	scratchErr = CloseConnection(&DFLStubLibConnID);
 	if (!scratchErr)
 		DFLStubLibConnID = kNoConnectionID;
@@ -510,9 +527,8 @@ Error:
 
 #if USEDFLSTUBLOADER
 static OSErr UnloadDFLStubLib(void)
-
 {
-	OSErr		err;
+	OSErr err;
 
 
 	if (!DFLStubLibLoaded)
@@ -531,66 +547,72 @@ static OSErr UnloadDFLStubLib(void)
 #endif
 
 
-OSErr LoadDFRLibrary(ConstStr63Param libName, OSType libArchType, CFragConnectionID *connID, Str255 errMessage)
-
+OSErr LoadDFRLibrary(ConstStr63Param libName, OSType libArchType,
+		     CFragConnectionID * connID, Str255 errMessage)
 {
-	OSErr			err;
-	Ptr				mainAddr;
-	Str255		errStr_local;
-	StringPtr	errStrPtr;
-	ISAType		libISA;
+	OSErr err;
+	Ptr mainAddr;
+	Str255 errStr_local;
+	StringPtr errStrPtr;
+	ISAType libISA;
 #if USEDFLSTUBLOADER
-	OSErr			scratchErr;
+	OSErr scratchErr;
 #endif
 
 
 	ResetDFRLoaderGlobals();
-	*connID = (void *)kNoConnectionID;
+	*connID = (void *) kNoConnectionID;
 
 	if (!libName || !*libName || !connID)
 		return paramErr;
 
-	if ((libArchType != kPowerPCCFragArch) && (libArchType != kMotorola68KCFragArch))
-		if (libArchType == kAnyCFragArch)
-		{
+	if ((libArchType != kPowerPCCFragArch)
+	    && (libArchType != kMotorola68KCFragArch))
+		if (libArchType == kAnyCFragArch) {
 			if (GetCurrentISA() == kPowerPCISA)
 				libArchType = kPowerPCCFragArch;
 			else if (GetCurrentISA() == kM68kISA)
 				libArchType = kMotorola68KCFragArch;
 			else
 				return cfragArchitectureErr;
-		}
-		else
+		} else
 			return cfragArchitectureErr;
 
 	err = SystemSupportsDFRLibraries(libArchType);
 	if (err)
 		return err;
 
-	libISA = (libArchType == kPowerPCCFragArch) ? (kPowerPCISA | kPowerPCRTA) : (kM68kISA | kCFM68kRTA);
+	libISA =
+	    (libArchType ==
+	     kPowerPCCFragArch) ? (kPowerPCISA | kPowerPCRTA) : (kM68kISA |
+								 kCFM68kRTA);
 	errStrPtr = errMessage ? errMessage : errStr_local;
 
 #if USEDFLSTUBLOADER
-	if (useDFLStubLib)
-	{
+	if (useDFLStubLib) {
 		err = LoadDFLStubLib(libArchType);
 		if (err)
 			return err;
-		err = DFLStub_GetSharedLibrary(libName, libArchType, kPrivateCFragCopy, connID, &mainAddr, errStrPtr);
-		if (err)
-		{
+		err =
+		    DFLStub_GetSharedLibrary(libName, libArchType,
+					     kPrivateCFragCopy, connID,
+					     &mainAddr, errStrPtr);
+		if (err) {
 			scratchErr = UnloadDFLStubLib();
 			return err;
 		}
-	}
-	else
-	{
-		err = GetSharedLibrary(libName, libArchType, kPrivateCFragCopy, connID, &mainAddr, errStrPtr);
+	} else {
+		err =
+		    GetSharedLibrary(libName, libArchType,
+				     kPrivateCFragCopy, connID, &mainAddr,
+				     errStrPtr);
 		if (err)
 			return err;
 	}
 #else
-	err = GetSharedLibrary(libName, libArchType, kPrivateCFragCopy, connID, &mainAddr, errStrPtr);
+	err =
+	    GetSharedLibrary(libName, libArchType, kPrivateCFragCopy,
+			     connID, &mainAddr, errStrPtr);
 	if (err)
 		return err;
 #endif
@@ -601,12 +623,11 @@ OSErr LoadDFRLibrary(ConstStr63Param libName, OSType libArchType, CFragConnectio
 }
 
 
-OSErr UnloadDFRLibrary(CFragConnectionID *connID)
-
+OSErr UnloadDFRLibrary(CFragConnectionID * connID)
 {
-	OSErr		err;
+	OSErr err;
 #if USEDFLSTUBLOADER
-	OSErr		scratchErr;
+	OSErr scratchErr;
 #endif
 
 
@@ -619,7 +640,7 @@ OSErr UnloadDFRLibrary(CFragConnectionID *connID)
 	err = CloseConnection(connID);
 #endif
 	if (!err)
-		*connID = (void *)kNoConnectionID;
+		*connID = (void *) kNoConnectionID;
 #if USEDFLSTUBLOADER
 	if (!err)
 		if (useDFLStubLib)

@@ -39,25 +39,25 @@
 #define	regInvalidPolicyCode	0
 
 typedef enum {
-	realNameQueryPart				= 0x00000001,
-	regFirstQueryPart				= 0x00000002,
-	regLastQueryPart				= 0x00000004,
-	regCodeQueryPart				= 0x00000008,
-	oldRegQueryPart					= 0x00000010,
-	emailQueryPart					= 0x00000020,
-	profileQueryPart				= 0x00000040,
-	destinationQueryPart		= 0x00000080,
-	adIDQueryPart						= 0x00000100,
-	platformQueryPart				= 0x00000200,
-	productQueryPart				= 0x00000400,
-	versionQueryPart				= 0x00000800,
-	distributorIDQueryPart	= 0x00001000,
-	actionQueryPart					= 0x00002000,
-	topicQueryPart					= 0x00004000,
-	modeQueryPart						= 0x00008000,
-	regLevelQueryPart				= 0x00010000,
-	langQueryPart						= 0x00020000,
-	queryQueryPart					= 0x00040000
+	realNameQueryPart = 0x00000001,
+	regFirstQueryPart = 0x00000002,
+	regLastQueryPart = 0x00000004,
+	regCodeQueryPart = 0x00000008,
+	oldRegQueryPart = 0x00000010,
+	emailQueryPart = 0x00000020,
+	profileQueryPart = 0x00000040,
+	destinationQueryPart = 0x00000080,
+	adIDQueryPart = 0x00000100,
+	platformQueryPart = 0x00000200,
+	productQueryPart = 0x00000400,
+	versionQueryPart = 0x00000800,
+	distributorIDQueryPart = 0x00001000,
+	actionQueryPart = 0x00002000,
+	topicQueryPart = 0x00004000,
+	modeQueryPart = 0x00008000,
+	regLevelQueryPart = 0x00010000,
+	langQueryPart = 0x00020000,
+	queryQueryPart = 0x00040000
 } urlQueryParts;
 
 #define	standardQueryPart					(langQueryPart | platformQueryPart | productQueryPart | versionQueryPart | distributorIDQueryPart)
@@ -71,7 +71,7 @@ typedef enum {
 																	 adIDQueryPart					| platformQueryPart	| productQueryPart	| versionQueryPart			|		\
 																	 distributorIDQueryPart	| actionQueryPart		| topicQueryPart		| modeQueryPart					|		\
 																	 langQueryPart)
-																	 
+
 #define	paymentQuery							(actionQueryPart | standardRegIdentityQuery | modeQueryPart | oldRegQueryPart)
 #define	junkDownQuery							helpQuery
 #define	registrationQuery					(actionQueryPart | standardRegIdentityQuery | modeQueryPart)
@@ -90,40 +90,51 @@ typedef enum {
 #define searchQuery								(actionQueryPart | standardQueryPart | queryQueryPart)
 
 typedef struct {
-	PStr	destination;
-	PStr	adID;
+	PStr destination;
+	PStr adID;
 } AdURLStringsRec, *AdURLStringsPtr, **AdURLStringsHandle;
 
-typedef	PStr	(*GetSomeHunkOfRegProcPtr) (UserStateType state, PStr string);
+typedef PStr(*GetSomeHunkOfRegProcPtr) (UserStateType state, PStr string);
 
-void								OpenAdwareURL (UserStateType state, short hostResID, short action, UInt32 query, long refcon);
-OSErr 							OpenAdwareURLStr (UserStateType state, StringPtr host, short action, UInt32 query, long refcon);
-Handle							GenerateAdwareURL (UserStateType state, short hostResID, short action, UInt32 query, long refcon);
-OSErr								AccuAttributeValuePair (AccuPtr a, PStr attribute, PStr value);
-OSErr								AccuAttributeValuePairHandle (AccuPtr a, PStr attribute, Handle value);
-UserStateType				ChooseInitialUserState (UserStateType state, Boolean foundRegFile, Boolean needsRegistration, int pnPolicyCode, InitNagResultType *result);
-Boolean							PolicyCheck (int pnPolicyCode, int regMonth);
-Boolean							CheckForRegCodeFile (Boolean *needsRegistration, uLong *regDate, int *pnPolicyCode);
-UserStateType				PolicyCodeToRegisteredNagState (int policyCode);
-UserStateType				PolicyCodeToUnregisteredNagState (int policyCode);
-PStr								GetDominantPref (short prefNumber, PStr string);
-PStr								GetSomeHunkOfReg (UserStateType state, PStr string, short action, GetSomeHunkOfRegProcPtr getRegProc);
-PStr								GetRegFirst (UserStateType state, PStr string);
-PStr								GetRegLast (UserStateType state, PStr string);
-PStr								GetRegCode (UserStateType state, PStr string);
-PStr								GetDespisedBoxRegCode (UserStateType state, PStr string);
-PStr								GetRegLevel (UserStateType state, PStr string);
-PStr								GetOldRegCode (UserStateType state, PStr string);
-PStr								GetVersionString (PStr string);
-PStr								GetModeString (PStr string);
-Handle							GetDistributorID (void);
-PStr								GetProfileID (PStr string);
-OSErr								SetProfileID(PStr profile);
-Handle							GetProfileData (void);
-Handle							GetTextFromEudoraFolderFile (short fileResID);
-Handle							GetTextFromAppFolderFile (short folderResID, short fileResID);
-Handle							GetResourceFromFile (ResType theType, short theID, short refNum);
-Boolean							ValidRegCode (UserStateType state, int *policyCode, int *regMonth);
-Boolean							RegCodeVerifies(const char *szCode, const char *szName, int *outProduct, int *outMonth);
+void OpenAdwareURL(UserStateType state, short hostResID, short action,
+		   UInt32 query, long refcon);
+OSErr OpenAdwareURLStr(UserStateType state, StringPtr host, short action,
+		       UInt32 query, long refcon);
+Handle GenerateAdwareURL(UserStateType state, short hostResID,
+			 short action, UInt32 query, long refcon);
+OSErr AccuAttributeValuePair(AccuPtr a, PStr attribute, PStr value);
+OSErr AccuAttributeValuePairHandle(AccuPtr a, PStr attribute,
+				   Handle value);
+UserStateType ChooseInitialUserState(UserStateType state,
+				     Boolean foundRegFile,
+				     Boolean needsRegistration,
+				     int pnPolicyCode,
+				     InitNagResultType * result);
+Boolean PolicyCheck(int pnPolicyCode, int regMonth);
+Boolean CheckForRegCodeFile(Boolean * needsRegistration, uLong * regDate,
+			    int *pnPolicyCode);
+UserStateType PolicyCodeToRegisteredNagState(int policyCode);
+UserStateType PolicyCodeToUnregisteredNagState(int policyCode);
+PStr GetDominantPref(short prefNumber, PStr string);
+PStr GetSomeHunkOfReg(UserStateType state, PStr string, short action,
+		      GetSomeHunkOfRegProcPtr getRegProc);
+PStr GetRegFirst(UserStateType state, PStr string);
+PStr GetRegLast(UserStateType state, PStr string);
+PStr GetRegCode(UserStateType state, PStr string);
+PStr GetDespisedBoxRegCode(UserStateType state, PStr string);
+PStr GetRegLevel(UserStateType state, PStr string);
+PStr GetOldRegCode(UserStateType state, PStr string);
+PStr GetVersionString(PStr string);
+PStr GetModeString(PStr string);
+Handle GetDistributorID(void);
+PStr GetProfileID(PStr string);
+OSErr SetProfileID(PStr profile);
+Handle GetProfileData(void);
+Handle GetTextFromEudoraFolderFile(short fileResID);
+Handle GetTextFromAppFolderFile(short folderResID, short fileResID);
+Handle GetResourceFromFile(ResType theType, short theID, short refNum);
+Boolean ValidRegCode(UserStateType state, int *policyCode, int *regMonth);
+Boolean RegCodeVerifies(const char *szCode, const char *szName,
+			int *outProduct, int *outMonth);
 
 #endif

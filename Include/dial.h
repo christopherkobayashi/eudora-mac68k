@@ -33,7 +33,7 @@
 #ifndef DIAL_H
 #define DIAL_H
 
-enum { kDialDefault,kDialSpeaker,kDialModem };
+enum { kDialDefault, kDialSpeaker, kDialModem };
 
 void Dial(StringPtr number, short mode);
 

@@ -37,23 +37,25 @@
 
 #ifdef Rez
 
-Type 'EuAC'
-{ array {
-  unsigned int;	// pref #
-	unsigned int; // type
-	unsigned longint;	// reserved
-	pstring;	// acap name
-}; };
+Type 'EuAC' {
+	array {
+		unsigned int;	// pref #
+		unsigned int;	// type
+		unsigned longint;	// reserved
+		pstring;	// acap name
+	};
+};
 
-Type 'EuAl'
-{ array {
-  unsigned int;	// pref #
-}; };
+Type 'EuAl' {
+	array {
+		unsigned int;	// pref #
+	};
+};
 
 #else
 
 OSErr ACAPLoad(Boolean giveQuit);
 
-#endif // Rez
+#endif				// Rez
 
-#endif // ACAP_H
+#endif				// ACAP_H

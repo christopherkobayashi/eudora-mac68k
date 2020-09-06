@@ -33,9 +33,8 @@
 #define STATWIN_H
 
 
-#endif //STATWIN_H
+#endif				//STATWIN_H
 
 void OpenStatWin(void);
 void RedisplayStats(void);
 MyWindowPtr GetStatWin(void);
-

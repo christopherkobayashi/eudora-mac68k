@@ -34,10 +34,12 @@
 
 OSErr DoReplyMultiple(TOCHandle tocH, short modifiers);
 PersHandle MultiPers(TOCHandle tocH);
-PStr MultiSubj(TOCHandle tocH,PStr subj);
-uShort MultiMost(uShort **vector,TOCHandle tocH,short (*compare)(),uShort *winnerCountP);
-uShort **BoxSortVector(TOCHandle tocH,Boolean selected,short (*compare)());
+PStr MultiSubj(TOCHandle tocH, PStr subj);
+uShort MultiMost(uShort ** vector, TOCHandle tocH, short (*compare)(),
+		 uShort * winnerCountP);
+uShort **BoxSortVector(TOCHandle tocH, Boolean selected,
+		       short (*compare)());
 #define DecBVCompare(x) short BVCompare_##x(uShort **vector,TOCHandle tocH,short i,short j);
 DecBVCompare(persId)
-DecBVCompare(subj)
+    DecBVCompare(subj)
 #endif

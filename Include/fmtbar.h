@@ -32,40 +32,39 @@
 #ifndef FMTBAR_H
 #define FMTBAR_H
 
-/* MJN *//* new file *//* moved text formatting toolbar code from compact.h to here */
+		       /* MJN *//* new file *//* moved text formatting toolbar code from compact.h to here */
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /************************************************************************
  * declarations for functions relating to composition window actions
  ************************************************************************/
-Boolean TextFormattingBarHelp(MyWindowPtr win,Point mouse); /* MJN *//* new routine */
-Boolean TextFormattingBarClick(MyWindowPtr win, EventRecord* event, Point clickLoc); /* MJN *//* new routine */
-Boolean TextFormattingBarButton(MyWindowPtr win,ControlHandle buttonHandle,long modifiers,short part,short which); /* MJN *//* new routine */
-void TextFormattingBarIdle(MyWindowPtr win); /* MJN *//* new routine */
-void AddTextFormattingBarIcons(MyWindowPtr win,Boolean visible,Boolean enabled); /* MJN *//* new routine */
-short GetTxtFmtBarHeight(void); /* MJN *//* new routine */
-void GetTxtFmtBarRect(MyWindowPtr win,Rect *txtFmtBarRect); /* MJN *//* new routine */
-Boolean TextFormattingBarVisible(MyWindowPtr win); /* MJN *//* new routine */
-Boolean TextFormattingBarEnabled(MyWindowPtr win); /* MJN *//* new routine */
-Boolean TextFormattingBarOK(MyWindowPtr win); /* MJN *//* new routine */
-Boolean TextFormattingBarAllowed(MyWindowPtr win); /* MJN *//* new routine */
-Boolean TFBMenusAllowed(MyWindowPtr activeWindow); /* MJN *//* new routine */
-void InvalTextFormattingBar(MyWindowPtr win); /* MJN *//* new routine */
-void HideTxtFmtBar(MyWindowPtr win); /* MJN *//* new routine */
-void ShowTxtFmtBar(MyWindowPtr win); /* MJN *//* new routine */
-void HideShowTxtFmtBar(MyWindowPtr win,Boolean visible); /* MJN *//* new routine */
-void ToggleTxtFmtBarVisible(MyWindowPtr win); /* MJN *//* new routine */
-void HideShowAllTFB(Boolean visible); /* MJN *//* new routine */
-void EnableTxtFmtBar(MyWindowPtr win); /* MJN *//* new routine */
-void DisableTxtFmtBar(MyWindowPtr win); /* MJN *//* new routine */
-void SetTxtFmtBarEnabled(MyWindowPtr win,Boolean enabled); /* MJN *//* new routine */
-void ToggleTxtFmtBarEnabled(MyWindowPtr win); /* MJN *//* new routine */
-void EnableTxtFmtBarIfOK(MyWindowPtr win); /* MJN *//* new routine */
-void RequestTFBEnableCheck(MyWindowPtr win); /* MJN *//* new routine */
-void TFBRespondToSettingsChanges(void); /* MJN *//* new routine */
-void MatchTFBToCurSettings(MyWindowPtr win); /* MJN *//* new routine */
+Boolean TextFormattingBarHelp(MyWindowPtr win, Point mouse);	/* MJN *//* new routine */
+Boolean TextFormattingBarClick(MyWindowPtr win, EventRecord * event, Point clickLoc);	/* MJN *//* new routine */
+Boolean TextFormattingBarButton(MyWindowPtr win, ControlHandle buttonHandle, long modifiers, short part, short which);	/* MJN *//* new routine */
+void TextFormattingBarIdle(MyWindowPtr win);	/* MJN *//* new routine */
+void AddTextFormattingBarIcons(MyWindowPtr win, Boolean visible, Boolean enabled);	/* MJN *//* new routine */
+short GetTxtFmtBarHeight(void);	/* MJN *//* new routine */
+void GetTxtFmtBarRect(MyWindowPtr win, Rect * txtFmtBarRect);	/* MJN *//* new routine */
+Boolean TextFormattingBarVisible(MyWindowPtr win);	/* MJN *//* new routine */
+Boolean TextFormattingBarEnabled(MyWindowPtr win);	/* MJN *//* new routine */
+Boolean TextFormattingBarOK(MyWindowPtr win);	/* MJN *//* new routine */
+Boolean TextFormattingBarAllowed(MyWindowPtr win);	/* MJN *//* new routine */
+Boolean TFBMenusAllowed(MyWindowPtr activeWindow);	/* MJN *//* new routine */
+void InvalTextFormattingBar(MyWindowPtr win);	/* MJN *//* new routine */
+void HideTxtFmtBar(MyWindowPtr win);	/* MJN *//* new routine */
+void ShowTxtFmtBar(MyWindowPtr win);	/* MJN *//* new routine */
+void HideShowTxtFmtBar(MyWindowPtr win, Boolean visible);	/* MJN *//* new routine */
+void ToggleTxtFmtBarVisible(MyWindowPtr win);	/* MJN *//* new routine */
+void HideShowAllTFB(Boolean visible);	/* MJN *//* new routine */
+void EnableTxtFmtBar(MyWindowPtr win);	/* MJN *//* new routine */
+void DisableTxtFmtBar(MyWindowPtr win);	/* MJN *//* new routine */
+void SetTxtFmtBarEnabled(MyWindowPtr win, Boolean enabled);	/* MJN *//* new routine */
+void ToggleTxtFmtBarEnabled(MyWindowPtr win);	/* MJN *//* new routine */
+void EnableTxtFmtBarIfOK(MyWindowPtr win);	/* MJN *//* new routine */
+void RequestTFBEnableCheck(MyWindowPtr win);	/* MJN *//* new routine */
+void TFBRespondToSettingsChanges(void);	/* MJN *//* new routine */
+void MatchTFBToCurSettings(MyWindowPtr win);	/* MJN *//* new routine */
 void GetCurEditorMargins(PETEHandle pte, PSMPtr currentTxtMargin);
 #define kSeparatorRefCon 'fmSp'
 
-#endif  //ifndef FMTBAR_H
-
+#endif				//ifndef FMTBAR_H

@@ -36,19 +36,19 @@
 /**********************************************************************
  * the log file
  **********************************************************************/
-UPtr ComposeLogR(uLong level,UPtr into,short format,...);
-UPtr ComposeLogS(uLong level,UPtr into,UPtr format,...);
-UPtr Log(uLong level,Uptr string);
-void MyParamText(PStr p1,PStr p2,PStr p3,PStr p4);
+UPtr ComposeLogR(uLong level, UPtr into, short format, ...);
+UPtr ComposeLogS(uLong level, UPtr into, UPtr format, ...);
+UPtr Log(uLong level, Uptr string);
+void MyParamText(PStr p1, PStr p2, PStr p3, PStr p4);
 void CloseLog(void);
 void LogAlert(short template);
-void CarefulLog(uLong level,short format,UPtr data,short dSize);
-void LineLog(uLong level,short format,UPtr data,short dSize);
-void HexLog(uLong level,short format,UPtr data,short dSize);
+void CarefulLog(uLong level, short format, UPtr data, short dSize);
+void LineLog(uLong level, short format, UPtr data, short dSize);
+void HexLog(uLong level, short format, UPtr data, short dSize);
 #ifdef DEBUG
 #define LOGFLOW(x) do{ComposeLogS(LOG_FLOW,nil,"\p{%r:%d}:%d",FNAME_STRN+FILE_NUM,__LINE__,x);}while(0)
 #else
-#define LOGFLOW(x) 
+#define LOGFLOW(x)
 #endif
 #define LOG_SEND	1
 #define LOG_RETR	2

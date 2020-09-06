@@ -36,43 +36,43 @@
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 
 #pragma segment Main
-void ListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle);
+void ListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+	      ListHandle lHandle);
 /************************************************************************
  * my list definition
  ************************************************************************/
-void ListDraw(Boolean lSelect,Rect *lRect,Cell lCell,ListHandle lHandle)
+void ListDraw(Boolean lSelect, Rect * lRect, Cell lCell,
+	      ListHandle lHandle)
 {
 	Str63 myString;
-	short junk=sizeof(myString);
+	short junk = sizeof(myString);
 	SAVE_STUFF;
 	SET_COLORS;
-		
+
 	EraseRect(lRect);
-	LGetCell(myString,&junk,lCell,lHandle);
-	MoveTo(lRect->left+(*lHandle)->indent.h,lRect->top+(*lHandle)->indent.v);
-	DrawString(myString+1);
-	
-	if (myString[0])
-	{
+	LGetCell(myString, &junk, lCell, lHandle);
+	MoveTo(lRect->left + (*lHandle)->indent.h,
+	       lRect->top + (*lHandle)->indent.v);
+	DrawString(myString + 1);
+
+	if (myString[0]) {
 		Point pt;
 		PolyHandle pH;
-		
+
 		pt.h = lRect->right - 2;
-		pt.v = (lRect->top + lRect->bottom)/2;
-		MoveTo(pt.h,pt.v);
+		pt.v = (lRect->top + lRect->bottom) / 2;
+		MoveTo(pt.h, pt.v);
 		PenNormal();
-		if (pH=OpenPoly())
-		{
-			Line(-4,-4);
-			Line(0,9);
-			LineTo(pt.h,pt.v);
+		if (pH = OpenPoly()) {
+			Line(-4, -4);
+			Line(0, 9);
+			LineTo(pt.h, pt.v);
 			ClosePoly();
 			PaintPoly(pH);
 			KillPoly(pH);
 		}
 	}
-	if (lSelect)
-	{
+	if (lSelect) {
 		HiInvertRect(lRect);
 	}
 	REST_STUFF;

@@ -36,4 +36,4 @@ OSStatus OSXAddressBookSync(void);
 void OSXAddressBookSyncCleanup(Boolean bRemoveNickFile);
 void OSXAddressBookScheduledSync(void);
 
-#endif // OSXABSYNC_H
+#endif				// OSXABSYNC_H

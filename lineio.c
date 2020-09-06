@@ -37,7 +37,7 @@
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 
 #pragma segment FileUtil
-																
+
 #define LIKE_BUFFER 8192
 
 #define Buffer lip->buffer
@@ -49,89 +49,93 @@
 #define FSpot lip->fSpot
 #define Eof lip->eof
 
-short OpenLine(short vRef,long dirId,UPtr name,short perm,LineIOP lip)
+short OpenLine(short vRef, long dirId, UPtr name, short perm, LineIOP lip)
 {
 	int err;
 	short refN;
-	
+
 	Zero(*lip);
-		
+
 	/*
 	 * open the file
 	 */
-	if (err=AFSHOpen(name,vRef,dirId,&refN,perm)) goto failure;
+	if (err = AFSHOpen(name, vRef, dirId, &refN, perm))
+		goto failure;
 	RefN = refN;
-	
+
 	/*
 	 * allocate a buffer
 	 */
-	GetEOF(RefN,&BufferSize);
+	GetEOF(RefN, &BufferSize);
 	BufferSize += 2;
-	if (BufferSize > LIKE_BUFFER) BufferSize = LIKE_BUFFER;
-	if ((Buffer=NuHTempOK(BufferSize))==nil)
-	{
-		err=MemError();
+	if (BufferSize > LIKE_BUFFER)
+		BufferSize = LIKE_BUFFER;
+	if ((Buffer = NuHTempOK(BufferSize)) == nil) {
+		err = MemError();
 		goto failure;
 	}
-	
+
 	/*
 	 * fill the first buffer
 	 */
-	BFilled = BufferSize-1;
+	BFilled = BufferSize - 1;
 	LDRef(Buffer);
-	err=ARead(RefN,&BFilled,*Buffer);
+	err = ARead(RefN, &BFilled, *Buffer);
 	UL(Buffer);
-	if (err && err!=eofErr) goto failure;
+	if (err && err != eofErr)
+		goto failure;
 	BSpot = LastSpot = FSpot = 0;
-	(*Buffer)[BFilled] = '\015';			/* a marker, to expedite searches */
-	return(noErr);
+	(*Buffer)[BFilled] = '\015';	/* a marker, to expedite searches */
+	return (noErr);
 
-failure:
+      failure:
 	CloseLine(lip);
-	return(err);
+	return (err);
 }
 
 /************************************************************************
  * SeekLine - seek the line routines to a given spot
  ************************************************************************/
-int SeekLine(long spot,LineIOP lip)
+int SeekLine(long spot, LineIOP lip)
 {
 	int err;
-	
-	if (err = SetFPos(RefN,fsFromStart,spot)) goto failure;
-	
+
+	if (err = SetFPos(RefN, fsFromStart, spot))
+		goto failure;
+
 	/*
 	 * fill the first buffer
 	 */
-	BFilled = BufferSize-1;
+	BFilled = BufferSize - 1;
 	LDRef(Buffer);
-	err=ARead(RefN,&BFilled,*Buffer);
+	err = ARead(RefN, &BFilled, *Buffer);
 	UL(Buffer);
-	if (err && err!=eofErr) goto failure;
+	if (err && err != eofErr)
+		goto failure;
 	Eof = False;
 	BSpot = 0;
 	LastSpot = FSpot = spot;
-	(*Buffer)[BFilled] = '\015';			/* a marker, to expedite searches */
-	return(noErr);
+	(*Buffer)[BFilled] = '\015';	/* a marker, to expedite searches */
+	return (noErr);
 
-failure:
+      failure:
 	CloseLine(lip);
-	return(err);
+	return (err);
 }
 
 /**********************************************************************
  * NLGetLine - get a line, possiby preceeded by a linefeed
  **********************************************************************/
-int NLGetLine(UPtr line,int size, long *len,LineIOP lip)
+int NLGetLine(UPtr line, int size, long *len, LineIOP lip)
 {
-	short l = GetLine(line,size,len,lip);
-	
-	if (l==LINE_START && *len && *line=='\012')
-	{
-		BMD(line+1,line,--*len);
-		if (!*len) l = 0;
+	short l = GetLine(line, size, len, lip);
+
+	if (l == LINE_START && *len && *line == '\012') {
+		BMD(line + 1, line, --*len);
+		if (!*len)
+			l = 0;
 	}
-	return(l);
+	return (l);
 }
 
 /**********************************************************************
@@ -139,62 +143,62 @@ int NLGetLine(UPtr line,int size, long *len,LineIOP lip)
  * for file manager errors, LINE_START if returning the beginning of
  * a line, LINE_MIDDLE if a partial line is being returned.
  **********************************************************************/
-int GetLine(UPtr line,int size, long *len,LineIOP lip)
+int GetLine(UPtr line, int size, long *len, LineIOP lip)
 {
 	register UPtr bp;
-	register UPtr cp=line;
+	register UPtr cp = line;
 	int where;
 	int err;
-	static FILE *trace=0;
-	
-	if (!BFilled) return (0); 		/* we have no chars */
-	size--; //make sure we don't overrun buffer
+	static FILE *trace = 0;
+
+	if (!BFilled)
+		return (0);	/* we have no chars */
+	size--;			//make sure we don't overrun buffer
 	CycleBalls();
 	bp = LDRef(Buffer) + BSpot;
-	where = (bp==*Buffer || bp[-1]=='\015') ? LINE_START : LINE_MIDDLE;
-	LastSpot = FSpot + BSpot; 	/* remember where this line begins */
-	for (;;)
-	{
-		while (*bp!='\015' && --size>0) {*cp = *bp++; if (!*cp) *cp=' '; cp++;}
+	where = (bp == *Buffer
+		 || bp[-1] == '\015') ? LINE_START : LINE_MIDDLE;
+	LastSpot = FSpot + BSpot;	/* remember where this line begins */
+	for (;;) {
+		while (*bp != '\015' && --size > 0) {
+			*cp = *bp++;
+			if (!*cp)
+				*cp = ' ';
+			cp++;
+		}
 		BSpot = bp - *Buffer;
-		if (BSpot==BFilled)
-		{
+		if (BSpot == BFilled) {
 			FSpot += BFilled;
 			BFilled = BufferSize - 1;
-			err=ARead(RefN,&BFilled,*Buffer);
+			err = ARead(RefN, &BFilled, *Buffer);
 			Eof = !BFilled;
-			if (err==eofErr)
-			{
-				if (BFilled==0)
-				{
+			if (err == eofErr) {
+				if (BFilled == 0) {
 					*cp = 0;
 					BFilled = 0;
 					UL(Buffer);
-					if (len) *len = cp-line;
+					if (len)
+						*len = cp - line;
 					return (where);
 				}
-			}
-			else if (err)
-			{
+			} else if (err) {
 				UL(Buffer);
-				FileSystemError(READ_MBOX,"",err);
-				return(err);
+				FileSystemError(READ_MBOX, "", err);
+				return (err);
 			}
 			(*Buffer)[BFilled] = '\015';	/* a marker, to expedite searches */
 			BSpot = 0;
 			bp = *Buffer;
-		}
-		else
-		{
-			if (size>0)
-			{
+		} else {
+			if (size > 0) {
 				*cp++ = '\015';
 				BSpot++;
 			}
 			*cp = 0;
 			UL(Buffer);
-			if (len) *len = cp-line;
-			return(where);
+			if (len)
+				*len = cp - line;
+			return (where);
 		}
 	}
 }
@@ -204,15 +208,12 @@ int GetLine(UPtr line,int size, long *len,LineIOP lip)
  **********************************************************************/
 void CloseLine(LineIOP lip)
 {
-	if (lip)
-	{
-		if (RefN != 0)
-		{
+	if (lip) {
+		if (RefN != 0) {
 			FSClose(RefN);	// not MyFSClose, because reading only
 			RefN = 0;
 		}
-		if (Buffer != nil)
-		{
+		if (Buffer != nil) {
 			ZapHandle(Buffer);
 			Buffer = nil;
 		}
@@ -224,5 +225,4 @@ void CloseLine(LineIOP lip)
 long TellLine(LineIOP lip)
 {
 	return (LastSpot);
-} 
-
+}

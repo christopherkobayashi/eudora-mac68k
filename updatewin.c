@@ -39,8 +39,8 @@
 #define MemResError()	(MemError () ? MemError ()	: ResError ())
 
 typedef struct {
-	MyWindowPtr	win;
-	Boolean			inited;
+	MyWindowPtr win;
+	Boolean inited;
 } WinData;
 
 static WinData gWin;
@@ -48,40 +48,41 @@ static WinData gWin;
 /************************************************************************
  * prototypes
  ************************************************************************/
-static Boolean DoClose (MyWindowPtr win);
-static Boolean DoPosition (Boolean save, MyWindowPtr win);
+static Boolean DoClose(MyWindowPtr win);
+static Boolean DoPosition(Boolean save, MyWindowPtr win);
 
 /************************************************************************
  * OpenUpdateWin - open the update window
  ************************************************************************/
 
-OSErr OpenUpdateWin (void)
-
+OSErr OpenUpdateWin(void)
 {
-	OSErr	theError;
-	
+	OSErr theError;
+
 	if (gWin.inited) {
-		SelectWindow_ (gWin.win);
+		SelectWindow_(gWin.win);
 		return;
 	}
-	
-	gWin.win = GetNewMyWindow (UPDATE_WIND, nil, BehindModal, false, true, UPDATE_WIN);
-	theError = MemError () ? MemError ()	: ResError ();
-	
+
+	gWin.win =
+	    GetNewMyWindow(UPDATE_WIND, nil, BehindModal, false, true,
+			   UPDATE_WIN);
+	theError = MemError()? MemError() : ResError();
+
 	if (!theError) {
-//		gWin.win->saveSize	= true;
-		gWin.win->close			= DoClose;
-		gWin.win->position	= DoPosition;
+//              gWin.win->saveSize      = true;
+		gWin.win->close = DoClose;
+		gWin.win->position = DoPosition;
 		gWin.inited = true;
 
 		gWin.win->isRunt = true;
-		ShowMyWindow (gWin.win);
+		ShowMyWindow(gWin.win);
 		gWin.win->isRunt = false;
 	}
 	if (theError) {
 		if (gWin.win)
-			CloseMyWindow (gWin.win);
-		WarnUser (COULDNT_WIN, theError);
+			CloseMyWindow(gWin.win);
+		WarnUser(COULDNT_WIN, theError);
 	}
 	return (theError);
 }
@@ -93,7 +94,7 @@ OSErr OpenUpdateWin (void)
 static Boolean DoClose(MyWindowPtr win)
 {
 #pragma unused(win)
-	
+
 	gWin.inited = false;
 	return (true);
 }
@@ -102,73 +103,86 @@ static Boolean DoClose(MyWindowPtr win)
 /************************************************************************
  * DoPosition - remember the position of the update window
  ************************************************************************/
-Boolean DoPosition (Boolean save, MyWindowPtr win)
-
+Boolean DoPosition(Boolean save, MyWindowPtr win)
 {
 	Rect r;
 	Boolean zoomed;
 	FSSpec spec = (*(TextDHandle) win->qWindow.refCon)->spec;
-	
-	if (!*spec.name) return(False);
-	
-	if (save)
-	{
-		utl_SaveWindowPos((WindowPtr)win,&r,&zoomed);
-		SavePosFork(spec.vRefNum,spec.parID,spec.name,&r,zoomed);
+
+	if (!*spec.name)
+		return (False);
+
+	if (save) {
+		utl_SaveWindowPos((WindowPtr) win, &r, &zoomed);
+		SavePosFork(spec.vRefNum, spec.parID, spec.name, &r,
+			    zoomed);
+	} else {
+		if (!RestorePosFork
+		    (spec.vRefNum, spec.parID, spec.name, &r, &zoomed))
+			return (False);
+		utl_RestoreWindowPos((WindowPtr) win, &r, zoomed, 1,
+				     TitleBarHeight(win),
+				     LeftRimWidth(win),
+				     (void *) FigureZoom,
+				     (void *) DefPosition);
 	}
-	else
-	{
-		if (!RestorePosFork(spec.vRefNum,spec.parID,spec.name,&r,&zoomed))
-			return(False);
-		utl_RestoreWindowPos((WindowPtr)win,&r,zoomed,1,TitleBarHeight(win),LeftRimWidth(win),(void*)FigureZoom,(void*)DefPosition);
-	}
-	return(True);
+	return (True);
 }
 
 
 //
-//	UpdateCheck
+//      UpdateCheck
 //
-//		Contact eudora.com and check for application updates.
-//		If there are updates write the results into a file
-//		Open a window displaying this information
+//              Contact eudora.com and check for application updates.
+//              If there are updates write the results into a file
+//              Open a window displaying this information
 //
 
-OSErr UpdateCheck (void)
-
+OSErr UpdateCheck(void)
 {
-	FSSpec	updateSpec;
-	Handle	url;
-	Str255	filename;
-	OSErr 	theError;
-	long		reference;
-	
+	FSSpec updateSpec;
+	Handle url;
+	Str255 filename;
+	OSErr theError;
+	long reference;
+
 	// First, we need a file!
-	theError = FSMakeFSSpec (Root.vRef, Root.dirId, GetRString (filename, UPDATE_FILE), &updateSpec);
+	theError =
+	    FSMakeFSSpec(Root.vRef, Root.dirId,
+			 GetRString(filename, UPDATE_FILE), &updateSpec);
 	if (theError == fnfErr)
-		theError = FSpCreate (&updateSpec, CREATOR, 'TEXT', smSystemScript);
-	
+		theError =
+		    FSpCreate(&updateSpec, CREATOR, 'TEXT',
+			      smSystemScript);
+
 	// Send a GET to the server to request updates
 	if (!theError)
-		if (url = GenerateAdwareURL (UPDATE_SITE, PATH_TO_UPDATE_QUERY_PAGE, true)) {
-			theError = DownloadURL (LDRef (url), &updateSpec, nil, FinishedUpdateCheck, &reference, nil);			
-			ZapHandle (url);
+		if (url =
+		    GenerateAdwareURL(UPDATE_SITE,
+				      PATH_TO_UPDATE_QUERY_PAGE, true)) {
+			theError =
+			    DownloadURL(LDRef(url), &updateSpec, nil,
+					FinishedUpdateCheck, &reference,
+					nil);
+			ZapHandle(url);
 		}
 	return (theError);
 }
 
 
-void FinishedUpdateCheck (long refCon, OSErr theError)
-
+void FinishedUpdateCheck(long refCon, OSErr theError)
 {
 	MyWindowPtr win;
-	FSSpec			updateSpec;
-	Str255			filename;
+	FSSpec updateSpec;
+	Str255 filename;
 
 	if (!theError)
-		theError = FSMakeFSSpec (Root.vRef, Root.dirId, GetRString (filename, UPDATE_FILE), &updateSpec);
+		theError =
+		    FSMakeFSSpec(Root.vRef, Root.dirId,
+				 GetRString(filename, UPDATE_FILE),
+				 &updateSpec);
 	if (!theError)
-		win = OpenText (&updateSpec, nil, true, nil, true, true);
+		win = OpenText(&updateSpec, nil, true, nil, true, true);
 
-//		theError = OpenUpdateWin ();
+//              theError = OpenUpdateWin ();
 }

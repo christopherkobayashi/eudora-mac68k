@@ -32,80 +32,81 @@
 #ifndef MENU_H
 #define MENU_H
 
-void EnableMenus(WindowPtr winWP,Boolean all);
+void EnableMenus(WindowPtr winWP, Boolean all);
 void EnableMenuItems(Boolean all);
-void DoMenu(WindowPtr topWin,long selection,short modifiers);
+void DoMenu(WindowPtr topWin, long selection, short modifiers);
 #define DoMenu2(w,m,i,mods)	DoMenu(w,(m)<<16|(i),mods)
 Boolean EnableIf(MenuHandle mh, short item, Boolean expr);
-void CheckBox(MyWindowPtr win,Boolean all);
-void CheckPrior(MyWindowPtr win,Boolean all);
-short MailboxKindaMenu(short mnu,short item,PStr s,FSSpecPtr spec);
+void CheckBox(MyWindowPtr win, Boolean all);
+void CheckPrior(MyWindowPtr win, Boolean all);
+short MailboxKindaMenu(short mnu, short item, PStr s, FSSpecPtr spec);
 void SetCheckItem(PStr item);
-Boolean DoIndependentMenu(int menu,int item,short modifiers);
-void SetMenuTexts(short modifiers,Boolean all);
-void CheckState(MyWindowPtr win,Boolean all,short origItem);
+Boolean DoIndependentMenu(int menu, int item, short modifiers);
+void SetMenuTexts(short modifiers, Boolean all);
+void CheckState(MyWindowPtr win, Boolean all, short origItem);
 void SaveAll(void);
 OSErr NewMessageWith(short item);
 void FixRecipMenu(void);
 void SetupRecipMenus(void);
-void SetupRecipMenusWith(Handle	hRecip);
+void SetupRecipMenusWith(Handle hRecip);
 void PruneRecipMenu(void);
 void InsertSystemConfig(PETEHandle pte);
-OSErr HMGetHelpMenuHandle(MenuRef *mh);
-void MyEnableItem(MenuHandle mh,short item);
-void MyDisableItem(MenuHandle mh,short item);
+OSErr HMGetHelpMenuHandle(MenuRef * mh);
+void MyEnableItem(MenuHandle mh, short item);
+void MyDisableItem(MenuHandle mh, short item);
 void AdjustStupidCommandKeys(void);
-OSErr ReadReplacmentCommandKeyPref(short pref, char *key, UInt8 *modifiers);
-long STUPIDCheckMailHack(EventRecord *event);
+OSErr ReadReplacmentCommandKeyPref(short pref, char *key,
+				   UInt8 * modifiers);
+long STUPIDCheckMailHack(EventRecord * event);
 Boolean MenuItemIsSeparator(MenuHandle theMenu, short item);
 
-Boolean ChangePWMenuShown ();
-short   AdjustSpecialMenuSelection ( short item );
-short   AdjustSpecialMenuItem      ( short item );
+Boolean ChangePWMenuShown();
+short AdjustSpecialMenuSelection(short item);
+short AdjustSpecialMenuItem(short item);
 
 #ifdef MENUSTATS
 void NoteMenuSelection(long selection);
 #endif
 #ifdef USECMM
-void		HandleContextualMenuClick( WindowPtr topWinWP, EventRecord* event );
+void HandleContextualMenuClick(WindowPtr topWinWP, EventRecord * event);
 #endif
 
 #ifdef DEBUG
 enum {
-/*    1 */ 	dbNoOffscreenBM=1,
-/*    2 */ 	dbPeteBusy,
-/*    3 */ 	dbSerialNos,
-/*    4 */ 	dbRandNickEvents,
-/*    5 */ 	dbAEStuff,
-/*    6 */ 	dbNoDblBuffs,
-/*    7 */ 	dbHeapCheck,
-/*    8 */ 	dbArrivalTimes,
-/*    9 */ 	dbUseResFile,
-/*   10 */ 	dbNoTempMem,
-/*   11 */ 	dbOneShotProfile,
-/*   12 */ 	dbGrowZone,
-/*   13 */ 	dbPorts10k,
-/*   14 */ 	dbTCPBuff,
-/*   15 */ 	dbVisComp,
-/*   16 */ 	dbMsgFetchTrace,
-/*   17 */ 	dbSeparator1,
-/*   18 */ 	dbDebugger,
-/*   19 */ 	dbIMAPMsgFlags,
-/*   20 */ 	dbSLReseLeaks,
-/*   21 */ 	dbAds,
-/*   22 */ 	dbCmdKey,
-/*   23 */ 	dbTestSpooler,
-/*   24 */ 	dbDumpPte,
-/*   25 */ 	dbNag,
-/*   26 */ 	dbDumpCtl,
-/*   27 */ 	dbAdWin,
-/*   28 */	dbAudit,
-/*   29 */	dbLWSPMatch,
-/*   30 */	dbAddRecvdStat,
-/*   31 */	dbAddSentStat,
-/*   32 */	dbWindowPtrs,
-dbLimit
+/*    1 */ dbNoOffscreenBM = 1,
+/*    2 */ dbPeteBusy,
+/*    3 */ dbSerialNos,
+/*    4 */ dbRandNickEvents,
+/*    5 */ dbAEStuff,
+/*    6 */ dbNoDblBuffs,
+/*    7 */ dbHeapCheck,
+/*    8 */ dbArrivalTimes,
+/*    9 */ dbUseResFile,
+/*   10 */ dbNoTempMem,
+/*   11 */ dbOneShotProfile,
+/*   12 */ dbGrowZone,
+/*   13 */ dbPorts10k,
+/*   14 */ dbTCPBuff,
+/*   15 */ dbVisComp,
+/*   16 */ dbMsgFetchTrace,
+/*   17 */ dbSeparator1,
+/*   18 */ dbDebugger,
+/*   19 */ dbIMAPMsgFlags,
+/*   20 */ dbSLReseLeaks,
+/*   21 */ dbAds,
+/*   22 */ dbCmdKey,
+/*   23 */ dbTestSpooler,
+/*   24 */ dbDumpPte,
+/*   25 */ dbNag,
+/*   26 */ dbDumpCtl,
+/*   27 */ dbAdWin,
+/*   28 */ dbAudit,
+/*   29 */ dbLWSPMatch,
+/*   30 */ dbAddRecvdStat,
+/*   31 */ dbAddSentStat,
+/*   32 */ dbWindowPtrs,
+	dbLimit
 };
-#endif		
+#endif
 
 #endif

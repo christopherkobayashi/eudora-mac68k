@@ -32,54 +32,52 @@
 #ifndef LEX822_H
 #define LEX822_H
 
-typedef enum
-{
+typedef enum {
 	LinearWhite,
 	Atom,
 	QText,
 	RegText,
 	DomainLit,
-	t822Comment,			/* conflict with "Comment" in AIFF.h */
+	t822Comment,		/* conflict with "Comment" in AIFF.h */
 	Special,
 	EndOfHeader,
 	EndOfMessage,
-	ErrorToken,				/* something went wrong */
+	ErrorToken,		/* something went wrong */
 	Continue822
 } Token822Enum;
 
-typedef enum
-{
-	Init822,				/* get started */
+typedef enum {
+	Init822,		/* get started */
 	CollectLine,		/* not doing anything special right at the moment */
 	CollectLWSP,		/* collecting a run of LWSP */
 	CollectAtom,		/* collecting an atom */
-	CollectComment,	/* collecting an RFC 822 comment */
+	CollectComment,		/* collecting an RFC 822 comment */
 	CollectQText,		/* collecting a quoted text string */
-	CollectDL,			/* collecting a domain literal */
-	CollectSpecial,	/* collecting a single special character */
+	CollectDL,		/* collecting a domain literal */
+	CollectSpecial,		/* collecting a single special character */
 	CollectText,		/* collecting an unstructured field body */
-									/*   we have to be put in this state by an external force */
+	/*   we have to be put in this state by an external force */
 	ReceiveError,		/* ran out of characters */
 	State822Limit
 } State822Enum;
 
-typedef struct
-{
+typedef struct {
 	State822Enum state;
-	Str255 token;							/* tokens over 255 characters will be shot */
-	Str255 buffer;						/* input buffer line */
-	UPtr spot;								/* spot we're currently processing */
-	UPtr end;									/* time to die */
-	short inStructure;				/* in a quote, comment, or domain literal */
-	Boolean reinitToken;			/* have we seen the end of the input stream? */
-	Boolean uhOh;							/* we tawt we taw a putty tat */
-	Boolean has1522;					/* RFC 1522 encoded data found */
+	Str255 token;		/* tokens over 255 characters will be shot */
+	Str255 buffer;		/* input buffer line */
+	UPtr spot;		/* spot we're currently processing */
+	UPtr end;		/* time to die */
+	short inStructure;	/* in a quote, comment, or domain literal */
+	Boolean reinitToken;	/* have we seen the end of the input stream? */
+	Boolean uhOh;		/* we tawt we taw a putty tat */
+	Boolean has1522;	/* RFC 1522 encoded data found */
 } Lex822State, *L822SPtr, **L822SHandle;
 
 typedef struct Accumulator *AccuPtr;
-Token822Enum Lex822(TransStream stream, L822SPtr l822p,AccuPtr fullHeaders);
+Token822Enum Lex822(TransStream stream, L822SPtr l822p,
+		    AccuPtr fullHeaders);
 
-PStr Quote822(PStr into,PStr from,Boolean spaces);
+PStr Quote822(PStr into, PStr from, Boolean spaces);
 short DecodeB64String(PStr s);
 void PseudoQP(PStr text);
 

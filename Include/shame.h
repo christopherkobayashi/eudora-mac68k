@@ -47,21 +47,26 @@
 	do {Str255 _s_;DoAnAlert(level,GetRString(_s_,errNum));}while(0)
 #define DoNumBigAlert(level,errNum) \
 	do {Str255 _s_;DoABigAlert(level,GetRString(_s_,errNum));}while(0)
-int ReallyDoAnAlert(int template,int which);
+int ReallyDoAnAlert(int template, int which);
 int AlertStr(int template, int which, UPtr str);
 Boolean Switch(void);
 void SetAlertBeep(Boolean onOrOff);
-Boolean MommyMommy(short sId,UPtr string);
-int Aprintf(short template,short which,short rFormat,...);
-void Dprintf(PStr fmt,...);
+Boolean MommyMommy(short sId, UPtr string);
+int Aprintf(short template, short which, short rFormat, ...);
+void Dprintf(PStr fmt, ...);
 OSErr PtrPlusHand(const void *pointer, Handle hand, long size);
 OSErr HandPlusHand(Handle h1, Handle h2);
-void SetHandleBig(Handle h,long size);
+void SetHandleBig(Handle h, long size);
 OSErr MemoryPreflight(long size);
 Handle DupHandle(Handle inHandle);
-OSErr MyHandToHand(Handle *inHandle);
-short ReallyStandardAlert(AlertType alertType, StringPtr error, StringPtr explanation, AlertStdAlertParamPtr alertParam);
-OSErr MyStandardAlert(AlertType inAlertType,PStr inError,PStr inExplanation, AlertStdAlertParamRec *  inAlertParam,short *outItemHit);
+OSErr MyHandToHand(Handle * inHandle);
+short ReallyStandardAlert(AlertType alertType, StringPtr error,
+			  StringPtr explanation,
+			  AlertStdAlertParamPtr alertParam);
+OSErr MyStandardAlert(AlertType inAlertType, PStr inError,
+		      PStr inExplanation,
+		      AlertStdAlertParamRec * inAlertParam,
+		      short *outItemHit);
 OSErr GoGetHelp(PStr error, PStr explanation);
 #ifdef DEBUG
 void LeaksInit(void);

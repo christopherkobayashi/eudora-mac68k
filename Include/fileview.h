@@ -32,33 +32,31 @@
 #ifndef FILEVIEW_H
 #define FILEVIEW_H
 
-typedef enum { kNameCol,kDateCol,kSizeCol,kFDColCount } FVColumnEnum;
+typedef enum { kNameCol, kDateCol, kSizeCol, kFDColCount } FVColumnEnum;
 
 enum {
-	kFVPrefsVersion=1,
-	kExandListResType='FvEl',
-	kExandListResID=1000,
-	kFVPrefsResType='FvPf',
-	kFVPrefsResID=1000
+	kFVPrefsVersion = 1,
+	kExandListResType = 'FvEl',
+	kExandListResID = 1000,
+	kFVPrefsResType = 'FvPf',
+	kFVPrefsResID = 1000
 };
 
-typedef struct
-{
-	short		version;
+typedef struct {
+	short version;
 	FVColumnEnum sortCol;
 } FVPrefs, **FVPrefsHandle;
 
-typedef struct
-{
-	ViewListPtr	list;
-	short 		savePreviewHi;
-	short		vRefNum;
-	uLong		dirId;
-	ExpandInfo	expandList;
-	FVPrefs		prefs;
-	Boolean		dirtyPrefs;
-	uLong		lastUpdateCheck,lastUpdate;
-	ControlRef	controls[kFDColCount];
+typedef struct {
+	ViewListPtr list;
+	short savePreviewHi;
+	short vRefNum;
+	uLong dirId;
+	ExpandInfo expandList;
+	FVPrefs prefs;
+	Boolean dirtyPrefs;
+	uLong lastUpdateCheck, lastUpdate;
+	ControlRef controls[kFDColCount];
 } FileViewInfo, *FileViewPtr, **FileViewHandle;
 
 void NewFileView(MyWindowPtr win, FileViewHandle hData);
@@ -66,14 +64,16 @@ void FVDispose(FileViewHandle fvh);
 FileViewHandle GetFileViewInfo(MyWindowPtr win);
 
 void FileViewUpdate(MyWindowPtr win);
-void FileViewClick(MyWindowPtr win,EventRecord *event);
+void FileViewClick(MyWindowPtr win, EventRecord * event);
 void FileViewCursor(Point mouse);
-OSErr FileViewDragHandler(MyWindowPtr win,DragTrackingMessage which,DragReference drag);
-Boolean FileViewKey(MyWindowPtr win, EventRecord *event);
-Boolean FileViewFind(MyWindowPtr win,PStr what);
+OSErr FileViewDragHandler(MyWindowPtr win, DragTrackingMessage which,
+			  DragReference drag);
+Boolean FileViewKey(MyWindowPtr win, EventRecord * event);
+Boolean FileViewFind(MyWindowPtr win, PStr what);
 Boolean FileViewMenu(MyWindowPtr win, int menu, int item, short modifiers);
 void FVSizeHeaderButtons(MyWindowPtr win, FileViewHandle fvh);
-void FileViewButton(MyWindowPtr win,ControlHandle buttonHandle,long modifiers,short part);
+void FileViewButton(MyWindowPtr win, ControlHandle buttonHandle,
+		    long modifiers, short part);
 void FileViewActivate(MyWindowPtr win);
 void FileViewIdle(MyWindowPtr win);
 void FVRemoveButtons(MyWindowPtr win);

@@ -37,16 +37,16 @@ Boolean HaveSpeller(void);
 #ifdef WINTERTREE
 short SpellOpen(void);
 void SpellScan(void);
-void PeteSpellScan(PETEHandle pte,Boolean manual);
+void PeteSpellScan(PETEHandle pte, Boolean manual);
 void SpellClose(Boolean withPrejuidice);
 void EnableSpellMenu(Boolean all);
-void SpellMenu(short item,short modifiers);
+void SpellMenu(short item, short modifiers);
 void SpellAgain(void);
 Boolean SpellAnyWrongHuh(PETEHandle pte);
 #ifdef USECMM
-OSErr AppendSpellItems(PETEHandle pte,MenuHandle contextMenu);
+OSErr AppendSpellItems(PETEHandle pte, MenuHandle contextMenu);
 #endif
-typedef enum {sprNeverSpell=-2,sprSpellComplete=-1} SpellResultEnum;
+typedef enum { sprNeverSpell = -2, sprSpellComplete = -1 } SpellResultEnum;
 #define SpelledAuto(pte) ((*PeteExtra(pte))->spelled==sprSpellComplete)
 #define SpellDisabled(pte) ((*PeteExtra(pte))->spelled == sprNeverSpell)
 #define SpellChecked(pte) (!SpellDisabled(pte) && (*PeteExtra(pte))->spelled<0)

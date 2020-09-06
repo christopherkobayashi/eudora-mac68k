@@ -180,16 +180,16 @@ MenuInfo
  **********************************************************************/
 
 
-//	QuickDraw
+//      QuickDraw
 #define	MyCreateNewPort(port)							port = CreateNewPort()
 #define	GetPortPixelDepth(port)						(GetPixDepth (GetPortPixMap (port)))
 RgnHandle SavePortClipRegion(CGrafPtr port);
-void RestorePortClipRegion(CGrafPtr port,RgnHandle rgn);
+void RestorePortClipRegion(CGrafPtr port, RgnHandle rgn);
 
-//	QuickDraw Globals
-Rect	*GetQDGlobalsScreenBitsBounds (Rect *bounds);
+//      QuickDraw Globals
+Rect *GetQDGlobalsScreenBitsBounds(Rect * bounds);
 
-//	Window Manager
+//      Window Manager
 #define	GetWindowVisRgn(aWindowPtr,aRgnHandle)	(GetPortVisibleRegion (GetWindowPort (aWindowPtr), (aRgnHandle)))
 
 #if !defined(GetWindowUpdateRgn)
@@ -203,8 +203,8 @@ RgnHandle MyGetWindowUpdateRegion(WindowRef window);
 #define GetWindowStructureBounds(win,rectPtr)	GetWindowBounds(win,kWindowStructureRgn,rectPtr)
 #define GetWindowContentBounds(win,rectPtr)	GetWindowBounds(win,kWindowContentRgn,rectPtr)
 // pascal Boolean GetWindowGoAwayFlag(WindowRef win); CK
-void GetWMgrPort(GrafPtr *wPort);
-void GetCWMgrPort(CGrafPtr *wPort);
+void GetWMgrPort(GrafPtr * wPort);
+void GetCWMgrPort(CGrafPtr * wPort);
 
 #if !defined(GetWindowStructureRgn)
 #define GetWindowStructureRgn(win,rgn)			GetWindowRegion(win,kWindowStructureRgn,rgn)
@@ -215,53 +215,55 @@ void GetCWMgrPort(CGrafPtr *wPort);
 #endif
 
 Boolean MyIsWindowVisible(WindowRef win);
-OSStatus	InvalWindowPort (WindowPtr theWindow);
-Rect	*GetUpdateRgnBounds (WindowPtr theWindow, Rect *bounds);
-Rect	*GetVisibleRgnBounds (WindowPtr theWindow, Rect *bounds);
-Rect	*GetContentRgnBounds (WindowPtr theWindow, Rect *bounds);
-Rect	*GetStructureRgnBounds (WindowPtr theWindow, Rect *bounds);
-short	MyGetWindowTitleWidth (WindowPtr theWindow);
-Boolean	HasUpdateRgn (WindowPtr theWindow);
+OSStatus InvalWindowPort(WindowPtr theWindow);
+Rect *GetUpdateRgnBounds(WindowPtr theWindow, Rect * bounds);
+Rect *GetVisibleRgnBounds(WindowPtr theWindow, Rect * bounds);
+Rect *GetContentRgnBounds(WindowPtr theWindow, Rect * bounds);
+Rect *GetStructureRgnBounds(WindowPtr theWindow, Rect * bounds);
+short MyGetWindowTitleWidth(WindowPtr theWindow);
+Boolean HasUpdateRgn(WindowPtr theWindow);
 
-//	Control Manager
+//      Control Manager
 #define ZapControlDataHandle(cntl)								{ if (GetControlDataHandle (cntl)) { DisposeHandle ((void *)(GetControlDataHandle (cntl))); SetControlDataHandle ((cntl), nil); }}
-ControlHandle GetControlList (WindowPtr theWindow);
-ControlHandle GetNextControl (ControlHandle theControl);
+ControlHandle GetControlList(WindowPtr theWindow);
+ControlHandle GetNextControl(ControlHandle theControl);
 
-//	Menu Manager
+//      Menu Manager
 #define	EnableItem	MacEnableMenuItem
 #define	DisableItem	DisableMenuItem
 #define	IsValidMenuHandle(aMenuRef)						(aMenuRef)
 #define MySetMenuTitle(menu,title) SetMenuTitle(menu,title)
 
-//	Dialog Manager
+//      Dialog Manager
 #define	GetDialogPortBounds(dp,aRectPtr)		GetWindowPortBounds(GetDialogWindow(dp),aRectPtr)
 
-//	Memory Manager
+//      Memory Manager
 #define NewEmptyHandleSys NewEmptyHandle
 #define NewHandleSysClear NewHandleClear
 #define NewHandleSys NewHandle
 
-OSErr AEGetDescDataHandle(AEDesc *theAEDesc,Handle *handle);
+OSErr AEGetDescDataHandle(AEDesc * theAEDesc, Handle * handle);
 void AEDisposeDescDataHandle(Handle h);
 
-//	Printing
-//OSStatus PMGetPhysicalPaperSizeAsRect(PMPageFormat pageFormat,Rect *paperSize);	// PMGetPhysicalPaperSize returns rect as PMRect, not Rect
-//OSStatus PMGetPhysicalPageSizeAsRect (PMPageFormat pageFormat,Rect *pageSize);	// PMGetPhysicalPageSize returns rect as PMRect, not Rect
-OSStatus PMGetAdjustedPaperSizeAsRect(PMPageFormat pageFormat,Rect *paperSize);	// PMGetAdjustedPaperSize returns rect as PMRect, not Rect
-OSStatus PMGetAdjustedPageSizeAsRect (PMPageFormat pageFormat,Rect *paperSize);	// PMGetAdjustedPaperSize returns rect as PMRect, not Rect
+//      Printing
+//OSStatus PMGetPhysicalPaperSizeAsRect(PMPageFormat pageFormat,Rect *paperSize);       // PMGetPhysicalPaperSize returns rect as PMRect, not Rect
+//OSStatus PMGetPhysicalPageSizeAsRect (PMPageFormat pageFormat,Rect *pageSize);        // PMGetPhysicalPageSize returns rect as PMRect, not Rect
+OSStatus PMGetAdjustedPaperSizeAsRect(PMPageFormat pageFormat, Rect * paperSize);	// PMGetAdjustedPaperSize returns rect as PMRect, not Rect
+OSStatus PMGetAdjustedPageSizeAsRect(PMPageFormat pageFormat, Rect * paperSize);	// PMGetAdjustedPaperSize returns rect as PMRect, not Rect
 
-//	Help Manager
-//		Ignore all balloon functions
+//      Help Manager
+//              Ignore all balloon functions
 #define HMRemoveBalloon()		noErr
 #define	HMIsBalloon()			false
 #define	HMSetBalloons(flag)		noErr
 #define	HMGetBalloons()			false
 #define HMShowBalloon(msg,tip,hotRect,tipProc,procID,var,method)	noErr
 
-//	Scrap Manager
-long GetScrap(Handle destination,ScrapFlavorType flavorType,SInt32 *offset);
-OSStatus PutScrap(SInt32 sourceBufferByteCount,ScrapFlavorType flavorType,const void * sourceBuffer);
+//      Scrap Manager
+long GetScrap(Handle destination, ScrapFlavorType flavorType,
+	      SInt32 * offset);
+OSStatus PutScrap(SInt32 sourceBufferByteCount, ScrapFlavorType flavorType,
+		  const void *sourceBuffer);
 #define ZeroScrap() ClearCurrentScrap()
 Boolean IsScrapFull(void);
 
@@ -271,17 +273,22 @@ void SetEmptyClipRgn(CGrafPtr port);
 Rect GetScreenBounds(void);
 
 void InitCarbonUtil(void);
-OSErr	MyAECreateDesc (DescType typeCode, void *dataPtr, Size dataSize, AEDesc *result);
-OSStatus	InvalControl (ControlHandle theControl);
-//ComponentResult	GraphicsImportSetClipFromPortClip (GraphicsImportComponent  ci, CGrafPtr port);
-void	MySetDialogFont (short fontNum);
-ListHandle			CreateNewList (ListDefUPP ldefUPP, short theProc, Rect *rView, ListBounds *dataBounds, Point cSize, WindowPtr theWindow, Boolean drawIt, Boolean hasGrow, Boolean scrollHoriz, Boolean scrollVert);
-Boolean MyIsMenuItemEnabled(MenuRef  menu,MenuItemIndex item);
+OSErr MyAECreateDesc(DescType typeCode, void *dataPtr, Size dataSize,
+		     AEDesc * result);
+OSStatus InvalControl(ControlHandle theControl);
+//ComponentResult       GraphicsImportSetClipFromPortClip (GraphicsImportComponent  ci, CGrafPtr port);
+void MySetDialogFont(short fontNum);
+ListHandle CreateNewList(ListDefUPP ldefUPP, short theProc, Rect * rView,
+			 ListBounds * dataBounds, Point cSize,
+			 WindowPtr theWindow, Boolean drawIt,
+			 Boolean hasGrow, Boolean scrollHoriz,
+			 Boolean scrollVert);
+Boolean MyIsMenuItemEnabled(MenuRef menu, MenuItemIndex item);
 
 
-short			ControlHi (ControlHandle theControl);
-short			ControlWi (ControlHandle theControl);
-// OSStatus	NotSupportedInCarbon (...); CK
+short ControlHi(ControlHandle theControl);
+short ControlWi(ControlHandle theControl);
+// OSStatus     NotSupportedInCarbon (...); CK
 #define	InlineGetHandleSize	GetHandleSize
 
 

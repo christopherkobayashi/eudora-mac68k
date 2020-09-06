@@ -36,25 +36,22 @@
 extern "C" {
 #endif
 
-Boolean CHostUnreachableByPPP ( char *serverName );
+	Boolean CHostUnreachableByPPP(char *serverName);
 
-enum 
-{
-	kQDUseTrueTypeScalerGlyphs    = (1 << 0),
-  kQDUseCGTextRendering    = (1 << 1),
-  // As of Mac OS X 10.2, kQDUseCGTextMetrics implies kQDUseCGTextRendering
-  kQDUseCGTextMetrics        = (1 << 2),
-  kQDSupportedFlags        = kQDUseTrueTypeScalerGlyphs
-                      | kQDUseCGTextRendering
-                      | kQDUseCGTextMetrics,
-  // to request the current state, without changing anything
-  kQDDontChangeFlags        = 0xFFFFFFFF
-};
+	enum {
+		kQDUseTrueTypeScalerGlyphs = (1 << 0),
+		kQDUseCGTextRendering = (1 << 1),
+		// As of Mac OS X 10.2, kQDUseCGTextMetrics implies kQDUseCGTextRendering
+		kQDUseCGTextMetrics = (1 << 2),
+		kQDSupportedFlags = kQDUseTrueTypeScalerGlyphs
+		    | kQDUseCGTextRendering | kQDUseCGTextMetrics,
+		// to request the current state, without changing anything
+		kQDDontChangeFlags = 0xFFFFFFFF
+	};
 
-UInt32 SwapQDTextFlags( UInt32 flags );
+	UInt32 SwapQDTextFlags(UInt32 flags);
 
 #ifdef __cpplusplus
 }
 #endif
-
 #endif

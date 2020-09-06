@@ -32,7 +32,7 @@
 #ifndef LDAPUTILS_H
 #define LDAPUTILS_H
 
-/* MJN *//* new file */
+	 /* MJN *//* new file */
 
 
 
@@ -42,35 +42,39 @@
 
 
 
-/* FINISH *//* SET FINAL */
-/* FINISH *//* should this go somewhere else?  mydefs.h?  sysdefs.c? */
+	    /* FINISH *//* SET FINAL */
+	    /* FINISH *//* should this go somewhere else?  mydefs.h?  sysdefs.c? */
 #define LDAP_CAPABLE
 
 #pragma mark typedefs
 
 typedef struct {
-	Boolean				sessionOpen;
-	LDAP*					ldapRef;
-	Boolean				opActive;
-	int						opMsgID;
-	Boolean				searchResultsValid;
-	int						searchErr;
-	LDAPMessage*	searchResults;
+	Boolean sessionOpen;
+	LDAP *ldapRef;
+	Boolean opActive;
+	int opMsgID;
+	Boolean searchResultsValid;
+	int searchErr;
+	LDAPMessage *searchResults;
 #ifdef DEBUG
-	Str255				searchFilter;
+	Str255 searchFilter;
 #endif
-	long					refCon;
+	long refCon;
 } LDAPSessionRec, *LDAPSessionPtr, **LDAPSessionHdl;
 
-typedef char** RawLDAPAttrList;
+typedef char **RawLDAPAttrList;
 
 typedef struct {
-	long		numLogicalAttrs;
-	long		numPhysicalAttrs;
-	Handle	attrList;
+	long numLogicalAttrs;
+	long numPhysicalAttrs;
+	Handle attrList;
 } LDAPAttrListRec, *LDAPAttrListPtr, **LDAPAttrListHdl;
 
-typedef void (*LDAPResultsEntryFilterProcPtr)(LDAPSessionHdl ldapSession, Str255 userNameStr, Str255 emailAddressStr, long startOffset, long endOffset);
+typedef void (*LDAPResultsEntryFilterProcPtr)(LDAPSessionHdl ldapSession,
+					      Str255 userNameStr,
+					      Str255 emailAddressStr,
+					      long startOffset,
+					      long endOffset);
 
 
 
@@ -88,19 +92,27 @@ extern Str255 LDAPDividerStr;
 
 RawLDAPAttrList DerefLDAPAttrList(LDAPAttrListHdl attributesList);
 void UnderefLDAPAttrList(LDAPAttrListHdl attributesList);
-OSErr NewLDAPAttrList(LDAPAttrListHdl *attributesList);
+OSErr NewLDAPAttrList(LDAPAttrListHdl * attributesList);
 void DisposeLDAPAttrList(LDAPAttrListHdl attributesList);
 OSErr AppendLDAPAttrList(LDAPAttrListHdl attributesList, Str255 attrName);
 OSErr CompactLDAPAttrList(LDAPAttrListHdl attributesList);
-OSErr LDAPResultsToText(LDAPSessionHdl ldapSession, Handle *resultText, LDAPAttrListHdl attributesList, Boolean translateLabels, LDAPResultsEntryFilterProcPtr entryFilter);
+OSErr LDAPResultsToText(LDAPSessionHdl ldapSession, Handle * resultText,
+			LDAPAttrListHdl attributesList,
+			Boolean translateLabels,
+			LDAPResultsEntryFilterProcPtr entryFilter);
 OSErr ClearLDAPSearchResults(LDAPSessionHdl ldapSession);
-OSErr LDAPSearch(LDAPSessionHdl ldapSession, Str255 searchStr, PStr forHost, Boolean useRawSearchStr, short searchScope, Str255 searchBaseObject, LDAPAttrListHdl attributesList);
-OSErr OpenLDAPSession(LDAPSessionHdl ldapSession, Str255 ldapServer, int ldapPortNo);
+OSErr LDAPSearch(LDAPSessionHdl ldapSession, Str255 searchStr,
+		 PStr forHost, Boolean useRawSearchStr, short searchScope,
+		 Str255 searchBaseObject, LDAPAttrListHdl attributesList);
+OSErr OpenLDAPSession(LDAPSessionHdl ldapSession, Str255 ldapServer,
+		      int ldapPortNo);
 OSErr CloseLDAPSession(LDAPSessionHdl ldapSession);
-OSErr NewLDAPSession(LDAPSessionHdl *ldapSession);
+OSErr NewLDAPSession(LDAPSessionHdl * ldapSession);
 OSErr DisposeLDAPSession(LDAPSessionHdl ldapSession);
-OSErr GetLDAPServerList(Handle *serverList);
-OSErr ParseLDAPURLQuery(Str255 urlQueryStr, Str255 baseObjectDN, LDAPAttrListHdl *attributesList, short *searchScope, Str255 searchFilter);
+OSErr GetLDAPServerList(Handle * serverList);
+OSErr ParseLDAPURLQuery(Str255 urlQueryStr, Str255 baseObjectDN,
+			LDAPAttrListHdl * attributesList,
+			short *searchScope, Str255 searchFilter);
 OSErr LDAPErrCodeToMsgStr(int errCode, Str255 errMsg, Boolean addErrNum);
 short GetLDAPSpecialErrMsgIndex(OSErr theError);
 OSErr LoadLDAPCode(void);
@@ -117,4 +129,4 @@ OSErr InitLDAP(void);
 #endif
 
 
-#endif  //ifndef LDAPUTILS_H
+#endif				//ifndef LDAPUTILS_H

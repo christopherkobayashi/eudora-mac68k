@@ -36,23 +36,29 @@
 /************************************************************************
  * dialogs, with a little extra added
  ************************************************************************/
-MyWindowPtr GetNewMyDialog(short template,UPtr wStorage,MyWindowPtr win,WindowPtr behind);
-Boolean DoModelessEvent(DialogPtr dlog,EventRecord *event);
-Boolean DoModelessEdit(MyWindowPtr win,short item);
-void	StartMovableModal(DialogPtr dialog);
-void	EndMovableModal(DialogPtr dialog);
-pascal void	MovableModalDialog(DialogPtr myDialog,ModalFilterUPP theFilterProc,short *itemHit);
-pascal short MovableAlert(short alertID,short which,ModalFilterUPP theFilterProc);
+MyWindowPtr GetNewMyDialog(short template, UPtr wStorage, MyWindowPtr win,
+			   WindowPtr behind);
+Boolean DoModelessEvent(DialogPtr dlog, EventRecord * event);
+Boolean DoModelessEdit(MyWindowPtr win, short item);
+void StartMovableModal(DialogPtr dialog);
+void EndMovableModal(DialogPtr dialog);
+pascal void MovableModalDialog(DialogPtr myDialog,
+			       ModalFilterUPP theFilterProc,
+			       short *itemHit);
+pascal short MovableAlert(short alertID, short which,
+			  ModalFilterUPP theFilterProc);
 void BackTab(DialogPtr dlog);
 void PushModalWindow(WindowPtr theWindow);
 void PopModalWindow(void);
 
-Boolean ReorderWindows (WindowPtr *firstDialog, WindowPtr *beforeFirstDialog);
-Boolean MyIsDialogEvent (const EventRecord *theEvent);
-Boolean MyDialogSelect(const EventRecord *theEvent, DialogPtr *theDialog, short *itemHit);
+Boolean ReorderWindows(WindowPtr * firstDialog,
+		       WindowPtr * beforeFirstDialog);
+Boolean MyIsDialogEvent(const EventRecord * theEvent);
+Boolean MyDialogSelect(const EventRecord * theEvent, DialogPtr * theDialog,
+		       short *itemHit);
 
-Boolean IsModelessDialog (WindowPtr theWindow);
-void		MyDisposeDialog (DialogPtr dlog);
+Boolean IsModelessDialog(WindowPtr theWindow);
+void MyDisposeDialog(DialogPtr dlog);
 
 Boolean AreAllModalsPlugwindows();
 #endif

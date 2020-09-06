@@ -34,46 +34,46 @@
 
 #include <nag.h>
 
-//	Ad id
-//	Note: must update linkmng.c if this changes ...
-typedef struct
-{	long	server;		//	Server ID
-	long	ad;			//	Individual ad ID
+//      Ad id
+//      Note: must update linkmng.c if this changes ...
+typedef struct {
+	long server;		//      Server ID
+	long ad;		//      Individual ad ID
 } AdId;
 
-typedef struct
-{
-	AdId	adId;
-	Str32	title;
-	Handle	iconSuite;
-	Boolean	deleted;
+typedef struct {
+	AdId adId;
+	Str32 title;
+	Handle iconSuite;
+	Boolean deleted;
 } TBAdInfo, **TBAdHandle;
 
-//	Prototypes
+//      Prototypes
 void OpenAdWindow(void);
 void CloseAdWindow(void);
 Boolean PeteIsInAdWindow(PETEHandle pte);
 Boolean IsAdInPlaylist(AdId adId);
-void AdWinGotImage(PETEHandle pte,FSSpecPtr spec);
+void AdWinGotImage(PETEHandle pte, FSSpecPtr spec);
 void AdShutdown(void);
 #ifdef DEBUG
 void ToggleAdWindow(Boolean resetPlayState);
-void DebugAdMenu(short item,short modifiers);
+void DebugAdMenu(short item, short modifiers);
 void CheckCurrentAd(void);
 #endif
 void AdWinIdle(void);
-void AreAdsFailing(StringPtr errString, OSErr *errCode,Boolean *failing,Boolean *succeeding);
+void AreAdsFailing(StringPtr errString, OSErr * errCode, Boolean * failing,
+		   Boolean * succeeding);
 void AdCheckingMail(void);
 Boolean AdWinNeedsNetwork(void);
-Boolean SameAd(AdId *pAd1,AdId *pAd2);
+Boolean SameAd(AdId * pAd1, AdId * pAd2);
 void AdUserClick(AdId adId);
 Handle AdGetTBIcon(AdId adId);
 void AdDeleteButton(AdId adId);
 void SizeAdWin(void);
-OSErr ValidAdImage(PETEHandle pte,Handle hData);
+OSErr ValidAdImage(PETEHandle pte, Handle hData);
 void SetupSponsorAd(void);
 void DrawSponsorAd(MyWindowPtr win);
-Boolean ClickSponsorAd(MyWindowPtr win,EventRecord *event,Point pt);
+Boolean ClickSponsorAd(MyWindowPtr win, EventRecord * event, Point pt);
 void SetupWinSponsorInfo(MyWindowPtr win);
 UPtr GetLanguageCode(UPtr s);
 void ForcePlaylistRequest(void);

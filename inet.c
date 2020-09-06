@@ -43,70 +43,68 @@
  * somewhat limited, in that it will accept only four octets, and does
  * not permit the abbreviated forms for class A and B networks.
  **********************************************************************/
-Boolean DotToNum(UPtr string,long *nPtr)
+Boolean DotToNum(UPtr string, long *nPtr)
 {
-	long address=0;
-	Byte b=0;
+	long address = 0;
+	Byte b = 0;
 	UPtr cp;
-	int dotcount=0;
-	
+	int dotcount = 0;
+
 	/*
 	 * allow leading spaces
 	 */
-	for (cp=string+1;cp<=string+*string;cp++) if (*cp!=' ') break;
-	
+	for (cp = string + 1; cp <= string + *string; cp++)
+		if (*cp != ' ')
+			break;
+
 	/*
 	 * the address
 	 */
-	for (;cp<=string+*string;cp++)
-	{
-		if (*cp=='.')
-		{
-			if (++dotcount > 3) return (False); /* only 4 octets allowed */
+	for (; cp <= string + *string; cp++) {
+		if (*cp == '.') {
+			if (++dotcount > 3)
+				return (False);	/* only 4 octets allowed */
 			address <<= 8;
 			address |= b;
-			b=0;
-		}
-		else if (isdigit(*cp))
-		{
+			b = 0;
+		} else if (isdigit(*cp)) {
 			b *= 10;
 			b += (*cp - '0');
-			if (b>255) return (False);					/* keep it under 256 */
-		}
-		else if (*cp==' ')										/* allow trailing spaces */
+			if (b > 255)
+				return (False);	/* keep it under 256 */
+		} else if (*cp == ' ')	/* allow trailing spaces */
 			break;
 		else
-			return (False); 										/* periods or digits ONLY */
+			return (False);	/* periods or digits ONLY */
 	}
-	
+
 	/*
 	 * final checks, assignment
 	 */
-	if (dotcount!=3) return (False);
+	if (dotcount != 3)
+		return (False);
 	address <<= 8;
 	address |= b;
 	*nPtr = address;
-	return(True);
+	return (True);
 }
 
 /**********************************************************************
  * NumToDot - turn an address into a dotted decimal string
  **********************************************************************/
-UPtr NumToDot(unsigned long num,UPtr string)
+UPtr NumToDot(unsigned long num, UPtr string)
 {
-	unsigned char* bp=(unsigned char *)&num;
-	UPtr cp=string;
-	int count=4;
+	unsigned char *bp = (unsigned char *) &num;
+	UPtr cp = string;
+	int count = 4;
 	int length;
-	
-	for (count=4;count;count--,bp++)
-	{
-		NumToString((unsigned long)*bp,cp);
+
+	for (count = 4; count; count--, bp++) {
+		NumToString((unsigned long) *bp, cp);
 		length = *cp;
 		*cp = '.';
-		cp += length+1;
+		cp += length + 1;
 	}
-	*string = cp-string-1;
-	return(string);
-} 
-
+	*string = cp - string - 1;
+	return (string);
+}

@@ -31,5 +31,5 @@
 
 #ifndef MSIDDB_H
 #define MSIDDB_H
-OSErr MSIDDBFunc(MSSubCallEnum selector,MStoreBoxHandle boxH);
+OSErr MSIDDBFunc(MSSubCallEnum selector, MStoreBoxHandle boxH);
 #endif
