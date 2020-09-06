@@ -16,11 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Keychain.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
 #include <Types.h>
-#include "PrefDefs.h"
+#include "prefdefs.h"
 #include "StringDefs.h"
 PersHandle SettingsPers(void);
 #define ICCRAP	SettingsPers()!=PersList||!ReadIC||WriteIC

@@ -16,8 +16,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
 #include <conf.h>
 #include <mydefs.h>
+
+#include <paywin.h>
 
 #ifdef NAG
 #include "nag.h"
@@ -39,6 +42,9 @@ OSErr PutFeaturesInto (DialogPtr theDialog, short theItem);
 #define NAG_INTRO_CODE_BTN	2
 
 void CheckAdQT(void);
+
+Boolean UserHasValidPaidModeRegcode(void);
+
 
 //
 //	InitNagging

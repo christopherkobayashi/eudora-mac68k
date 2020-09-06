@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Folders.h>
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -41,7 +44,7 @@ enum
 
 // Globals to keep track of NS Library database
 Boolean gNSLValid = false;
-MNSDatabadeRef gRef;
+// MNSDatabadeRef gRef; CK
 
 //
 // Network Setup Library prototypes

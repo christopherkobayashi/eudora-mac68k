@@ -20,7 +20,7 @@ DAMAGE. */
 #include <mydefs.h>
 
 #include <Types.h>
-#include "PrefDefs.h"
+#include "prefdefs.h"
 #include "StringDefs.h"
 Boolean PrefBounds(short prefN,long *lower,long *upper)
 {

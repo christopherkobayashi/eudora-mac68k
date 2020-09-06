@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -641,7 +643,7 @@ Boolean MaybeApplySplittingAlgorithm (Handle notes)
 	// Walk through the 'notes', looking for attribute/value pairs we care about.
 	notesSize	= GetHandleSize (notes);
 	notesPtr	= LDRef (notes);
-	while ((!*realName || !*firstName || !*lastName) && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, &attributeLength, &value, &valueLength))) {
+	while ((!*realName || !*firstName || !*lastName) && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, &attributeLength, &value, &valueLength))) {
 		// Check to see if we hit a tag we care about
 		if (*nameTag == attributeLength && !memcmp (&nameTag[1], attribute, attributeLength))
 			MakePPtr (realName, value, valueLength);
@@ -712,7 +714,7 @@ Handle GetTaggedFieldValueInNotes (Handle notes, PStr tag)
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
 		found			= false;
-		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, &attributeLength, &value, &valueLength))) {
+		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, &attributeLength, &value, &valueLength))) {
 			// Is this the tag we're looking for?
 			if (*tag == attributeLength && !memcmp (&tag[1], attribute, attributeLength))
 				found = true;
@@ -752,7 +754,7 @@ PStr GetTaggedFieldValueStrInNotes (Handle notes, PStr tag, PStr value)
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
 		found			= false;
-		while (!found && (newPtr = ParseAttributeValuePairStr (notesPtr, notesSize - (notesPtr - *notes), attribute, value))) {
+		while (!found && (newPtr = ParseAttributeValuePairStr (notesPtr, notesSize - (notesPtr - (UPtr)*notes), attribute, value))) {
 			// Is this the tag we're looking for?
 			if (StringSame (tag, attribute))
 				found = true;
@@ -805,7 +807,7 @@ OSErr SetTaggedFieldValueInNotes (Handle notes, PStr tag, Ptr value, long length
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
 		found			= false;
-		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, &attributeLength, &originalValue, &originalValueLength))) {
+		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, &attributeLength, &originalValue, &originalValueLength))) {
 			// Is this the tag we're looking for?
 			if ((*tag == attributeLength) && !memcmp (&tag[1], attribute, attributeLength))
 				found = true;
@@ -817,15 +819,15 @@ OSErr SetTaggedFieldValueInNotes (Handle notes, PStr tag, Ptr value, long length
 		if (found) {
 			switch (setValue) {
 				case nickFieldReplaceExisting:
-					Munger (notes, originalValue - *notes, nil, originalValueLength, value, length);
+					Munger (notes, originalValue - (UPtr)*notes, nil, originalValueLength, value, length);
 					break;
 				case nickFieldAppendExisting:
 					GetRString (concatString, separatorIndex);
 					if (*concatString) {
-						Munger (notes, originalValue - *notes + originalValueLength, nil, 0, &concatString[1], *concatString);
+						Munger (notes, originalValue - (UPtr)*notes + originalValueLength, nil, 0, &concatString[1], *concatString);
 						originalValueLength += *concatString;
 					}
-					Munger (notes, originalValue - *notes + originalValueLength, nil, 0, value, length);
+					Munger (notes, originalValue - (UPtr)*notes + originalValueLength, nil, 0, value, length);
 					break;
 				case nickFieldIgnoreExisting:
 					if (ignored)
@@ -904,11 +906,11 @@ Boolean FindTaggedFieldValueOffsets (short ab, short nick, PStr tag, long *attri
 		// Walk through the 'notes', looking for attribute/value pairs.
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
-		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, attributeLength, &value, valueLength)))
+		while (!found && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, attributeLength, &value, valueLength)))
 			// Is this the tag we're looking for?
 			if ((*tag == *attributeLength) && !memcmp (&tag[1], attribute, *attributeLength)) {
-				*attributeOffset = attribute - *notes;
-				*valueOffset		 = value - *notes;
+				*attributeOffset = attribute - (UPtr)*notes;
+				*valueOffset		 = value - (UPtr)*notes;
 				found = true;
 			}
 			else
@@ -2386,7 +2388,7 @@ void FlattenListWith(Handle h,Byte c)
 		if (!colon) *to++ = c;					/* and add a separator */
 	}
 	if (to > *h) to--;
-	SetHandleBig_(h,to-*h);
+	SetHandleBig_(h,to-(UPtr)*h);
 }
 
 /************************************************************************
@@ -2411,7 +2413,7 @@ void CommaList(Handle h)
 		}
 	}
 	if (to > *h) to -= 2;
-	SetHandleBig_(h,to-*h);
+	SetHandleBig_(h,to-(UPtr)*h);
 }
 
 /************************************************************************

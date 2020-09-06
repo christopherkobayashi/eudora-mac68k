@@ -16,8 +16,16 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Folders.h>
+#include <Resources.h>
+#include <string.h>
+
 #include <conf.h>
 #include <mydefs.h>
+
+#include <peteglue.h>
+#include <spell.h>
+#include <aeutil.h>
 
 #include "nickwin.h"
 #include "listview.h"
@@ -3807,7 +3815,7 @@ OSErr PopulateTabs (ControlHandle tabControl, short ab, short nick)
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
 		// Go fish...  Dangerous -- but we are being very, very careful to not use any pointer into the notes after we have unlocked the handle
-		while (!theError && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, &attributeLength, &value, &valueLength))) {
+		while (!theError && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, &attributeLength, &value, &valueLength))) {
 			// I got one!
 			MakePPtr (tag, attribute, attributeLength);
 			
@@ -5006,10 +5014,10 @@ AttributeValueHandle ParseAllAttributeValuePairs (Handle notes, Handle *leftover
 		notesSize	= GetHandleSize (notes);
 		notesPtr	= LDRef (notes);
 		// Go fish...
-		while (!theError && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - *notes), &attribute, &av.attributeLength, &value, &av.valueLength))) {
+		while (!theError && (newPtr = ParseAttributeValuePair (notesPtr, notesSize - (notesPtr - (UPtr)*notes), &attribute, &av.attributeLength, &value, &av.valueLength))) {
 			// I got one!
-			av.attributeOffset = attribute - *notes;
-			av.valueOffset		 = value - *notes;
+			av.attributeOffset = attribute - (UPtr)*notes;
+			av.valueOffset		 = value - (UPtr)*notes;
 			
 			// If anything appears between this tag and the previous tag, put it in leftovers
 			if (!theError)

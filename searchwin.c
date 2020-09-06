@@ -16,6 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Devices.h>
+#include <Resources.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #ifdef NEWFIND
 #include "searchwin.h"
 #include "regexp.h"
@@ -290,7 +296,7 @@ static Boolean SearchMessage(MyWindowPtr win,MSumPtr sumP,SearchHandle sh,Search
 static Boolean SearchText(StringPtr value,UPtr pText,long len,long offset,short relation);
 static Boolean SearchString(StringPtr value,StringPtr s,short relation);
 static Boolean SearchHeader(short header,Handle text,long size,StringPtr searchString,short relation);
-static short ShortCompare(short value1,short value2);
+// static short ShortCompare(short value1,short value2); CK
 static void SetSearchTopMargin(MyWindowPtr win,SearchHandle sh);
 static Boolean MustSearchBody(short category);
 static void InvalidBoxSize(MyWindowPtr win);
@@ -3031,7 +3037,7 @@ long DateTimeDifference(DateTimeRec *date,DateTimeRec *currDate,long seconds,sho
 /**********************************************************************
  * ShortCompare - compare 2 short, return 0 if equal, -1 if value1 < value2, 1 if value1 2 value2
  **********************************************************************/
-static  short ShortCompare(short value1,short value2)
+short ShortCompare(short value1,short value2)
 {
 	if (value1 == value2) return 0;
 	if (value1 < value2) return -1;
@@ -3733,7 +3739,7 @@ long SearchStrText(PStr s,Ptr text,long length,long offset)
 		}
 		
 		//	match
-		return tp1-text;
+		return tp1-(UPtr)text;
 
   NoMatch:
 		tp1++;

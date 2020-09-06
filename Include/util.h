@@ -95,7 +95,7 @@ typedef struct
  * replace RemoveResource calls to fix OS bug
  **********************************************************************/
 //#define RmveResource(h) MyRemoveResource(h)	* Already defined to RemoveResource
-#define RemoveResource(h) MyRemoveResource(h)
+// #define RemoveResource(h) MyRemoveResource(h) CK
 
 /**********************************************************************
  * declarations for functions in util.c

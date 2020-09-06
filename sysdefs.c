@@ -16,6 +16,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <string.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 #define SystemSevenOrLater 1
 #define PM_USE_SESSION_APIS 0
@@ -24,7 +29,7 @@ DAMAGE. */
 #include <Appearance.h>
 #include <AppleEvents.h>
 //#include <AppleTalk.h>
-#include <Assert.h>
+#include <assert.h>
 #include <AEObjects.h>
 #include <AEPackObject.h>
 #include <AERegistry.h>
@@ -36,7 +41,7 @@ DAMAGE. */
 //#include <CTBUtilities.h>
 #include <Controls.h>
 #include <ControlDefinitions.h>
-#include <CType.h>
+//#include <ctype.h>
 //#include <CursorCtl.h>
 #include <Devices.h>
 #include <Dialogs.h>
@@ -47,13 +52,13 @@ DAMAGE. */
 //#include <Disks.h>
 #include <Drag.h>
 //#include <ErrMgr.h>
-#include <ErrNo.h>
+#include <errno.h>
 #include <Errors.h>
 #include <Events.h>
 #include <Files.h>
 #include <Finder.h>
 #include <FixMath.h>
-#include <Float.h>
+#include <float.h>
 #include <Folders.h>
 #include <Fonts.h>
 //#include <GXEnvironment.h>
@@ -67,14 +72,14 @@ DAMAGE. */
 #else //TARGET_CPU_PPC
 #define KeychainManagerAvailable()	(false)
 #endif //TARGET_CPU_PPC
-#include <Limits.h>
+#include <limits.h>
 #include <Lists.h>
-#include <Locale.h>
+#include <locale.h>
 #if TARGET_RT_MAC_CFM
 #include <MacTCP.h>
 #endif
 #include <MacApplication.h>
-#include <Math.h>
+#include <math.h>
 #include <Memory.h>
 #include <Menus.h>
 #include <Movies.h>
@@ -100,20 +105,20 @@ DAMAGE. */
 #include <SCSI.h>
 //#include <SegLoad.h>
 //#include <Serial.h>
-#include <SetJmp.h>
+#include <setjmp.h>
 //#include <ShutDown.h>
-#include <Signal.h>
+#include <signal.h>
 //#include <Slots.h>
 #include <Sound.h>
 //#include <Start.h>
-#include <StdArg.h>
-#include <StdDef.h>
-#include <StdIO.h>
-#include <StdLib.h>
-#include <String.h>
-#include <Strings.h>
+#include <stdarg.h>
+// #include <StdRef.h> CK
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include <TextEdit.h>
-#include <Time.h>
+#include <time.h>
 #include <Timer.h>
 #include <ToolUtils.h>
 //#include <Traps.h>

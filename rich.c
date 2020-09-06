@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 //depot/projects/eudora/mac/Current/rich.c#24 - edit change 4405 (text)
 #include "rich.h"
 /* Copyright (c) 1995 by QUALCOMM Incorporated */

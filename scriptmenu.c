@@ -16,6 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <AEObjects.h>
+#include <Folders.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "scriptmenu.h"
 #include <OSA.h>
 #define FILE_NUM 137

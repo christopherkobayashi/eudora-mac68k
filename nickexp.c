@@ -16,8 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <string.h>
+
 #include <conf.h>
 #include <mydefs.h>
+
+#include <peteglue.h>
 
 #include "nickexp.h"
 #define FILE_NUM 6
@@ -2472,6 +2476,7 @@ void InsertAlias (PETEHandle pte, HSPtr hs, PStr nameStr, Boolean wantExpansion,
 			if (!PeteGetTextAndSelection (pte, nil, &selStart, &selEnd))
 				(void) SetNicknameHiliting (pte, selStart, selEnd, true);
 		
+#ifdef WINTERTREE
 		// (jp) 1/24/00	This is a temporary fix for the problem that "turns off" spell checking
 		//							following expansion of nicknames that contain a space.  The spell scanner
 		//							keys on the space as the end of spell checking -- though the syle is not
@@ -2485,6 +2490,7 @@ void InsertAlias (PETEHandle pte, HSPtr hs, PStr nameStr, Boolean wantExpansion,
 		**Pslh = pse;
 		(void) PETEInsertTextPtr(PETE,pte,spot,nameStr + 1,len,Pslh);
 		// End of hack.
+#endif
 		
 		if (!dontUndo)
 			(void) PeteFinishUndo (pte, peUndoPaste, pStart, spot == -1 ? kPETECurrentSelection : spot + len);

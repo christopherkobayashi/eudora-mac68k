@@ -16,6 +16,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <string.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "sendmail.h"
 #include "myssl.h"
 #define FILE_NUM 34
@@ -427,7 +432,7 @@ OSErr DoSMTPAuth(TransStream stream)
 					while (*spot && !IsWhite(*spot)) spot++;	// skip code
 					
 					// rest will be base64 or whitespace, the decoder won't care
-					AccuAddFromHandle(&chalAcc,respAcc.data,spot-*respAcc.data,respAcc.offset-(spot-*respAcc.data)-1);
+					AccuAddFromHandle(&chalAcc,respAcc.data,spot-(UPtr)*respAcc.data,respAcc.offset-(spot-(UPtr)*respAcc.data)-1);
 				}
 			}
 		}
@@ -3563,7 +3568,7 @@ Boolean AnyFunny(Handle text,long offset)
 	}
 	if (spot<end)
 	{
-		MakePStr(line,*text+offset,spot-*text-offset);
+		MakePStr(line,*text+offset,spot-(UPtr)*text-offset);
 		if (*line && IsFromLine(line+1)) return true;
 	}
 	
@@ -4355,7 +4360,7 @@ int GetReplyLo(TransStream stream, UPtr buffer, int size, AccuPtr bufAcc, Boolea
 		for (cp=buffer;cp<buffer+rSize && (*cp < ' ' || *cp>'~');cp++);
 		if (isEhlo && cp[0]=='2' && cp[1]=='5' && cp[2]=='0')
 			EhloLine(buffer,rSize);
-		rSize -= cp-buffer;			
+		rSize -= cp-(char *)buffer;			
 	}
 	while (rSize<3 ||
 				 !isdigit(cp[0])||!isdigit(cp[1])||!isdigit(cp[2]) ||

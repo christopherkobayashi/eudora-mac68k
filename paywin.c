@@ -20,7 +20,7 @@ DAMAGE. */
 #include <mydefs.h>
 
 #include "paywin.h"
-#include "regcode_v2.h"
+//#include "regcode_v2.h"
 
 #define FILE_NUM 127
 /* Copyright (c) 1999 by QUALCOMM Incorporated */

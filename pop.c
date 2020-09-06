@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -116,9 +118,11 @@ PStr Un2184(PStr dest, PStr orig, PStr charset);
 
 /* Globals */
 
+#ifdef KERBEROS
 Boolean gPOPKerbInited = false;		// true when Kerberos has been initialized for POP
 KClientSessionInfo gSession;		// session info
 KClientKey gPrivateKey;				// private key
+#endif
 
 
 /************************************************************************
@@ -3376,7 +3380,8 @@ void Log1POPD(PStr intro, PStr which, POPDHandle popDH)
 		}
 	}
 }
-	
+
+#ifdef KERBEROS
 /**********************************************************************
  * KerbDestroy - destroy the user's current ticket
  **********************************************************************/
@@ -3557,3 +3562,4 @@ OSErr SendPOPTicket(TransStream stream)
 	ZapHandle(ticket);
 	return(err);
 }
+#endif

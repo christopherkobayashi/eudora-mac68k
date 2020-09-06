@@ -20,7 +20,7 @@ DAMAGE. */
 #include <mydefs.h>
 
 #include <Types.h>
-#include "PrefDefs.h"
+#include "prefdefs.h"
 #define Audit	true
 Boolean PrefAudit(short prefN)
 {

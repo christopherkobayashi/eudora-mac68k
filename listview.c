@@ -17,6 +17,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 DAMAGE. */
 
 #include <Folders.h>
+#include <Resources.h>
 
 #include <conf.h>
 #include <mydefs.h>

@@ -205,12 +205,12 @@ OSErr FSpSetLongNameUnicode ( FSSpec *spec, ConstHFSUniStr255Param longName, FSS
 
 OSErr MakeUniqueLongFileName ( short vRefNum, long dirID, StringPtr name, TextEncoding srcEncoding, short maxLen );
 
-#define FSpOpenResFile FSpOpenResFilePersistent
 short FSpOpenResFilePersistent(FSSpecPtr spec,short mode);
-#define FSpOpenDF FSpOpenDFPersistent
+#define FSpOpenResFile FSpOpenResFilePersistent
 OSErr FSpOpenDFPersistent(FSSpecPtr spec,short mode,short *refN);
-#define FSpOpenRF FSpOpenRFPersistent
+#define FSpOpenDF FSpOpenDFPersistent
 OSErr FSpOpenRFPersistent(FSSpecPtr spec,short mode,short *refN);
+#define FSpOpenRF FSpOpenRFPersistent
 
 Boolean FSpIsLocked(FSSpecPtr spec);
 Boolean SpecEndsWithExtensionR(FSSpecPtr spec,short resID);
