@@ -16,8 +16,16 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <AEObjects.h>
+#include <ColorPicker.h>
+#include <Resources.h>
+#include <string.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "functions.h"
-#include "regcode_v2.h"
+// #include "regcode_v2.h" CK
 #define FILE_NUM 15
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 
@@ -1587,7 +1595,7 @@ OSErr GetWSMenuItem(AEAddressDescPtr aead, PStr itemText)
 	short err;
 	AEDesc ad;
 	
-	if (err = GetAppProperty(aead,pBatchMenuString,typeChar,&ad)) return(err);
+//	if (err = GetAppProperty(aead,pBatchMenuString,typeChar,&ad)) return(err); CK
 	
 	*itemText = MIN(61,AEGetDescDataSize(&ad));
 	AEGetDescData(&ad,itemText+1,*itemText);
@@ -1684,9 +1692,9 @@ OSErr Spell(short item,AEDescPtr objAD)
 	
 	if (err = AECreateDesc(typeProcessSerialNumber,&psn,sizeof(psn),&spellerAD))
 		goto done;
-	
-	if (err = AECreateAppleEvent(kWordServicesClass,kWSBatchCheckMe,&spellerAD,kAutoGenerateReturnID,kAnyTransactionID,&ae))
-		goto done;
+
+//	if (err = AECreateAppleEvent(kWordServicesClass,kWSBatchCheckMe,&spellerAD,kAutoGenerateReturnID,kAnyTransactionID,&ae)) CK
+//		goto done; CK
 	
 #ifdef DEBUG
 	if (RunType==Debugging) {AEGetDescDataSize(objAD);  if (MemError()) Debugger();}
