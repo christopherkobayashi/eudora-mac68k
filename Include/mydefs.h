@@ -582,7 +582,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "statwin.h"
 #include "xml.h"
 #include "scriptmenu.h"
-// #include "carbonutil.h" CK
+#include "carbonutil.h"
 #include "fileview.h"
 #include "palmconduitae.h"
 #include "junk.h"
@@ -610,3 +610,7 @@ Boolean	CanDoSSL ( void );
 #include "Globals.h"
 
 void DebugSomething(void);
+
+// CK fixme!
+Rect * GetControlBounds( ControlRef   control, Rect *       bounds);
+Rect * GetPortBounds( CGrafPtr   port, Rect *     rect);
