@@ -19,7 +19,11 @@ DAMAGE. */
 /* Copyright (c) 1995 by QUALCOMM Incorporated */
 #ifndef TRANS_H
 #define TRANS_H
-#include "emsapi-Mac.h"
+
+#include <emsapi-mac.h>
+
+#include <Drag.h>
+
 /*
  * Translator description structure
  */

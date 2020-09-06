@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef ADUTIL_H
 #define ADUTIL_H
 
+#include <nag.h>
+
 /* Copyright (c) 1999 by QUALCOMM Incorporated */
 
 #define	regInvalidPolicyCode	0

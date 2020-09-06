@@ -118,7 +118,7 @@ void WriteZero(void *pointer,long size);
 #define Zero(x) WriteZero(&(x),sizeof(x))
 void MacInitialize(int masterCount,long ensureStack);
 PStr GetRString(PStr theString,short theIndex);
-GetFontID(UPtr theName);
+short GetFontID(UPtr theName);
 Boolean GrabEvent(EventRecord *theEvent);
 short SubmenuId(MenuHandle mh, short item);
 Boolean MyOSEventAvail(short mask,EventRecord *event);

@@ -18,6 +18,12 @@ DAMAGE. */
 
 #ifndef MYDEFS_C
 #define MYDEFS_C
+
+#include <Events.h>
+#include <AppleEvents.h>
+#include <AEDataModel.h>
+#include <MacTCP.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /**********************************************************************
  * This file contains important things common to all source files
@@ -396,23 +402,27 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #define AsyncSendTrans (*CurTrans.vAsyncSendTrans)
 #endif
 
+#ifdef CK
 #include "KClient.h"
 #include "KClientCompat.h"
 #include "KClientDeprecated.h"
+#endif
 #if TARGET_RT_MAC_CFM
 #include "GSS.h"		// !!! Marshall sez - not yet for MachO
 #endif
 #include "regexp.h"
+#ifdef CK
 #include "OpenSSL.h"	// needed for TransStream
+#endif
 #include "trans.h"
 #include "color.h"
 #include "macslip.h"
 #include "euErrors.h"
 #include "lineio.h"
-#include "AEUtil.h"
+// #include "AEUtil.h" CK
 #include "icon.h"
 #include "prefdefs.h"
-#include "strndefs.h"
+#include "StrnDefs.h"
 #include "nickae.h"
 #ifdef WINTERTREE
 #include "ssce.h"
@@ -427,7 +437,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "wrappers.h"
 #include "util.h"
 #include "anal.h"
-#include "pete.h"
+// #include "pete.h" CK
 #include "menusharing.h"
 #include "lex822.h"
 #include "header.h"

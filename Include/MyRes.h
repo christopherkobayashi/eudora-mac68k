@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef MYRES_H
 #define MYRES_H
 
+#include <Dialogs.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /**********************************************************************
  * This file contains resource definitions for Pop mail

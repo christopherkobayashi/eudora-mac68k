@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#define INTERNAL_FOR_QC /* CK */
+
 /* ==================================================================================
 
     Eudora Extended Message Services API SDK Macintosh
@@ -86,6 +88,11 @@ DAMAGE. */
 #ifndef __EMS_MAC__
 #define __EMS_MAC__
 
+#include <Aliases.h>
+#include <Drag.h>
+#include <Menus.h>
+#include <Controls.h>
+
 #if PRAGMA_STRUCT_ALIGN
 #pragma options align=mac68k
 #endif
@@ -148,7 +155,6 @@ extern "C" {
 #ifdef INTERNAL_FOR_QC
 #define EMST_IMPORTER                  (0x90L)
 #endif    //    INTERNAL_FOR_QC
-
 
 /* ----- Translator info flags and contexts --- store as a long ---------------------- */
 /* Used both as bit flags and as constants */

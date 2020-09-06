@@ -19,6 +19,7 @@ DAMAGE. */
 #ifndef CONF_H
 #define CONF_H
 
+#undef TARGET_CPU_PPC
 
 /*
  *	Define this once we're ready to make the build that doesn't register
@@ -50,8 +51,8 @@ DAMAGE. */
 /*
  * define ADWARE to make an ADWARE build
  */
-#define	ADWARE
-#define	NAG
+//#define	ADWARE
+//#define	NAG
 
 /*
  * define DEBUG if you want debugging code & resources
@@ -124,7 +125,7 @@ DAMAGE. */
 #define	USECMM					// Provide Contextual Menu Manager Support
 #define IMAP			//turn this on to enable the beast
 //#ifndef LIGHT	// No Wintertree
-#define WINTERTREE	// use internal wintertree speller
+#undef WINTERTREE	// use internal wintertree speller CK
 //#endif //LIGHT
 #define LDAP_USE_STD_LINK_MECHANISM
 #define NEWFIND
@@ -132,11 +133,11 @@ DAMAGE. */
 //#define NO_CHARSETS // Define if you want to turn off the Unicode stuff
 #define CONTEXT_FILING	// Define to turn on contextual filing
 #ifndef rez
-#if TARGET_CPU_PPC
+#ifdef TARGET_CPU_PPC
 #define	SPEECH_ENABLED
 #define URLACCESS
 #endif
-#if TARGET_CPU_68K
+#ifdef TARGET_CPU_68K
 #pragma opt_strength_reduction off
 #endif
 #endif

@@ -19,6 +19,17 @@ DAMAGE. */
 #ifndef UNDO_H
 #define UNDO_H
 
+#include <mydefs.h>
+#include <Dialogs.h>
+#include <Files.h>
+#include <adutil.h>
+#include <util.h>
+#include <mywindow.h>
+#include <StringDefs.h>
+#include <StrnDefs.h>
+#include <MyRes.h>
+
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /************************************************************************
  * definitions for undo

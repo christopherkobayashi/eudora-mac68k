@@ -18,7 +18,7 @@ DAMAGE. */
 
 #ifndef ANAL_H
 #define ANAL_H
-#include "TAE.h"
+// #include "TAE.h" CK
 
 #define MAX_ANAL_WHITE	50	// allow up to 50 words to be whitelisted
 
