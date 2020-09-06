@@ -16,6 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Devices.h>
+#include <Folders.h>
+#include <Resources.h>
+#include <conf.h>
+#include <mydefs.h>
+
+#include <aeutil.h>
 #include "fileutil.h"
 #define FILE_NUM 13
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
@@ -637,7 +644,7 @@ OSErr MyUpdateResFile(short resFile)
 	{
 		UpdateResFile(resFile);
 		if (!(err=ResError()) && !PrefIsSet(PREF_CORVAIR))
-			err = ,  MakeDarnSure(resFile);
+			err = MakeDarnSure(resFile); // CK was comma after =
 	}
 	return(err);
 }

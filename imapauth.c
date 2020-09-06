@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 /* Copyright (c) 1999 by QUALCOMM Incorporated */
 #define	FILE_NUM 120
 
@@ -263,6 +266,7 @@ int produce_hmac(unsigned char* text, unsigned char* key, char* digest)
 	return (TRUE);
 }
 
+#if 0 // CK KRB4
 
 /**********************************************************************
  * KERBEROS_V4
@@ -702,6 +706,9 @@ Boolean KerberosWasUsed(void)
 	CurPers = oldPers;
 	return(result);
 }
+#endif
+
+#if 0 // CK GSSAPI
 
 /**********************************************************************
  * GSSAPI
@@ -1009,3 +1016,6 @@ OSErr InitGSSAPIAuth(CGSSAPIAuthDataPtr cgssapiPtr, authchallenge_t challenger, 
 
 	return (err);
 }
+
+#endif
+
