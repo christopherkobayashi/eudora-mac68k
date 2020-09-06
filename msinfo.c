@@ -19,7 +19,7 @@ DAMAGE. */
 #include <conf.h>
 #include <mydefs.h>
 
-#include "MSInfo.h"
+#include "msinfo.h"
 #define FILE_NUM 95
 #pragma segment MIMEStore
 OSErr MSCreateInfo(MStoreBoxHandle boxH);

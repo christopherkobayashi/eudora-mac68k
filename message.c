@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -1870,7 +1872,7 @@ long FindAnAttachment(Handle text,long offset,FSSpecPtr spec,Boolean attach,uLon
 			}
 		}
 	}
-	offset = result ? spot-*text : -1;
+	offset = result ? spot-(UPtr)*text : -1;
 	UL(text);
 	return(offset);
 }
@@ -3296,7 +3298,7 @@ UPtr FindHeaderString(UPtr text,UPtr headerName,long *size,Boolean bodyToo)
 		if (addressee)
 		{
 			if (colon=PIndex(header,':'))
-				*header = colon-header;
+				*header = colon-(unsigned char*)header;
 		}
 #endif
 		if (

@@ -16,6 +16,8 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
@@ -1743,7 +1745,7 @@ void SaveExpandedFolderList(ExpandInfoPtr pExpList)
 		if (!(err=ResError())) MyUpdateResFile(SettingsRefN);
 		DetachResource((Handle)pExpList->hExpandList);
 	}
-	ZapHandle((Handle)pExpList->hExpandList);
+	// ZapHandle((Handle)pExpList->hExpandList); CK
 }
 
 

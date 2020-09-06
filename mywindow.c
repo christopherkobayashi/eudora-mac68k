@@ -109,8 +109,8 @@ MyWindowPtr GetNewMyWindowWithClass(short resId,void *wStorage,MyWindowPtr win,W
 				def.u.procID = kWindowPlainDialogProc;
 				err = CreateCustomWindow(&def,winClass,kWindowNoAttributes,&rBounds,&theWindow);
 			}
-			else
-				err = CreateNewWindow(winClass,winClass==kDrawerWindowClass?kWindowCompositingAttribute+kWindowResizableAttribute:kWindowNoAttributes,&rBounds,&theWindow);
+//			else CK
+//				err = CreateNewWindow(winClass,winClass==kDrawerWindowClass?kWindowCompositingAttribute+kWindowResizableAttribute:kWindowNoAttributes,&rBounds,&theWindow); CK
 
 			if (err)
 			{

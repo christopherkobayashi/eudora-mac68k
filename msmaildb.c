@@ -19,7 +19,7 @@ DAMAGE. */
 #include <conf.h>
 #include <mydefs.h>
 
-#include "MSMailDB.h"
+#include "msmaildb.h"
 #include "mstore.h"
 #pragma segment MIMEStore
 OSErr MSCreateMailDB(MStoreBoxHandle boxH);

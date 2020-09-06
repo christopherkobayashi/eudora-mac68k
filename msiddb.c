@@ -16,10 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <ToolUtils.h>
+
 #include <conf.h>
 #include <mydefs.h>
 
-#include "MSIDDB.h"
+#include "msiddb.h"
 #define FILE_NUM 96
 #pragma segment MIMEStore
 OSErr MSCreateIDDB(MStoreBoxHandle boxH);

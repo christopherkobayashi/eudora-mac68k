@@ -19,7 +19,7 @@ DAMAGE. */
 #include <conf.h>
 #include <mydefs.h>
 
-#include "MSTOC.h"
+#include "mstoc.h"
 #define FILE_NUM 97
 #pragma segment MIMEStore
 OSErr MSCreateTOC(MStoreBoxHandle boxH);
