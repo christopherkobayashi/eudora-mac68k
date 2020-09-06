@@ -20,6 +20,8 @@ DAMAGE. */
 #define NAG_H
 #ifdef NAG
 
+#include <MyRes.h>
+
 #define	kTEXTResIDFollowsChar	'~'
 #define	kSecondsPerDay				 (24*60*60)
 #define	kDeadbeatDays					14

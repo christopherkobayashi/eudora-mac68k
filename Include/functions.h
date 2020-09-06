@@ -19,6 +19,9 @@ DAMAGE. */
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#include <StandardFile.h>
+#include <MacHelp.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 OSErr RemSpoolFolder(long uidHash);
 void SendBack(WindowPtr theWindow);

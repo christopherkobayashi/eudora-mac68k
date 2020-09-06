@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
+#include <Appearance.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /**********************************************************************
  * my own window package

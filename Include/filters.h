@@ -20,7 +20,7 @@ DAMAGE. */
 #define FILTERS_H
 
 #ifdef TWO
-#include "filtdefs.h"
+#include "FiltDefs.h"
 
 typedef struct CountedSpecStruct
 {

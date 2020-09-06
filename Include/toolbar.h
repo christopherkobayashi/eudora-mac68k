@@ -18,6 +18,9 @@ DAMAGE. */
 
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
+
+#include <ControlDefinitions.h>
+
 #ifdef TWO
 
 typedef enum

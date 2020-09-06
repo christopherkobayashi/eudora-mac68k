@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef ADWIN_H
 #define ADWIN_H
 
+#include <nag.h>
+
 //	Ad id
 //	Note: must update linkmng.c if this changes ...
 typedef struct

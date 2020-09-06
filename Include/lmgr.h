@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef LMGR_H
 #define LMGR_H
 
+#include <Lists.h>
+
 Boolean FirstSelected(Cell *c,ListHandle list);
 short Next1Selected(short thisOne,ListHandle list);
 short InWhich1Cell(Point mouse,ListHandle list);

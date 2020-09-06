@@ -411,9 +411,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "GSS.h"		// !!! Marshall sez - not yet for MachO
 #endif
 #include "regexp.h"
-#ifdef CK
 #include "OpenSSL.h"	// needed for TransStream
-#endif
 #include "trans.h"
 #include "color.h"
 #include "macslip.h"
@@ -437,7 +435,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "wrappers.h"
 #include "util.h"
 #include "anal.h"
-// #include "pete.h" CK
+#include "pete.h"
 #include "menusharing.h"
 #include "lex822.h"
 #include "header.h"
@@ -449,7 +447,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "nag.h"
 #include "StringUtil.h"
 #include "StringDefs.h"
-#include "adutil.h"
+// #include "adutil.h" CK
 #include "appleevent.h"
 #include "cursor.h"
 #include "mime.h"
@@ -497,7 +495,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #endif
 #include "nickwin.h"
 #include "nickexp.h"
-#include "paywin.h"
+// #include "paywin.h" CK
 #include "peteuserpane.h"
 #include "oops.h"
 #include "listview.h"
@@ -520,7 +518,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "md5.h"
 #include "lmgr.h"
 #include "log.h"
-#include "filtdefs.h"
+#include "FiltDefs.h"
 #include "filters.h"
 #include "filtmng.h"
 #include "filtwin.h"
@@ -565,7 +563,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "imapconnections.h"
 #include "imapauth.h"
 #include "NetworkSetup.h"
-#include "MoreNetworkSetup.h"
+// #include "MoreNetworkSetup.h" CK
 #include "networksetuplibrary.h"
 #include "linkwin.h"
 #include "linkmng.h"
@@ -584,7 +582,7 @@ OSErr ConnectTrans(TransStream stream, UPtr serverName, long port, Boolean silen
 #include "statwin.h"
 #include "xml.h"
 #include "scriptmenu.h"
-#include "carbonutil.h"
+// #include "carbonutil.h" CK
 #include "fileview.h"
 #include "palmconduitae.h"
 #include "junk.h"
@@ -605,7 +603,7 @@ Boolean	CanDoSSL ( void );
 #include "timebomb.h"
 #endif	
 
-#include "regcode_eudora.h"
+// #include "regcode_eudora.h" CK
 
 #include "light.h"
 

@@ -31,7 +31,7 @@ long BodyOffset(Handle text);
 
 Boolean IsMe(PStr address);
 OSErr WriteTranslators(short refN,TransInfoHandle translators);
-AddTranslatorsFromPtr(MessHandle messH,UPtr text,long len);
+int AddTranslatorsFromPtr(MessHandle messH,UPtr text,long len);
 HSPtr CompHeadFind(MessHandle messH,short index,HSPtr hSpec);
 HSPtr CompHeadFindStr(MessHandle messH,PStr name,HSPtr hSpec);
 HSPtr HandleHeadFindStr(UHandle text,PStr name,HSPtr hSpec);

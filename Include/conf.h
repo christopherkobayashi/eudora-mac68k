@@ -19,12 +19,14 @@ DAMAGE. */
 #ifndef CONF_H
 #define CONF_H
 
+/* CK build defs here
 #undef TARGET_CPU_PPC
+#define TWO
 
 /*
  *	Define this once we're ready to make the build that doesn't register
  */
-//#define	DEATH_BUILD
+#define	DEATH_BUILD /* CK */
 
 /*
  * Define this unless there is a miracle on the horizon
@@ -52,7 +54,7 @@ DAMAGE. */
  * define ADWARE to make an ADWARE build
  */
 //#define	ADWARE
-//#define	NAG
+#define	NAG // CK
 
 /*
  * define DEBUG if you want debugging code & resources

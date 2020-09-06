@@ -306,6 +306,6 @@ OSErr AddMyResourceMainThread(Handle h,OSType type,short id,ConstStr255Param nam
 #define ZapSettingsResourceMainThread ZapSettingsResource
 #define AddMyResourceMainThread_(h,t,i,n)	AddMyRsource_
 
-#endif THREADING_ON
+#endif // THREADING_ON
 
-#endif THREADING_H
+#endif // THREADING_H

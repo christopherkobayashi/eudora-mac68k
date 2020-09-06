@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#if !defined(__GLOBALS_H__)
+#define __GLOBALS_H__
+
 #pragma segment Main
 /**********************************************************************
  * Global variables for POP mail
@@ -49,6 +52,18 @@ extern Boolean Toshiba;				/* toshiba hard drive? */
 extern Boolean LooseTrans;			/* is there a translator with loose morals? */
 extern Boolean QTMoviesInited;	/* has QuickTime been initialized for playing movies? */
 extern BoxCountHandle BoxCount;/* list of mailboxes for find */
+
+// CK this is from oops.h bad hack
+typedef struct
+{
+        FSSpec fromSpec;
+        FSSpec toSpec;
+        Accumulator ids;
+        Boolean redo;
+        Boolean open;
+        Boolean delete;
+} XfUndo, *XfUndoPtr, **XfUndoHandle;
+
 extern XfUndoHandle XfUndoH;		/* for undoing transfers */
 extern GrafPtr InsurancePort;	/* a port for use when no others are available */
 #if TARGET_RT_MAC_CFM
@@ -394,3 +409,5 @@ extern Accumulator OutgoingMIDList;	// list of outgoing message id's
 extern Boolean OutgoingMIDListDirty;	// is it dirty?
 
 extern AccuPtr ExportErrors;	// accumulate exporting errors here
+
+#endif // __GLOBALS_H__

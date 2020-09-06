@@ -99,7 +99,7 @@ typedef struct PeteExtra
 	long spelled;
 	Boolean spellReset;
 #endif
-	struct TAESessionState taeSession;	// session record for scanner
+//	struct TAESessionState taeSession;	// session record for scanner CK
 	long taeScanned;										// spot we next need to scan
 	long taeScannedSession;							// spot we last scanned at, to know if we need to reinit the session
 	long taeScore;											// score we came up with

@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#if !defined(__MENUSHARING_H__)
+#define __MENUSHARING_H__
+
 /* 
 Copyright (c) 1991-2000 UserLand Software, Inc. 
 
@@ -162,3 +165,5 @@ extern tyMSglobals MSglobals; /*menu sharing globals*/
 #pragma options align=reset
 #endif	//PRAGMA_ALIGN_SUPPORTED
 #endif	//TARGET_API_MAC_CARBON
+
+#endif // __MENUSHARING_H__

@@ -137,4 +137,4 @@ void ConConDispose(void);
 ConConProH ConConProFind(PStr profileStr);
 ConConProH ConConProFindHash(uLong profileHash);
 Boolean ConConMultipleAppropriate(TOCHandle tocH);
-#endif CONCENTRATOR_H
+#endif // CONCENTRATOR_H

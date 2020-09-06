@@ -16,6 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#if !defined(__UNICODE_H__)
+#define __UNICODE_H__
+
+#include <TextEncodingConverter.h>
+#include <UnicodeConverter.h>
+
 #define kUnicodeSourceHintDefault				((UniChar)0xF850)
 #define kUnicodeSourceHintChineseSimplified		((UniChar)0xF85C)
 #define kUnicodeSourceHintChineseTraditional	((UniChar)0xF85D)
@@ -97,3 +103,5 @@ ByteCount GoodUTF8Len(BytePtr utf8, ByteCount bufLen);
 
 OSErr SniffAndConvertHandleToRoman(Handle *hp);
 OSErr ConvertHandleToRoman(Handle *hp,TextEncoding encoding,uLong offset);
+
+#endif // __UNICODE_H__

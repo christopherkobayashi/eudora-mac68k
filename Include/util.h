@@ -383,7 +383,6 @@ enum {smScriptSmallSysFondSize=0x1243};
 
 #define MINI_MASK	(everyEvent & ~(highLevelEventMask|keyDownMask|((InAThread()||!ModalWindow)?(mDownMask|mUpMask):0)))
 
-#ifdef DEBUG
 #define GetResource NoSLGetResource
 #define Get1Resource NoSLGet1Resource
 #define Get1IndResource NoSLGet1IndResource
@@ -401,5 +400,4 @@ Handle NoSLGetNamedResource(OSType type,PStr name);
 Handle NoSLGet1NamedResource(OSType type,PStr name);
 MenuHandle NoSLGetMenu(short id);
 MenuHandle NoSLGetMHandle(short id);
-#endif
 #endif

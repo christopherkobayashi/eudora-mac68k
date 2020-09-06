@@ -24,8 +24,8 @@ DAMAGE. */
 
 #define MakePPtr(pstr,ptr,len) do{*pstr=MIN(len,sizeof(Str255)-1);BMD(ptr,pstr+1,(Byte)*pstr);}while(false)
 #define CtoPPtrCpy(p,c) do{short l=strlen(c);MakePPtr(p,c,l);}while(0)
-#define StringToNum(a,b) MyStringToNum(a,b)
 void MyStringToNum(PStr string,long *num);
+// static inline void StringToNum(PStr a, long *b) { MyStringToNum(a,b); } CK
 Boolean AllDigits(UPtr chars, long len);
 Boolean BeginsWith(PStr string,PStr prefix);
 void CaptureHex(PStr from,PStr to);

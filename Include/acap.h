@@ -41,6 +41,6 @@ Type 'EuAl'
 
 OSErr ACAPLoad(Boolean giveQuit);
 
-#endif Rez
+#endif // Rez
 
-#endif ACAP_H
+#endif // ACAP_H

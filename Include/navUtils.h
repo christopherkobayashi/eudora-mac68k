@@ -18,7 +18,9 @@ DAMAGE. */
 
 #ifndef NAVUTILS_H
 #define	NAVUTILS_H
+
 #include <Navigation.h>
+#include <StandardFile.h>
 
 #define	rNavSaveAsGuessParagraphsItem		1
 #define	rNavSaveAsIncludeHeadersItem		2

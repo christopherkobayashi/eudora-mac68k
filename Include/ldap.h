@@ -50,7 +50,7 @@ typedef	struct fd_set{
 #else
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
+// #include <sys/socket.h> CK
 #endif
 
 #ifdef _AIX

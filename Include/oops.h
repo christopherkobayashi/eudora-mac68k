@@ -19,14 +19,19 @@ DAMAGE. */
 #ifndef UNDO_H
 #define UNDO_H
 
-#include <mydefs.h>
 #include <Dialogs.h>
 #include <Files.h>
+
+#include <conf.h>
+
+#include <mydefs.h>
+
+#include <StringDefs.h>
+#include <StrnDefs.h>
+
 #include <adutil.h>
 #include <util.h>
 #include <mywindow.h>
-#include <StringDefs.h>
-#include <StrnDefs.h>
 #include <MyRes.h>
 
 
@@ -34,6 +39,7 @@ DAMAGE. */
 /************************************************************************
  * definitions for undo
  ************************************************************************/
+#if 0 // CK bad hack
 typedef struct
 {
 	FSSpec fromSpec;
@@ -43,6 +49,7 @@ typedef struct
 	Boolean open;
 	Boolean delete;
 } XfUndo, *XfUndoPtr, **XfUndoHandle;
+#endif
 
 void DoUndo(void);
 void NukeUndo(MyWindowPtr win);
@@ -50,5 +57,6 @@ void SetUndoMenu(MyWindowPtr win);
 void NukeXfUndo(void);
 void AddXfUndo(TOCHandle fromTocH, TOCHandle toTocH,short sumNum);
 OSErr AddIMAPXfUndoUIDs(TOCHandle fromTocH, TOCHandle toTocH, Handle uids, Boolean bDelete);
+
 
 #endif

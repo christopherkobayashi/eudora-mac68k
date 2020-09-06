@@ -20,6 +20,7 @@ DAMAGE. */
 #define CARBONUTIL_H
 
 #include <PMApplication.h>
+#include <MacWindows.h>
 
 /**********************************************************************
 	carbonutil.h	- accessor functions and macros for carbon compatibility

@@ -19,6 +19,7 @@ DAMAGE. */
 #ifndef FILEUTIL_H
 #define FILEUTIL_H
 
+#include <StandardFile.h>
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 
 OSErr TruncAtMark(short refN);
@@ -94,7 +95,7 @@ OSErr MakeDarnSure(short refN);
 OSErr FlushFile(short refN);
 OSErr SimpleResolveAlias(AliasHandle alias,FSSpecPtr spec);
 OSErr SimpleResolveAliasNoUI(AliasHandle alias,FSSpecPtr spec);
-UniqueSpec(FSSpecPtr spec,short max);
+int UniqueSpec(FSSpecPtr spec,short max);
 short SplitPerfectlyGoodFilenameIntoNameAndQuoteExtensionUnquote(PStr name,PStr dfName,PStr dfQuoteExtensionUnquote,short max);
 short NCWriteP(short refN,UPtr pString);
 short AWriteP(short refN,UPtr pString);

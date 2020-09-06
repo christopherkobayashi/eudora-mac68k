@@ -24,7 +24,7 @@ OSErr  SuckAddresses(BinAddrHandle *addresses, TextAddrHandle	text,Boolean wantC
 OSErr  SuckPtrAddresses(BinAddrHandle *addresses, TextAddrPtr text,long size,Boolean wantComments, Boolean wantErrors,Boolean wantAutoQual,long***addrSpots);
 PStr ShortAddr(PStr shortAddr, PStr longAddr);
 Boolean IsFCCAddr(PStr addr);
-SameAddressStr(PStr addr1,PStr addr2);
+Boolean SameAddressStr(PStr addr1,PStr addr2);
 PStr CanonAddr(PStr into,PStr addr,PStr name);
 short CountAddresses (Handle addresses, short justTellMeIfThereAreAtLeastThisMany);
 #define IsNewsgroupAddr(s)	((Byte)(s)[1]==(Byte)'©')

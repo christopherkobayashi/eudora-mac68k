@@ -20,6 +20,7 @@ DAMAGE. */
 #define MYRES_H
 
 #include <Dialogs.h>
+#include <StrnDefs.h>
 
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /**********************************************************************

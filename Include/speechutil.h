@@ -21,6 +21,7 @@ DAMAGE. */
 #ifndef SPEECHUTIL_H
 #define SPEECHUTIL_H
 
+#include <Dialogs.h>
 #include <Speech.h>
 
 //

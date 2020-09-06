@@ -18,6 +18,9 @@ DAMAGE. */
 
 #ifndef FILTMNG_H
 #define FILTMNG_H
+
+#include <appleevent.h>
+
 #ifdef TWO
 
 OSErr RegenerateFilters(void);

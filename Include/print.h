@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef PRINT_H
 #define PRINT_H
 
+#include <PMCore.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 /************************************************************************
  * declarations for printing

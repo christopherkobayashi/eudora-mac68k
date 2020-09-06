@@ -19,6 +19,9 @@ DAMAGE. */
 #ifndef PETEGRAPHIC_H
 #define PETEGRAPHIC_H
 
+#include <ImageCompression.h>
+#include <Movies.h>
+
 /* Copyright (c) 1996 by Qualcomm, Inc. */
 
 #define kFileInProcessType 0

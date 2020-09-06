@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef ENDS_H
 #define ENDS_H
 
+#include <Lists.h>
+
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
 void Initialize(void);
 void FigureOutFont(Boolean peteToo);
@@ -41,10 +43,10 @@ void CleanTempFolder(void);
 Boolean DateWarning(Boolean uiOK);
 #ifdef THREADING_ON
 void CreateTempBox(short which);
-#endif THREADING_ON
+#endif // THREADING_ON
 #ifdef HAVE_KEYCHAIN
 void KeychainConvert(void);
-#endif //HAVE_KEYCHAIN
+#endif // HAVE_KEYCHAIN
 
 pascal void SettingsListDef(short lMessage, Boolean lSelect, Rect *lRect, Cell lCell, short lDataOffset, short lDataLen, ListHandle lHandle);
 #ifdef FANCY_FILT_LDEF

@@ -19,6 +19,8 @@ DAMAGE. */
 #ifndef PAYWIN_H
 #define PAYWIN_H
 
+#include <nag.h>
+
 /* Copyright (c) 1999 by QUALCOMM Incorporated */
 /**********************************************************************
  * handling the payment & registration window

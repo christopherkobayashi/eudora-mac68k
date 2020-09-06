@@ -99,4 +99,4 @@ ine MOZ_MSG_FLAG_NEW        0x10000 /* This msg is new since the last time
 
 #define MOZ_MSG_FLAG_LABELS 0xE000000   /* These are used to remember the message labels */
 
-#endif EXPORT_H
+#endif // EXPORT_H

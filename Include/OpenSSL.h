@@ -38,7 +38,7 @@ typedef struct x509_store_st		X509_STORE;
 typedef struct x509_store_ctx_st	X509_STORE_CTX;
 typedef struct ssl_method_st		SSL_METHOD;
 typedef struct X509_name_st			X509_NAME;
-typedef struct X509_st 				X509;
+// typedef struct X509_st 				X509; CK
 
 /*	Routines that will go in the header file */
 BIO_METHOD *BIO_s_otsocket ( void );
