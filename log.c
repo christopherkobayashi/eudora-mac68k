@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 #include "log.h"
 #define FILE_NUM 50
 /* Copyright (c) 1992 by Qualcomm, Inc */
@@ -64,12 +67,14 @@ UPtr Log(uLong level,UPtr string)
 {
 #ifdef THREADING_ON
 	MyThreadBeginCritical();
-#endif THREADING_ON
+#endif // THREADING_ON
 	if (level==0xFFFFFFFF || (level&LogLevel)!=0)
 	{
 		Str31 stamp;
 		long tickDiff = TickCount()-LogTicks;
-		Str255 threadStr = "\pMAIN";
+		Str255 threadStr;
+
+		snprintf(threadStr, 6, "\pMAIN");
 		
 		// so now the threadID is the first field of each log entry
 		if (InAThread ())
@@ -97,7 +102,7 @@ UPtr Log(uLong level,UPtr string)
 				PeteScroll(win->pte,0,32767);
 #ifdef THREADING_ON
 	MyThreadEndCritical();
-#endif THREADING_ON
+#endif // THREADING_ON
 				return(string);
 			}
 		}
@@ -113,7 +118,7 @@ UPtr Log(uLong level,UPtr string)
 	}
 #ifdef THREADING_ON
 	MyThreadEndCritical();
-#endif THREADING_ON
+#endif // THREADING_ON
 	return(string);
 }
 
@@ -151,7 +156,7 @@ void OpenLog(void)
 	Str15 ctext;
 	short err;
 	long creator;
-	static roll;
+	static int roll;
 	
 	if (LogRefN && (GetEOF(LogRefN,&eof) || eof > roll)) CloseLog();
 	if (!LogRefN)

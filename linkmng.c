@@ -16,6 +16,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Resources.h>
+#include <ToolUtils.h>
+#include <conf.h>
+#include <mydefs.h>
+
 #include "linkmng.h"
 #define FILE_NUM 128
 
@@ -154,7 +159,7 @@ OSErr WriteHistTOC(short which);
 Handle GetHistoryData(short which,short index,Boolean readFromDisk);
 OSErr ReadHistTOC(short which);
 static void ZapHistoryFile(short which, Boolean destroy);
-OSErr RegenerateLinkHistory(short which, Boolean rebuild);
+static OSErr RegenerateLinkHistory(short which, Boolean rebuild);
 long HistMatchFound(long hashName,Handle theUrl,short which);
 void ReadHistFileList(FSSpec *pSpec,Boolean reread);
 OSErr AddHistoryToTOC(short which,UPtr name,long hashName,LinkTypeEnum type, LinkLabelEnum label,Boolean thumb,Handle url,AdId adId);

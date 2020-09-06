@@ -16,6 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Power.h>
+#include <Resources.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "main.h"
 
 #define FILE_NUM 22
@@ -2825,6 +2831,8 @@ void MemCorruptLo(UHandle map,long offset,PStr msg,short line)
 }
 #endif
 
+#if 0 // CK -- no wheel in 7.5.5, maybe no carbon
+
 /**********************************************************************
  * SetupEventHandlers - setup carbon event handlers
  **********************************************************************/
@@ -2849,6 +2857,7 @@ static void SetupEventHandlers(void)
 	// Services menu handler
 	if (!PrefIsSet(PREF_NO_SERVICES)) InstallEventHandler(appTarget,NewEventHandlerUPP(ServicesHandlerProc),sizeof(servicesEventSpec)/sizeof(EventTypeSpec),&servicesEventSpec,nil,nil);
 }
+
 
 /**********************************************************************
  * WheelHandlerProc - carbon event handler for scroll wheel
@@ -2924,6 +2933,7 @@ static pascal OSStatus WheelHandlerProc (EventHandlerCallRef nextHandler,EventRe
 	gEnterWheelHandlerCount--;
 	return noErr;
 }
+#endif
 
 /**********************************************************************
  * AppendOSTypeToCFArray - add data type to CF array as CF string
@@ -2959,6 +2969,7 @@ static pascal OSStatus ServicesHandlerProc (EventHandlerCallRef nextHandler,Even
 		selection = !PeteGetTextAndSelection(win->pte,nil,&start,&stop) && stop!=start;
 		switch (eventKind)
 		{
+#if 0 // CK can't find this anywhere
 			case kEventServiceGetTypes:
 				// Add the data types that we support to the copy/paste data-type arrays
 				if (selection)
@@ -3001,6 +3012,7 @@ static pascal OSStatus ServicesHandlerProc (EventHandlerCallRef nextHandler,Even
 					PETEUseScrap(PETE,nil);
 				}
 				break;
+#endif
 		}
 	}
 	return err;

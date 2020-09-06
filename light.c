@@ -20,6 +20,9 @@ DAMAGE. */
 //
 //	contains all the functions I'm creating for the decaying light version of Eudora.
 
+#include <conf.h>
+#include <mydefs.h>
+
 #include	"light.h"
 
 #ifdef	LIGHT

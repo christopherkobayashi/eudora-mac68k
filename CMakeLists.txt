@@ -102,7 +102,7 @@ add_application(Eudora
 	mailxfer.c
 	main.c
 	makefilter.c
-	mbdrawer.c
+#	mbdrawer.c
 	mbwin.c
 	md5.c
 	menu.c
