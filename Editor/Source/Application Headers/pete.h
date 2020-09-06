@@ -43,6 +43,8 @@ DAMAGE. */
 #include <TextEdit.h>
 #endif
 
+#include <Scrap.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

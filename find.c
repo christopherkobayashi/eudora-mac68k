@@ -16,6 +16,14 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <Quickdraw.h>
+#include <Controls.h>
+
+#include <string.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "find.h"
 #define FILE_NUM 14
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */

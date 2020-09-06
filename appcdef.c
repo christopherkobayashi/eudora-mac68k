@@ -18,6 +18,10 @@ DAMAGE. */
 
 #define FILE_NUM 61
 /* Copyright (c) 1994 by QUALCOMM Incorporated */
+#include <Controls.h>
+
+#include <conf.h>
+#include <mydefs.h>
 
 #include "appcdef.h"
 #pragma segment Appcdef
@@ -541,6 +545,8 @@ long AppCdefDisp(short varCode, ControlHandle theControl, short message, long pa
 	DisposeHandle(GetControlDataHandle(theControl));
 	return(0);
 }
+
+
 
 /**********************************************************************
  * AppCdefBGChange - change background color for top margin controls

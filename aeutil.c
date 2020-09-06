@@ -19,6 +19,11 @@ DAMAGE. */
 #define FILE_NUM 65
 /* Copyright (c) 1994 by QUALCOMM Incorporated */
 
+#include <Gestalt.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "aeutil.h"
 #pragma segment MAEUtil
 pascal OSErr MyAEIdle(EventRecord *event,long *sleep, RgnHandle *rgn);

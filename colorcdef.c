@@ -16,6 +16,12 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
+#include <mailbox.h>
+#include <mywindow.h>
+
 #define FILE_NUM 71
 /* Copyright (c) 1994 by QUALCOMM Incorporated */
 

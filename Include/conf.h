@@ -189,3 +189,5 @@ DAMAGE. */
 
 #define GetMHandle GetMenuHandle 	// dammit
 #endif
+
+#include <Gestalt.h>
