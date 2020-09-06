@@ -16,6 +16,13 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <AEObjects.h>
+#include <KeychainHI.h>
+#include <Gestalt.h>
+
+#include <conf.h>
+#include <mydefs.h>
+
 #include "util.h"
 #define FILE_NUM 41
 /* Copyright (c) 1990-1992 by the University of Illinois Board of Trustees */
@@ -116,7 +123,7 @@ void MacInitialize(int masterCount, long ensureStack)
 /**********************************************************************
  * turn a font name into a font id; if the name is not found, use ApplFont
  **********************************************************************/
-GetFontID(UPtr theName)
+short GetFontID(UPtr theName)
 {
 	short theID;
 	Str255 systemName;
