@@ -253,9 +253,7 @@ extern Boolean gMissingNSLib;
 #ifdef SPEECH_ENABLED
 extern FSSpec SpeechPrefFileSpec;
 #endif
-#ifdef ADWARE
 extern FSSpec SettingsFileSpec;
-#endif
 extern long gActiveConnections;
 extern Boolean gConnecting;
 extern Boolean gStayConnected;
