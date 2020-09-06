@@ -120,7 +120,7 @@ add_application(Eudora
 	mywindow.c
 	nag.c
 	navUtils.c
-	netscapeplugins.c
+#	netscapeplugins.c
 	networksetuplibrary.c
 	newhtml.c
 	nickae.c
@@ -129,12 +129,12 @@ add_application(Eudora
 	nickwin.c
 	oops.c
 	palmconduitae.c
-	paywin.c
+#	paywin.c
 	personalitieswin.c
 	peteglue.c
 	peteuserpane.c
-	pgpin.c
-	pgpout.c
+#	pgpin.c
+#	pgpout.c
 	ph.c
 	pop.c
 	prefaudit.c
@@ -147,7 +147,7 @@ add_application(Eudora
 	regexp.c
 	register.c
 	rich.c
-	sasl.c
+#	sasl.c
 	schizo.c
 	scriptmenu.c
 	search.c
@@ -158,10 +158,10 @@ add_application(Eudora
 	signaturewin.c
 	sort.c
 	speechutil.c
-	spell.c
+#	spell.c
 	spool.c
 	squish.c
-	ssl.c
+#	ssl.c
 	stationerywin.c
 	statmng.c
 	statwin.c
