@@ -16,6 +16,10 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+#include <string.h>
+
 #include "junk.h"
 #define FILE_NUM 144
 
@@ -32,7 +36,7 @@ Boolean WhiteListByMID(TOCHandle tocH, short sumNum);
 
 // IMAP support
 OSErr JunkIMAP(TOCHandle tocH, short sumNum, Boolean isJunk, Boolean dontMove);
-OSErr ArchiveIMAPJunk(void);
+static OSErr ArchiveIMAPJunk(void);
 void JunkMoveIMAPMessages(TOCHandle tocH, Boolean isJunk);
 
 /************************************************************************
