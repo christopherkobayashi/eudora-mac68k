@@ -178,17 +178,29 @@ Rect	*GetQDGlobalsScreenBitsBounds (Rect *bounds);
 
 //	Window Manager
 #define	GetWindowVisRgn(aWindowPtr,aRgnHandle)	(GetPortVisibleRegion (GetWindowPort (aWindowPtr), (aRgnHandle)))
+
+#if !defined(GetWindowUpdateRgn)
 #define GetWindowUpdateRgn(theWindow,rgn)		(GetWindowRegion(theWindow,kWindowUpdateRgn,rgn),rgn)
+#endif
+
 RgnHandle MyGetWindowStructureRegion(WindowRef window);
 RgnHandle MyGetWindowContentRegion(WindowRef window);
 RgnHandle MyGetWindowUpdateRegion(WindowRef window);
+
 #define GetWindowStructureBounds(win,rectPtr)	GetWindowBounds(win,kWindowStructureRgn,rectPtr)
 #define GetWindowContentBounds(win,rectPtr)	GetWindowBounds(win,kWindowContentRgn,rectPtr)
 // pascal Boolean GetWindowGoAwayFlag(WindowRef win); CK
 void GetWMgrPort(GrafPtr *wPort);
 void GetCWMgrPort(CGrafPtr *wPort);
+
+#if !defined(GetWindowStructureRgn)
 #define GetWindowStructureRgn(win,rgn)			GetWindowRegion(win,kWindowStructureRgn,rgn)
+#endif
+
+#if !defined(IsWindowVisible)
 #define IsWindowVisible(win) MyIsWindowVisible(win)
+#endif
+
 Boolean MyIsWindowVisible(WindowRef win);
 OSStatus	InvalWindowPort (WindowPtr theWindow);
 Rect	*GetUpdateRgnBounds (WindowPtr theWindow, Rect *bounds);
