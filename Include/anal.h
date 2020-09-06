@@ -27,7 +27,7 @@ void AnalScanPete(PETEHandle pte,Boolean toCompletion,Boolean toSpeak);
 short AnalScanHandle(UHandle text,long offset,long len,Boolean *inHeader);
 #define AnalIcon(score) (ANAL_ICON_BASE+score-1)
 #define AnalDisabled()	(NoAnalDictionary || (GetPrefLong(PREF_NO_COURIC)&1))
-#define BeingAnal()	(!AnalDisabled()&&HasFeature(featureAnal)&&TAEStartSession)
+//#define BeingAnal()	(!AnalDisabled()&&HasFeature(featureAnal)&&TAEStartSession)
 #define AnalDoIncoming()	(BeingAnal()&&!(GetPrefLong(PREF_NO_COURIC)&2))
 #define AnalDoExisting()	(BeingAnal()&&!(GetPrefLong(PREF_NO_COURIC)&4))
 #define AnalMarkPhrases()	(BeingAnal()&&!(GetPrefLong(PREF_NO_COURIC)&8))

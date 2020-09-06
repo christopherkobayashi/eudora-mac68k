@@ -184,7 +184,7 @@ RgnHandle MyGetWindowContentRegion(WindowRef window);
 RgnHandle MyGetWindowUpdateRegion(WindowRef window);
 #define GetWindowStructureBounds(win,rectPtr)	GetWindowBounds(win,kWindowStructureRgn,rectPtr)
 #define GetWindowContentBounds(win,rectPtr)	GetWindowBounds(win,kWindowContentRgn,rectPtr)
-pascal Boolean GetWindowGoAwayFlag(WindowRef win);
+// pascal Boolean GetWindowGoAwayFlag(WindowRef win); CK
 void GetWMgrPort(GrafPtr *wPort);
 void GetCWMgrPort(CGrafPtr *wPort);
 #define GetWindowStructureRgn(win,rgn)			GetWindowRegion(win,kWindowStructureRgn,rgn)
@@ -256,7 +256,7 @@ Boolean MyIsMenuItemEnabled(MenuRef  menu,MenuItemIndex item);
 
 short			ControlHi (ControlHandle theControl);
 short			ControlWi (ControlHandle theControl);
-OSStatus	NotSupportedInCarbon (...);
+// OSStatus	NotSupportedInCarbon (...); CK
 #define	InlineGetHandleSize	GetHandleSize
 
 
