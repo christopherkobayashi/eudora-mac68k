@@ -16,6 +16,9 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH 
 DAMAGE. */
 
+#include <conf.h>
+#include <mydefs.h>
+
 #include "address.h"
 #define FILE_NUM 1
 // Copyright (c) 1990-1992 by the University of Illinois Board of Trustees
@@ -310,7 +313,7 @@ Boolean IsFCCAddr(PStr addr)
 /**********************************************************************
  * SameAddressStr - do two strings hold the same address?
  **********************************************************************/
-SameAddressStr(PStr addr1,PStr addr2)
+Boolean SameAddressStr(PStr addr1,PStr addr2)
 {
 	Str255 short1, short2;
 	
