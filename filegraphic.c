@@ -19,10 +19,14 @@ DAMAGE. */
 #include <Quickdraw.h>
 #include <QuickTimeComponents.h>
 #include <Resources.h>
+#include <Controls.h>
+#include <ToolUtils.h>
+#include <string.h>
 
 #include <conf.h>
 #include <mydefs.h>
 
+#include <aeutil.h>
 #include "filegraphic.h"
 #include "pete.h"
 
@@ -154,7 +158,7 @@ OSErr PeteFileGraphicStyle(PETEHandle pte,FSSpecPtr spec,HTMLGraphicInfo *html,P
 	
 	if (gHandle = NuHandleClear(sizeof(FileGraphicInfo)))
 	{
-		(*gHandle)->pgi.itemProc = FileGraphic;
+		(*gHandle)->pgi.itemProc = (PETEGraphicHandlerProcPtr)FileGraphic;
 		(*gHandle)->attachment = (flags&fgAttachment)!=0;
 		(*gHandle)->centerInWin = (flags&fgCenterInWindow)!=0;
 		(*gHandle)->isEmoticon = (flags&fgEmoticon)!=0;
@@ -255,7 +259,7 @@ OSErr FileGraphicChangeGraphic(PETEHandle pte,long offset,FSSpecPtr spec)
 	{
 		FGIHandle graphic;
 		
-		if (pse.psGraphic && (graphic = pse.psStyle.graphicStyle.graphicInfo))
+		if (pse.psGraphic && (graphic = (FGIHandle) pse.psStyle.graphicStyle.graphicInfo))
 		{
 			DisposeGraphic(graphic);	// dispose of any previous graphic data
 			PeteMakeFileGraphic(pte,graphic,spec,GetMaxWidth(pte),(*graphic)->height,(*graphic)->displayInline);
@@ -1343,7 +1347,7 @@ OSErr PeteFileGraphicHit(PETEHandle pte,FGIHandle graphic,long offset,EventRecor
 					dragged = True;
 	#ifdef IMAP
 				}
-	#endif IMAP
+	#endif // IMAP
 			}
 		}
 	}
@@ -2670,7 +2674,7 @@ Boolean IsGraphicFile(FSSpecPtr spec)
 	//	Is there a PICT resource?
 	else if (picture = SpecResPicture(spec))
 	{
-		ZapHandle((Handle)picture);
+		// ZapHandle((Handle)picture); CK
 		result = true;
 	}
 	//	Can QuickTime display it?
